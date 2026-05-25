@@ -175,7 +175,7 @@ export default function Home() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex gap-8">
-            {["music", "videos", "about", "contact"].map((section) => (
+            {["music", "videos", "pics", "about", "contact"].map((section) => (
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
@@ -200,7 +200,7 @@ export default function Home() {
         {/* Mobile Nav Menu */}
         {isNavOpen && (
           <div className="md:hidden absolute top-20 left-0 w-full bg-background border-b border-white/5 py-6 px-6 flex flex-col gap-6">
-            {["music", "videos", "about", "contact"].map((section) => (
+            {["music", "videos", "pics", "about", "contact"].map((section) => (
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
@@ -374,6 +374,50 @@ export default function Home() {
                   allowFullScreen
                   className="absolute inset-0"
                 />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pics Section */}
+      {/* To add your own photos: replace the src values in GALLERY_PHOTOS at the top of this file */}
+      <section id="pics" className="py-28 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// the evidence</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            PICS
+          </h2>
+          <div className="graffiti-divider" />
+
+          {/* Masonry gallery — swap placeholder URLs with your own images */}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+            {[
+              { src: "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[3/4]", rotate: "rotate-[0.6deg]" },
+              { src: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop&q=80", aspect: "aspect-video", rotate: "rotate-[-0.5deg]" },
+              { src: "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800&auto=format&fit=crop&q=80", aspect: "aspect-square", rotate: "rotate-[0.4deg]" },
+              { src: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[4/5]", rotate: "rotate-[-0.7deg]" },
+              { src: "https://images.unsplash.com/photo-1501612780327-45045538702b?w=800&auto=format&fit=crop&q=80", aspect: "aspect-video", rotate: "rotate-[0.5deg]" },
+              { src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[3/4]", rotate: "rotate-[-0.4deg]" },
+              { src: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&auto=format&fit=crop&q=80", aspect: "aspect-square", rotate: "rotate-[0.6deg]" },
+              { src: "https://images.unsplash.com/photo-1493225255440-1b62b490e1d5?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[4/5]", rotate: "rotate-[-0.5deg]" },
+              { src: "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&auto=format&fit=crop&q=80", aspect: "aspect-video", rotate: "rotate-[0.3deg]" },
+            ].map((photo, i) => (
+              <div
+                key={i}
+                className={`break-inside-avoid overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 group cursor-pointer ${photo.rotate}`}
+                style={{ borderRadius: "3px 14px 3px 14px", marginBottom: "1rem" }}
+                data-testid={`img-gallery-${i}`}
+              >
+                <div className={`${photo.aspect} w-full overflow-hidden relative`}>
+                  <img
+                    src={photo.src}
+                    alt={`Ash Johansen photo ${i + 1}`}
+                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-all duration-500 mix-blend-overlay" />
+                </div>
               </div>
             ))}
           </div>
