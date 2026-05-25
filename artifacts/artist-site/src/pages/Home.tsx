@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
 import { SiInstagram, SiSpotify, SiYoutube, SiX } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
 import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
@@ -28,10 +28,99 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+// Replace src values with your actual audio file URLs
+const TRACKS = [
+  { id: 1, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { id: 2, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { id: 3, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+  { id: 4, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+  { id: 5, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+];
+
+function formatTime(seconds: number): string {
+  if (isNaN(seconds)) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 export default function Home() {
   const { toast } = useToast();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [activeTagline, setActiveTagline] = useState(0);
+
+  // Audio player state
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const currentTrack = currentTrackIndex !== null ? TRACKS[currentTrackIndex] : null;
+
+  function playTrack(index: number) {
+    if (currentTrackIndex === index) {
+      togglePlayPause();
+      return;
+    }
+    setCurrentTrackIndex(index);
+    setCurrentTime(0);
+    setIsPlaying(true);
+  }
+
+  function togglePlayPause() {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  }
+
+  function skipTrack(dir: 1 | -1) {
+    if (currentTrackIndex === null) return;
+    const next = (currentTrackIndex + dir + TRACKS.length) % TRACKS.length;
+    setCurrentTrackIndex(next);
+    setCurrentTime(0);
+    setIsPlaying(true);
+  }
+
+  function handleSeek(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = parseFloat(e.target.value);
+    if (audioRef.current) audioRef.current.currentTime = val;
+    setCurrentTime(val);
+  }
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || currentTrackIndex === null) return;
+    audio.src = TRACKS[currentTrackIndex].src;
+    audio.load();
+    if (isPlaying) audio.play().catch(() => {});
+  }, [currentTrackIndex]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const onTime = () => setCurrentTime(audio.currentTime);
+    const onMeta = () => setDuration(audio.duration);
+    const onEnd = () => skipTrack(1);
+    audio.addEventListener("timeupdate", onTime);
+    audio.addEventListener("loadedmetadata", onMeta);
+    audio.addEventListener("ended", onEnd);
+    return () => {
+      audio.removeEventListener("timeupdate", onTime);
+      audio.removeEventListener("loadedmetadata", onMeta);
+      audio.removeEventListener("ended", onEnd);
+    };
+  }, [currentTrackIndex]);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.muted = isMuted;
+  }, [isMuted]);
 
   const taglines = ["Making waves", "Dark frequencies", "Available everywhere"];
 
@@ -191,6 +280,51 @@ export default function Home() {
           <h2 className="text-5xl md:text-7xl font-display text-white mb-16 flex items-center gap-6">
             <span className="text-primary neon-text-glow">/</span> Releases
           </h2>
+
+          {/* Track list */}
+          <div className="mb-12 bg-card/30 backdrop-blur border border-white/5 rounded-2xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-widest text-muted-foreground font-display">Tracks</span>
+              <span className="text-xs uppercase tracking-widest text-muted-foreground font-display">Preview</span>
+            </div>
+            {TRACKS.map((track, index) => (
+              <button
+                key={track.id}
+                onClick={() => playTrack(index)}
+                className={`w-full flex items-center gap-4 px-6 py-4 border-b border-white/5 last:border-b-0 transition-all duration-200 group text-left ${
+                  currentTrackIndex === index
+                    ? "bg-primary/10 border-l-2 border-l-primary"
+                    : "hover:bg-white/5"
+                }`}
+                data-testid={`button-track-${track.id}`}
+              >
+                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-primary/50 transition-colors">
+                  {currentTrackIndex === index && isPlaying ? (
+                    <Pause size={14} className="text-primary" />
+                  ) : (
+                    <Play size={14} className={currentTrackIndex === index ? "text-primary" : "text-muted-foreground group-hover:text-white"} />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-medium truncate ${currentTrackIndex === index ? "text-primary" : "text-white"}`}>
+                    {track.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
+                </div>
+                {currentTrackIndex === index && (
+                  <div className="flex gap-[3px] items-end h-4 flex-shrink-0">
+                    {[1,2,3].map((b) => (
+                      <div
+                        key={b}
+                        className={`w-[3px] bg-primary rounded-full ${isPlaying ? "animate-pulse" : ""}`}
+                        style={{ height: `${[60, 100, 75][b-1]}%`, animationDelay: `${b * 0.15}s` }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
             <div className="bg-card/50 backdrop-blur border border-white/5 rounded-2xl p-6 hover:border-primary/30 transition-colors">
@@ -402,11 +536,85 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 text-center border-t border-white/5 bg-background">
+      <footer className={`text-center border-t border-white/5 bg-background ${currentTrack ? "py-8 pb-28" : "py-8"}`}>
         <p className="text-xs uppercase tracking-widest text-muted-foreground font-display">
           © {new Date().getFullYear()} Ash Johansen. All rights reserved.
         </p>
       </footer>
+
+      {/* Hidden audio element */}
+      <audio ref={audioRef} preload="metadata" />
+
+      {/* Sticky Bottom Player */}
+      {currentTrack && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-white/10 px-4 py-3 shadow-2xl">
+          {/* Progress bar */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/10">
+            <div
+              className="h-full bg-primary transition-none"
+              style={{ width: duration ? `${(currentTime / duration) * 100}%` : "0%" }}
+            />
+          </div>
+
+          <div className="max-w-7xl mx-auto flex items-center gap-4">
+            {/* Track info */}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">{currentTrack.title}</p>
+              <p className="text-xs text-muted-foreground truncate">{currentTrack.artist}</p>
+            </div>
+
+            {/* Controls */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => skipTrack(-1)}
+                className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
+                data-testid="button-player-prev"
+              >
+                <SkipBack size={18} />
+              </button>
+              <button
+                onClick={togglePlayPause}
+                className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-black hover:scale-105 transition-transform neon-glow"
+                data-testid="button-player-playpause"
+              >
+                {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+              </button>
+              <button
+                onClick={() => skipTrack(1)}
+                className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
+                data-testid="button-player-next"
+              >
+                <SkipForward size={18} />
+              </button>
+            </div>
+
+            {/* Seek + time */}
+            <div className="hidden md:flex items-center gap-3 flex-1">
+              <span className="text-xs text-muted-foreground tabular-nums w-8 text-right">{formatTime(currentTime)}</span>
+              <input
+                type="range"
+                min={0}
+                max={duration || 0}
+                step={0.1}
+                value={currentTime}
+                onChange={handleSeek}
+                className="flex-1 h-1 accent-[hsl(var(--primary))] cursor-pointer"
+                data-testid="input-player-seek"
+              />
+              <span className="text-xs text-muted-foreground tabular-nums w-8">{formatTime(duration)}</span>
+            </div>
+
+            {/* Mute */}
+            <button
+              onClick={() => setIsMuted((m) => !m)}
+              className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
+              data-testid="button-player-mute"
+            >
+              {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
