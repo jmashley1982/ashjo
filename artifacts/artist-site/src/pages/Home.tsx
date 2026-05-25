@@ -129,6 +129,48 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Polaroid drag state
+  const [dragOffsets, setDragOffsets] = useState<Record<number, { x: number; y: number }>>({});
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const dragRef = useRef<{ index: number; startX: number; startY: number; initialOffset: { x: number; y: number } } | null>(null);
+
+  function handleDragStart(e: React.MouseEvent | React.TouchEvent, index: number) {
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const offset = dragOffsets[index] || { x: 0, y: 0 };
+    dragRef.current = { index, startX: clientX, startY: clientY, initialOffset: offset };
+    setDraggingIndex(index);
+
+    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
+      if (!dragRef.current) return;
+      const mx = "touches" in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+      const my = "touches" in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
+      const dx = mx - dragRef.current.startX;
+      const dy = my - dragRef.current.startY;
+      setDragOffsets((prev) => ({
+        ...prev,
+        [index]: {
+          x: dragRef.current!.initialOffset.x + dx,
+          y: dragRef.current!.initialOffset.y + dy,
+        },
+      }));
+    };
+
+    const handleEnd = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleEnd);
+      window.removeEventListener("touchmove", handleMove);
+      window.removeEventListener("touchend", handleEnd);
+      dragRef.current = null;
+      setDraggingIndex(null);
+    };
+
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleEnd);
+    window.addEventListener("touchmove", handleMove, { passive: false });
+    window.addEventListener("touchend", handleEnd);
+  }
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -455,31 +497,43 @@ export default function Home() {
 
         <div className="bathroom-wall mt-8">
           {[
-            { src: "/pic-smoking.jpg", rotate: "rotate-[-2deg]", top: "4%", left: "3%", z: 5 },
-            { src: "/pic-myspace.jpeg", rotate: "rotate-[3deg]", top: "2%", left: "28%", z: 3 },
-            { src: "/pic-sheet.jpeg", rotate: "rotate-[1.5deg]", top: "6%", left: "55%", z: 6 },
-            { src: "/pic-parking.jpeg", rotate: "rotate-[-1deg]", top: "1%", left: "78%", z: 4 },
-            { src: "/pic-cinematic.png", rotate: "rotate-[2.5deg]", top: "38%", left: "5%", z: 2 },
-            { src: "/pic-astronaut.png", rotate: "rotate-[-3deg]", top: "36%", left: "35%", z: 7 },
-            { src: "/pic-glitch.png", rotate: "rotate-[0.5deg]", top: "40%", left: "62%", z: 1 },
-            { src: "/pic-saloon.jpeg", rotate: "rotate-[-2.5deg]", top: "35%", left: "82%", z: 5 },
-          ].map((photo, i) => (
-            <div
-              key={i}
-              className={`polaroid-tile ${photo.rotate}`}
-              style={{ top: photo.top, left: photo.left, zIndex: photo.z }}
-              data-testid={`img-gallery-${i}`}
-            >
-              <div className="polaroid-img">
-                <img
-                  src={photo.src}
-                  alt={`Ash Johansen photo ${i + 1}`}
-                  loading="lazy"
-                />
+            { src: "/pic-smoking.jpg", rotateDeg: -2, top: "4%", left: "3%", z: 5 },
+            { src: "/pic-myspace.jpeg", rotateDeg: 3, top: "2%", left: "28%", z: 3 },
+            { src: "/pic-sheet.jpeg", rotateDeg: 1.5, top: "6%", left: "55%", z: 6 },
+            { src: "/pic-parking.jpeg", rotateDeg: -1, top: "1%", left: "78%", z: 4 },
+            { src: "/pic-cinematic.png", rotateDeg: 2.5, top: "38%", left: "5%", z: 2 },
+            { src: "/pic-astronaut.png", rotateDeg: -3, top: "36%", left: "35%", z: 7 },
+            { src: "/pic-glitch.png", rotateDeg: 0.5, top: "40%", left: "62%", z: 1 },
+            { src: "/pic-saloon.jpeg", rotateDeg: -2.5, top: "35%", left: "82%", z: 5 },
+          ].map((photo, i) => {
+            const offset = dragOffsets[i] || { x: 0, y: 0 };
+            const isDragging = draggingIndex === i;
+            return (
+              <div
+                key={i}
+                className={`polaroid-tile ${isDragging ? "dragging" : ""}`}
+                style={{
+                  top: photo.top,
+                  left: photo.left,
+                  zIndex: isDragging ? 100 : photo.z,
+                  transform: `rotate(${photo.rotateDeg}deg) translate3d(${offset.x}px, ${offset.y}px, 0)`,
+                }}
+                data-testid={`img-gallery-${i}`}
+                onMouseDown={(e) => handleDragStart(e, i)}
+                onTouchStart={(e) => handleDragStart(e, i)}
+              >
+                <div className="polaroid-img">
+                  <img
+                    src={photo.src}
+                    alt={`Ash Johansen photo ${i + 1}`}
+                    loading="lazy"
+                    draggable={false}
+                  />
+                </div>
+                <div className="polaroid-caption">ASH {String.fromCharCode(65 + i)}</div>
               </div>
-              <div className="polaroid-caption">ASH {String.fromCharCode(65 + i)}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
