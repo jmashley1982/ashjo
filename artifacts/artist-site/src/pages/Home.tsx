@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Menu, X, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
-import { SiInstagram, SiSpotify, SiYoutube, SiFacebook, SiApplemusic, SiYoutubemusic } from "react-icons/si";
+import { SiInstagram, SiSpotify, SiYoutube, SiApplemusic, SiYoutubemusic } from "react-icons/si";
 import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
 import heroBgSrc from "@assets/freepik_ashmullet-stands-in-an-empty-parking-lot-it-is-night-_1779741287440.jpeg";
 import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_1779741287440.jpeg";
@@ -9,24 +9,12 @@ import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_177974128744
 const TRACKS = [
   { id: 1, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
   { id: 2, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-  { id: 3, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-  { id: 4, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-  { id: 5, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
 // Fallback video IDs shown while live feed loads or if API is unavailable
-const FALLBACK_VIDEO_IDS = ["6ZJpSVg87ic", "FlS3Eop3kp0", "Mpo-ghb5Ggs"];
+const FALLBACK_VIDEO_IDS = ["6ZJpSVg87ic", "mqWEPS37iyY", "FlS3Eop3kp0", "Mpo-ghb5Ggs", "dQw4w9WgXcQ", "Z8Z7n1r2e5s"];
 
-const TAGLINES = [
-  "Songs for the fucked up, the burnt out, the last-call lovers, the first-punch fighters.",
-  "Thick guitars. Fuzzy bass. Electronic heartbreak.",
-  "Blisteringly angry, disgustingly positive.",
-  "Raw singalongs from the gutter.",
-  "Melodic whispers and wrenching screams.",
-  "Feedback loop salvation.",
-  "Your favorite chaos goblin.",
-  "Fierce, fun, and fucked up.",
-];
+const HERO_QUOTE = "I can't know how to hear any more about tables!";
 
 function formatTime(seconds: number): string {
   if (isNaN(seconds)) return "0:00";
@@ -37,9 +25,7 @@ function formatTime(seconds: number): string {
 
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const [activeTagline, setActiveTagline] = useState(0);
-  const [taglineFading, setTaglineFading] = useState(false);
-
+  const [musicTab, setMusicTab] = useState("spotify");
   // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
@@ -112,18 +98,6 @@ export default function Home() {
   useEffect(() => {
     if (audioRef.current) audioRef.current.muted = isMuted;
   }, [isMuted]);
-
-  // Tagline rotation with fade
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineFading(true);
-      setTimeout(() => {
-        setActiveTagline((prev) => (prev + 1) % TAGLINES.length);
-        setTaglineFading(false);
-      }, 350);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -254,7 +228,8 @@ export default function Home() {
             style={{ mixBlendMode: "screen" }}
           />
           <p
-            className={`px-5 py-2 border text-sm md:text-base tracking-[0.18em] uppercase transition-opacity duration-300 ${taglineFading ? "opacity-10" : "opacity-100"}`}
+            className="hero-quote glitch-text px-5 py-2 border text-sm md:text-base tracking-[0.12em] uppercase"
+            data-text={HERO_QUOTE}
             style={{
               fontFamily: "var(--font-mono)",
               color: "hsl(var(--primary))",
@@ -266,7 +241,7 @@ export default function Home() {
               maxWidth: "min(90vw, 640px)",
             }}
           >
-            {TAGLINES[activeTagline]}
+            {HERO_QUOTE}
           </p>
         </div>
 
@@ -331,79 +306,86 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-10">
-            {/* Spotify */}
-            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card">
-              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary" style={{ fontFamily: "var(--font-elite)" }}>Spotify</h3>
-              <iframe
-                src="https://open.spotify.com/embed/artist/0ALEPHbwPTJaqzNFMr5aMe?utm_source=generator"
-                width="100%"
-                height="380"
-                frameBorder="0"
-                allowFullScreen
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                className="rounded-sm"
-                title="Spotify Player"
-              />
+          {/* Streaming tabs */}
+          <div className="bg-card/40 backdrop-blur border border-white/5 overflow-hidden punk-card">
+            <div className="flex border-b border-white/5 overflow-x-auto">
+              {[
+                { key: "spotify", label: "Spotify", icon: SiSpotify },
+                { key: "soundcloud", label: "SoundCloud", icon: null as any },
+                { key: "apple", label: "Apple Music", icon: SiApplemusic },
+                { key: "ytm", label: "YouTube Music", icon: SiYoutubemusic },
+              ].map((t) => {
+                const TabIcon = t.icon;
+                return (
+                  <button
+                    key={t.key}
+                    className={`flex items-center gap-2 px-5 py-3 text-xs uppercase tracking-widest whitespace-nowrap transition-all duration-200 ${musicTab === t.key ? "text-primary bg-white/5 border-b-2 border-primary" : "text-muted-foreground hover:text-white hover:bg-white/[0.03]"}`}
+                    style={{ fontFamily: "var(--font-elite)" }}
+                    onClick={() => setMusicTab(t.key)}
+                  >
+                    {TabIcon && <TabIcon size={14} />}
+                    {t.label}
+                  </button>
+                );
+              })}
             </div>
-
-            {/* SoundCloud */}
-            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card-alt flex flex-col justify-between">
-              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary" style={{ fontFamily: "var(--font-elite)" }}>SoundCloud</h3>
-              <iframe
-                width="100%"
-                height="360"
-                scrolling="no"
-                frameBorder="no"
-                allow="autoplay"
-                src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/users/1590490014&color=%23ff1a7a&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
-                className="rounded-sm"
-                title="SoundCloud Player"
-              />
-            </div>
-
-            {/* Apple Music — Replace ARTIST_ID with your Apple Music artist ID */}
-            {/* Find it: music.apple.com/us/artist/ash-johansen/XXXXXXXXX — the number at the end */}
-            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card">
-              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary flex items-center gap-2" style={{ fontFamily: "var(--font-elite)" }}>
-                <SiApplemusic size={14} /> Apple Music
-              </h3>
-              <iframe
-                allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
-                frameBorder="0"
-                height="380"
-                sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                src="https://embed.music.apple.com/us/artist/ash-johansen/1817699556"
-                width="100%"
-                className="rounded-sm"
-                title="Apple Music Player"
-              />
-            </div>
-
-            {/* YouTube Music — no iframe embedding supported; deep-link instead */}
-            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card-alt flex flex-col">
-              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary flex items-center gap-2" style={{ fontFamily: "var(--font-elite)" }}>
-                <SiYoutubemusic size={14} /> YouTube Music
-              </h3>
-              <div className="flex-1 flex flex-col items-center justify-center gap-6 py-10">
-                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                  <SiYoutubemusic size={36} className="text-primary" />
+            <div className="p-5">
+              {musicTab === "spotify" && (
+                <iframe
+                  src="https://open.spotify.com/embed/artist/0ALEPHbwPTJaqzNFMr5aMe?utm_source=generator"
+                  width="100%"
+                  height="380"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  className="rounded-sm"
+                  title="Spotify Player"
+                />
+              )}
+              {musicTab === "soundcloud" && (
+                <iframe
+                  width="100%"
+                  height="360"
+                  scrolling="no"
+                  frameBorder="no"
+                  allow="autoplay"
+                  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/users/1590490014&color=%23ff1a7a&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
+                  className="rounded-sm"
+                  title="SoundCloud Player"
+                />
+              )}
+              {musicTab === "apple" && (
+                <iframe
+                  allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                  frameBorder="0"
+                  height="380"
+                  sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                  src="https://embed.music.apple.com/us/artist/ash-johansen/1817699556"
+                  width="100%"
+                  className="rounded-sm"
+                  title="Apple Music Player"
+                />
+              )}
+              {musicTab === "ytm" && (
+                <div className="flex flex-col items-center justify-center gap-6 py-14">
+                  <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                    <SiYoutubemusic size={36} className="text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground text-center max-w-xs" style={{ fontFamily: "var(--font-elite)" }}>
+                    Stream Ash Johansen on YouTube Music — all tracks, all the chaos.
+                  </p>
+                  <a
+                    href="https://music.youtube.com/search?q=Ash+Johansen"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
+                    style={{ fontFamily: "var(--font-elite)" }}
+                  >
+                    <SiYoutubemusic size={16} />
+                    Listen Now
+                  </a>
                 </div>
-                <p className="text-sm text-muted-foreground text-center max-w-xs" style={{ fontFamily: "var(--font-elite)" }}>
-                  Stream Ash Johansen on YouTube Music — all tracks, all the chaos.
-                </p>
-                {/* Replace href with your YouTube Music artist URL */}
-                <a
-                  href="https://music.youtube.com/search?q=Ash+Johansen"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
-                  style={{ fontFamily: "var(--font-elite)" }}
-                >
-                  <SiYoutubemusic size={16} />
-                  Listen Now
-                </a>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -419,15 +401,15 @@ export default function Home() {
           <div className="graffiti-divider" />
 
           {videosLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div key={i} className="aspect-video bg-card/40 border border-white/5 punk-card animate-pulse flex items-center justify-center">
                   <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Loading...</span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {liveVideos.map((video, i) => (
                 <div
                   key={video.id}
@@ -450,47 +432,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pics Section */}
-      {/* To add your own photos: replace the src values in GALLERY_PHOTOS at the top of this file */}
-      <section id="pics" className="py-28 px-6 max-w-7xl mx-auto relative z-10">
-        <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+      {/* Pics Section — Dive Bar Bathroom Wall */}
+      <section id="pics" className="py-28 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
           <span className="section-tag">// the evidence</span>
           <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
             PICS
           </h2>
           <div className="graffiti-divider" />
+        </div>
 
-          {/* Masonry gallery — swap placeholder URLs with your own images */}
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-            {[
-              { src: "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[3/4]", rotate: "rotate-[0.6deg]" },
-              { src: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop&q=80", aspect: "aspect-video", rotate: "rotate-[-0.5deg]" },
-              { src: "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800&auto=format&fit=crop&q=80", aspect: "aspect-square", rotate: "rotate-[0.4deg]" },
-              { src: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[4/5]", rotate: "rotate-[-0.7deg]" },
-              { src: "https://images.unsplash.com/photo-1501612780327-45045538702b?w=800&auto=format&fit=crop&q=80", aspect: "aspect-video", rotate: "rotate-[0.5deg]" },
-              { src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[3/4]", rotate: "rotate-[-0.4deg]" },
-              { src: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&auto=format&fit=crop&q=80", aspect: "aspect-square", rotate: "rotate-[0.6deg]" },
-              { src: "https://images.unsplash.com/photo-1493225255440-1b62b490e1d5?w=800&auto=format&fit=crop&q=80", aspect: "aspect-[4/5]", rotate: "rotate-[-0.5deg]" },
-              { src: "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&auto=format&fit=crop&q=80", aspect: "aspect-video", rotate: "rotate-[0.3deg]" },
-            ].map((photo, i) => (
-              <div
-                key={i}
-                className={`break-inside-avoid overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 group cursor-pointer ${photo.rotate}`}
-                style={{ borderRadius: "3px 14px 3px 14px", marginBottom: "1rem" }}
-                data-testid={`img-gallery-${i}`}
-              >
-                <div className={`${photo.aspect} w-full overflow-hidden relative`}>
-                  <img
-                    src={photo.src}
-                    alt={`Ash Johansen photo ${i + 1}`}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-all duration-500 mix-blend-overlay" />
-                </div>
+        <div className="bathroom-wall mt-8">
+          {[
+            { src: "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-2deg]", top: "4%", left: "3%", z: 5 },
+            { src: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[3deg]", top: "2%", left: "28%", z: 3 },
+            { src: "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[1.5deg]", top: "6%", left: "55%", z: 6 },
+            { src: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-1deg]", top: "1%", left: "78%", z: 4 },
+            { src: "https://images.unsplash.com/photo-1501612780327-45045538702b?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[2.5deg]", top: "38%", left: "5%", z: 2 },
+            { src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-3deg]", top: "36%", left: "35%", z: 7 },
+            { src: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[0.5deg]", top: "40%", left: "62%", z: 1 },
+            { src: "https://images.unsplash.com/photo-1493225255440-1b62b490e1d5?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-2.5deg]", top: "35%", left: "82%", z: 5 },
+            { src: "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[1deg]", top: "70%", left: "15%", z: 3 },
+          ].map((photo, i) => (
+            <div
+              key={i}
+              className={`polaroid-tile ${photo.rotate}`}
+              style={{ top: photo.top, left: photo.left, zIndex: photo.z }}
+              data-testid={`img-gallery-${i}`}
+            >
+              <div className="polaroid-img">
+                <img
+                  src={photo.src}
+                  alt={`Ash Johansen photo ${i + 1}`}
+                  loading="lazy"
+                />
               </div>
-            ))}
-          </div>
+              <div className="polaroid-caption">ASH {String.fromCharCode(65 + i)}</div>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -526,7 +505,6 @@ export default function Home() {
               <div className="mt-10 flex gap-5 flex-wrap">
                 {[
                   { Icon: SiInstagram, href: "https://www.instagram.com/ashjotheahole", name: "Instagram" },
-                  { Icon: SiFacebook, href: "#", name: "Facebook" },
                   { Icon: SiSpotify, href: "https://open.spotify.com/artist/0ALEPHbwPTJaqzNFMr5aMe", name: "Spotify" },
                   { Icon: SiYoutube, href: "#", name: "YouTube" },
                 ].map(({ Icon, href, name }) => (
@@ -566,7 +544,7 @@ export default function Home() {
               No forms. Just slide into my DMs.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex justify-center">
               <a
                 href="https://www.instagram.com/ashjotheahole"
                 target="_blank"
@@ -578,25 +556,13 @@ export default function Home() {
                 <SiInstagram size={22} />
                 @ashjotheahole
               </a>
-
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 border-2 border-white/20 text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300"
-                style={{ fontFamily: "var(--font-marker)", fontSize: "1.2rem", borderRadius: "3px 14px 3px 14px", letterSpacing: "2px" }}
-                data-testid="link-facebook-dm"
-              >
-                <SiFacebook size={22} />
-                Facebook
-              </a>
             </div>
 
             <p
               className="mt-8 text-xs uppercase tracking-widest text-muted-foreground"
               style={{ fontFamily: "var(--font-elite)" }}
             >
-              Booking · Press · Collabs · Just saying hi
+              Press · Collabs · Just saying hi
             </p>
           </div>
         </div>

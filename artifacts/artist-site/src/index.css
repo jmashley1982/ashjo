@@ -318,6 +318,115 @@ body::after {
   padding: 3rem 2rem;
 }
 
+/* Dive Bar Bathroom Wall — Pics Section */
+.bathroom-wall {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 900px;
+  background:
+    linear-gradient(180deg, rgba(12,10,8,0.7) 0%, rgba(12,10,8,0.3) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect width='64' height='64' fill='%23221816'/%3E%3Crect x='0' y='0' width='32' height='32' fill='%232a201e'/%3E%3Crect x='32' y='32' width='32' height='32' fill='%232a201e'/%3E%3C/svg%3E");
+  background-size: 64px 64px, 64px 64px;
+  border: 3px solid hsl(20 12% 14%);
+  border-radius: 4px 20px 4px 20px;
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+
+/* Graffiti scribble on bathroom wall */
+.bathroom-wall::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 140px 60px at 18% 25%, hsl(var(--primary) / 0.08), transparent),
+    radial-gradient(ellipse 80px 40px at 72% 60%, hsl(var(--sick-green) / 0.06), transparent),
+    radial-gradient(ellipse 120px 50px at 55% 80%, hsl(var(--blood-red) / 0.05), transparent);
+}
+
+.polaroid-tile {
+  position: absolute;
+  width: 220px;
+  background: #e8e2d6;
+  padding: 8px 8px 32px;
+  box-shadow: 4px 6px 16px rgba(0,0,0,0.75), 0 0 2px rgba(0,0,0,0.3);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, z-index 0s;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .polaroid-tile {
+    width: 140px;
+    padding: 5px 5px 20px;
+  }
+}
+.polaroid-tile:hover {
+  transform: rotate(0deg) scale(1.08) !important;
+  box-shadow: 6px 10px 28px rgba(0,0,0,0.85), 0 0 6px hsl(var(--primary) / 0.3);
+  z-index: 50 !important;
+}
+.polaroid-tile::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 18px;
+  background: hsl(55 30% 55% / 0.35);
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.polaroid-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #1a1512;
+}
+.polaroid-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.15) contrast(1.05);
+  transition: filter 0.4s ease;
+}
+.polaroid-tile:hover .polaroid-img img {
+  filter: sepia(0) contrast(1.1);
+}
+.polaroid-tile .polaroid-caption {
+  font-family: var(--font-marker);
+  color: #3a3228;
+  font-size: 0.7rem;
+  text-align: center;
+  margin-top: 6px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* Hero quote extra glitch */
+.hero-quote {
+  position: relative;
+}
+.hero-quote::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  color: hsl(var(--blood-red));
+  clip-path: inset(0 0 55% 0);
+  transform: translateX(-2px);
+  opacity: 0.5;
+  animation: glitchSlice 2.5s infinite;
+}
+@keyframes glitchSlice {
+  0%, 90%, 100% { clip-path: inset(0 0 100% 0); transform: translateX(0); }
+  92% { clip-path: inset(30% 0 40% 0); transform: translateX(3px); }
+  94% { clip-path: inset(60% 0 10% 0); transform: translateX(-2px); }
+  96% { clip-path: inset(0 0 100% 0); transform: translateX(0); }
+}
+
 /* Bio left-border block */
 .bio-block {
   background: rgba(0,0,0,0.7);
