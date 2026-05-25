@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Menu, X, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
-import { SiInstagram, SiSpotify, SiYoutube, SiFacebook } from "react-icons/si";
+import { SiInstagram, SiSpotify, SiYoutube, SiFacebook, SiApplemusic, SiYoutubemusic } from "react-icons/si";
 import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
 import heroBgSrc from "@assets/freepik_ashmullet-stands-in-an-empty-parking-lot-it-is-night-_1779741287440.jpeg";
 import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_1779741287440.jpeg";
@@ -14,8 +14,8 @@ const TRACKS = [
   { id: 5, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
-// Replace IDs with actual YouTube video IDs
-const VIDEO_IDS = ["6ZJpSVg87ic", "FlS3Eop3kp0", "Mpo-ghb5Ggs"];
+// Fallback video IDs shown while live feed loads or if API is unavailable
+const FALLBACK_VIDEO_IDS = ["6ZJpSVg87ic", "FlS3Eop3kp0", "Mpo-ghb5Ggs"];
 
 const TAGLINES = [
   "Songs for the fucked up, the burnt out, the last-call lovers, the first-punch fighters.",
@@ -132,6 +132,22 @@ export default function Home() {
   };
 
   // Intersection Observer for fade-in animations
+  // Live YouTube video feed
+  const [liveVideos, setLiveVideos] = useState<{ id: string; title: string }[]>(
+    FALLBACK_VIDEO_IDS.map((id, i) => ({ id, title: `Video ${i + 1}` }))
+  );
+  const [videosLoading, setVideosLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/youtube-feed")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.videos?.length) setLiveVideos(data.videos);
+      })
+      .catch(() => {})
+      .finally(() => setVideosLoading(false));
+  }, []);
+
   const [heroParallax, setHeroParallax] = useState(0);
   useEffect(() => {
     const onScroll = () => setHeroParallax(window.scrollY * 0.35);
@@ -316,7 +332,7 @@ export default function Home() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-10">
-            {/* Spotify — Replace embed URL with your actual Spotify artist/album URL */}
+            {/* Spotify */}
             <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card">
               <h3 className="text-sm uppercase tracking-widest mb-4 text-primary" style={{ fontFamily: "var(--font-elite)" }}>Spotify</h3>
               <iframe
@@ -331,7 +347,7 @@ export default function Home() {
               />
             </div>
 
-            {/* SoundCloud — Replace embed URL with your actual SoundCloud user URL */}
+            {/* SoundCloud */}
             <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card-alt flex flex-col justify-between">
               <h3 className="text-sm uppercase tracking-widest mb-4 text-primary" style={{ fontFamily: "var(--font-elite)" }}>SoundCloud</h3>
               <iframe
@@ -344,6 +360,50 @@ export default function Home() {
                 className="rounded-sm"
                 title="SoundCloud Player"
               />
+            </div>
+
+            {/* Apple Music — Replace ARTIST_ID with your Apple Music artist ID */}
+            {/* Find it: music.apple.com/us/artist/ash-johansen/XXXXXXXXX — the number at the end */}
+            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card">
+              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary flex items-center gap-2" style={{ fontFamily: "var(--font-elite)" }}>
+                <SiApplemusic size={14} /> Apple Music
+              </h3>
+              <iframe
+                allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+                frameBorder="0"
+                height="380"
+                sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+                src="https://embed.music.apple.com/us/artist/ash-johansen/REPLACE_WITH_APPLE_MUSIC_ID"
+                width="100%"
+                className="rounded-sm"
+                title="Apple Music Player"
+              />
+            </div>
+
+            {/* YouTube Music — no iframe embedding supported; deep-link instead */}
+            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card-alt flex flex-col">
+              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary flex items-center gap-2" style={{ fontFamily: "var(--font-elite)" }}>
+                <SiYoutubemusic size={14} /> YouTube Music
+              </h3>
+              <div className="flex-1 flex flex-col items-center justify-center gap-6 py-10">
+                <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                  <SiYoutubemusic size={36} className="text-primary" />
+                </div>
+                <p className="text-sm text-muted-foreground text-center max-w-xs" style={{ fontFamily: "var(--font-elite)" }}>
+                  Stream Ash Johansen on YouTube Music — all tracks, all the chaos.
+                </p>
+                {/* Replace href with your YouTube Music artist URL */}
+                <a
+                  href="https://music.youtube.com/search?q=Ash+Johansen"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
+                  style={{ fontFamily: "var(--font-elite)" }}
+                >
+                  <SiYoutubemusic size={16} />
+                  Listen Now
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -358,25 +418,35 @@ export default function Home() {
           </h2>
           <div className="graffiti-divider" />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {VIDEO_IDS.map((id, i) => (
-              <div
-                key={id}
-                className={`group relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}
-              >
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${id}`}
-                  title={`Ash Johansen video ${i + 1}`}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0"
-                />
-              </div>
-            ))}
-          </div>
+          {videosLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="aspect-video bg-card/40 border border-white/5 punk-card animate-pulse flex items-center justify-center">
+                  <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Loading...</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {liveVideos.map((video, i) => (
+                <div
+                  key={video.id}
+                  className={`group relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}
+                >
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${video.id}`}
+                    title={video.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
