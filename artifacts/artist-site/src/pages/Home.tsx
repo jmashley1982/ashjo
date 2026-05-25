@@ -372,16 +372,25 @@ export default function Home() {
             </span>
           </div>
 
-          <a
-            href="https://youtu.be/GDvx11wyT50?si=KbhUmxRE4Pj5NxPa"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-testid="link-collab-watch"
-            className="inline-flex items-center gap-3 px-8 py-3 mt-2 bg-primary text-primary-foreground uppercase tracking-[0.2em] text-sm font-bold border-2 border-primary hover:bg-transparent hover:text-primary transition-all duration-200"
+          <div className="w-full max-w-4xl aspect-video bg-muted overflow-hidden border border-white/10 shadow-2xl">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/GDvx11wyT50"
+              title="Ash Johansen x TMSTRY — Lovin On Da Ladies"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+
+          <span
+            className="text-xs uppercase tracking-[0.2em] text-muted-foreground"
+            style={{ fontFamily: "var(--font-elite)" }}
           >
-            <SiYoutube className="w-5 h-5" />
-            <span>Watch on YouTube</span>
-          </a>
+            Ash Johansen x TMSTRY — &ldquo;Lovin On Da Ladies&rdquo;
+          </span>
         </div>
       </section>
 
