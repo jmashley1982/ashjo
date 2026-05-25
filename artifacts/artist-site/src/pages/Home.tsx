@@ -132,6 +132,13 @@ export default function Home() {
   };
 
   // Intersection Observer for fade-in animations
+  const [heroParallax, setHeroParallax] = useState(0);
+  useEffect(() => {
+    const onScroll = () => setHeroParallax(window.scrollY * 0.35);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
@@ -209,32 +216,19 @@ export default function Home() {
 
       {/* Hero Section */}
       <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
           <img
             src={heroBgSrc}
             alt="Ash Johansen"
-            className="w-full h-full object-cover object-top grayscale"
+            className="w-full object-cover object-center grayscale"
+            style={{
+              height: "130%",
+              transform: `translateY(${heroParallax}px)`,
+              willChange: "transform",
+            }}
           />
         </div>
         <div className="absolute inset-0 video-overlay" />
-
-        {/* Ghost graffiti text bg */}
-        <div
-          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
-          aria-hidden="true"
-          style={{
-            fontFamily: "var(--font-marker)",
-            fontSize: "clamp(1.2rem, 2.5vw, 2rem)",
-            color: "rgba(255,255,255,0.025)",
-            transform: "rotate(-5deg)",
-            whiteSpace: "pre-wrap",
-            textAlign: "center",
-            lineHeight: 1.4,
-            padding: "0 10%",
-          }}
-        >
-          {"FEEDBACK ☆ DISTORTION ☆ SCREAMED HOOKS ☆ BROKEN AMPS ☆ FERAL POP ☆ NO MERCY"}
-        </div>
 
         <div className="relative z-10 text-center px-4 flex flex-col items-center">
           <img
