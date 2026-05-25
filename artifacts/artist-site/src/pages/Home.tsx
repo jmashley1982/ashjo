@@ -391,6 +391,41 @@ export default function Home() {
           >
             Ash Johansen x TMSTRY — &ldquo;Lovin On Da Ladies&rdquo;
           </span>
+
+          {/* Second release block */}
+          <div className="w-full border-t border-primary/20 pt-8 mt-2" />
+
+          <div className="flex flex-col items-center gap-1">
+            <span
+              className="text-xs uppercase tracking-[0.3em] text-muted-foreground"
+              style={{ fontFamily: "var(--font-elite)" }}
+            >
+              Ash Johansen — New Single Premiere
+            </span>
+            <span className="glitch-text text-2xl md:text-3xl text-primary neon-text-glow tracking-wider">
+              FRI · MAY 29 · 7:00 PM CDT
+            </span>
+          </div>
+
+          <div className="w-full max-w-4xl aspect-video bg-muted overflow-hidden border border-white/10 shadow-2xl">
+            <iframe
+              width="100%"
+              height="100%"
+              src="https://www.youtube.com/embed/6ZJpSVg87ic"
+              title="Ash Johansen – &quot;TM2YL&quot; (Official Music Video)"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+
+          <span
+            className="text-xs uppercase tracking-[0.2em] text-muted-foreground"
+            style={{ fontFamily: "var(--font-elite)" }}
+          >
+            Ash Johansen — &ldquo;TM2YL&rdquo; (Official Music Video)
+          </span>
         </div>
       </section>
 
