@@ -1,32 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Menu, X, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
-import { SiInstagram, SiSpotify, SiYoutube, SiX } from "react-icons/si";
-import { useToast } from "@/hooks/use-toast";
+import { SiInstagram, SiSpotify, SiYoutube, SiFacebook } from "react-icons/si";
 import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
 import heroBgSrc from "@assets/freepik_ashmullet-stands-in-an-empty-parking-lot-it-is-night-_1779741287440.jpeg";
 import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_1779741287440.jpeg";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-
-const contactSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  email: z.string().email("Please enter a valid email address."),
-  message: z.string().min(10, "Message must be at least 10 characters."),
-});
-
-type ContactFormValues = z.infer<typeof contactSchema>;
 
 // Replace src values with your actual audio file URLs
 const TRACKS = [
@@ -37,6 +14,20 @@ const TRACKS = [
   { id: 5, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
 ];
 
+// Replace IDs with actual YouTube video IDs
+const VIDEO_IDS = ["6ZJpSVg87ic", "FlS3Eop3kp0", "Mpo-ghb5Ggs"];
+
+const TAGLINES = [
+  "Songs for the fucked up, the burnt out, the last-call lovers, the first-punch fighters.",
+  "Thick guitars. Fuzzy bass. Electronic heartbreak.",
+  "Blisteringly angry, disgustingly positive.",
+  "Raw singalongs from the gutter.",
+  "Melodic whispers and wrenching screams.",
+  "Feedback loop salvation.",
+  "Your favorite chaos goblin.",
+  "Fierce, fun, and fucked up.",
+];
+
 function formatTime(seconds: number): string {
   if (isNaN(seconds)) return "0:00";
   const m = Math.floor(seconds / 60);
@@ -45,9 +36,9 @@ function formatTime(seconds: number): string {
 }
 
 export default function Home() {
-  const { toast } = useToast();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [activeTagline, setActiveTagline] = useState(0);
+  const [taglineFading, setTaglineFading] = useState(false);
 
   // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -122,66 +113,50 @@ export default function Home() {
     if (audioRef.current) audioRef.current.muted = isMuted;
   }, [isMuted]);
 
-  const taglines = ["Making waves", "Dark frequencies", "Available everywhere"];
-
+  // Tagline rotation with fade
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveTagline((prev) => (prev + 1) % taglines.length);
-    }, 3000);
+      setTaglineFading(true);
+      setTimeout(() => {
+        setActiveTagline((prev) => (prev + 1) % TAGLINES.length);
+        setTaglineFading(false);
+      }, 350);
+    }, 3500);
     return () => clearInterval(interval);
   }, []);
 
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      message: "",
-    },
-  });
-
-  function onSubmit(data: ContactFormValues) {
-    toast({
-      title: "Message sent",
-      description: "We've received your transmission. Stay tuned.",
-    });
-    form.reset();
-  }
-
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
+    if (element) element.scrollIntoView({ behavior: "smooth" });
     setIsNavOpen(false);
   };
 
   // Intersection Observer for fade-in animations
   const observerRef = useRef<IntersectionObserver | null>(null);
-
   useEffect(() => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("opacity-100", "translate-y-0");
-            entry.target.classList.remove("opacity-0", "translate-y-10");
+            entry.target.classList.remove("opacity-0", "translate-y-8");
           }
         });
       },
       { threshold: 0.1 }
     );
-
-    const hiddenElements = document.querySelectorAll(".fade-in-section");
-    hiddenElements.forEach((el) => observerRef.current?.observe(el));
-
+    document.querySelectorAll(".fade-in-section").forEach((el) => observerRef.current?.observe(el));
     return () => observerRef.current?.disconnect();
   }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* Ambient blobs */}
+      <div className="amp-blob amp-blob--pink" />
+      <div className="amp-blob amp-blob--red" />
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-white/5" style={{ transform: "rotate(-0.15deg)" }}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
@@ -197,7 +172,7 @@ export default function Home() {
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
-                className="nav-link text-sm font-medium uppercase tracking-widest text-muted-foreground hover:text-white transition-colors"
+                className="nav-link text-sm uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
                 data-testid={`link-${section}`}
               >
                 {section}
@@ -217,12 +192,13 @@ export default function Home() {
 
         {/* Mobile Nav Menu */}
         {isNavOpen && (
-          <div className="md:hidden absolute top-20 left-0 w-full bg-background border-b border-white/5 py-4 px-6 flex flex-col gap-6">
+          <div className="md:hidden absolute top-20 left-0 w-full bg-background border-b border-white/5 py-6 px-6 flex flex-col gap-6">
             {["music", "videos", "about", "contact"].map((section) => (
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
-                className="text-lg font-medium uppercase tracking-widest text-white hover:text-primary text-left"
+                className="text-xl uppercase tracking-widest text-primary text-left hover:text-white transition-colors"
+                style={{ fontFamily: "var(--font-elite)" }}
               >
                 {section}
               </button>
@@ -232,69 +208,88 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section
-        id="hero"
-        className="relative h-screen w-full flex items-center justify-center overflow-hidden"
-      >
+      <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <img
             src={heroBgSrc}
             alt="Ash Johansen"
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover object-top grayscale"
           />
         </div>
         <div className="absolute inset-0 video-overlay" />
+
+        {/* Ghost graffiti text bg */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
+          aria-hidden="true"
+          style={{
+            fontFamily: "var(--font-marker)",
+            fontSize: "clamp(1.2rem, 2.5vw, 2rem)",
+            color: "rgba(255,255,255,0.025)",
+            transform: "rotate(-5deg)",
+            whiteSpace: "pre-wrap",
+            textAlign: "center",
+            lineHeight: 1.4,
+            padding: "0 10%",
+          }}
+        >
+          {"FEEDBACK ☆ DISTORTION ☆ SCREAMED HOOKS ☆ BROKEN AMPS ☆ FERAL POP ☆ NO MERCY"}
+        </div>
 
         <div className="relative z-10 text-center px-4 flex flex-col items-center">
           <img
             src={logoSrc}
             alt="Ash Johansen"
-            className="w-[min(80vw,560px)] h-auto mb-4"
+            className="w-[min(82vw,580px)] h-auto mb-6 glitch-text"
             style={{ mixBlendMode: "screen" }}
           />
-          <div className="h-12 flex items-center justify-center">
-            {taglines.map((tagline, index) => (
-              <p
-                key={index}
-                className={`absolute text-lg md:text-2xl font-light tracking-[0.2em] uppercase text-primary transition-all duration-1000 ${
-                  activeTagline === index
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-              >
-                {tagline}
-              </p>
-            ))}
-          </div>
+          <p
+            className={`px-5 py-2 border text-sm md:text-base tracking-[0.18em] uppercase transition-opacity duration-300 ${taglineFading ? "opacity-10" : "opacity-100"}`}
+            style={{
+              fontFamily: "var(--font-mono)",
+              color: "hsl(var(--primary))",
+              borderColor: "hsl(var(--primary) / 0.5)",
+              textShadow: "0 0 10px hsl(var(--primary) / 0.7)",
+              borderRadius: "2px 10px 2px 10px",
+              background: "rgba(0,0,0,0.75)",
+              transform: "rotate(-0.4deg)",
+              maxWidth: "min(90vw, 640px)",
+            }}
+          >
+            {TAGLINES[activeTagline]}
+          </p>
         </div>
-        
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce">
-          <span className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Scroll</span>
-          <div className="w-[1px] h-12 bg-primary/50" />
-        </div>
+
+        <button
+          onClick={() => scrollToSection("music")}
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center animate-bounce"
+          data-testid="button-scroll-down"
+        >
+          <span className="text-xs uppercase tracking-widest text-muted-foreground mb-2" style={{ fontFamily: "var(--font-elite)" }}>Turn it up</span>
+          <div className="w-[1px] h-10 bg-primary/50" />
+        </button>
       </section>
 
       {/* Music Section */}
-      <section id="music" className="py-32 px-6 max-w-7xl mx-auto">
-        <div className="fade-in-section opacity-0 translate-y-10 transition-all duration-1000">
-          <h2 className="text-5xl md:text-7xl font-display text-white mb-16 flex items-center gap-6">
-            <span className="text-primary neon-text-glow">/</span> Releases
+      <section id="music" className="py-28 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// play loud</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            MUSIC
           </h2>
+          <div className="graffiti-divider" />
 
           {/* Track list */}
-          <div className="mb-12 bg-card/30 backdrop-blur border border-white/5 rounded-2xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground font-display">Tracks</span>
-              <span className="text-xs uppercase tracking-widest text-muted-foreground font-display">Preview</span>
+          <div className="mb-10 bg-card/40 backdrop-blur border border-white/5 overflow-hidden punk-card">
+            <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between">
+              <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Tracks — Preview</span>
             </div>
             {TRACKS.map((track, index) => (
               <button
                 key={track.id}
                 onClick={() => playTrack(index)}
                 className={`w-full flex items-center gap-4 px-6 py-4 border-b border-white/5 last:border-b-0 transition-all duration-200 group text-left ${
-                  currentTrackIndex === index
-                    ? "bg-primary/10 border-l-2 border-l-primary"
-                    : "hover:bg-white/5"
+                  currentTrackIndex === index ? "bg-primary/10 border-l-2 border-l-primary" : "hover:bg-white/5"
                 }`}
                 data-testid={`button-track-${track.id}`}
               >
@@ -306,18 +301,18 @@ export default function Home() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium truncate ${currentTrackIndex === index ? "text-primary" : "text-white"}`}>
+                  <p className={`text-sm font-medium truncate ${currentTrackIndex === index ? "text-primary" : "text-white"}`} style={{ fontFamily: "var(--font-elite)" }}>
                     {track.title}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
                 </div>
                 {currentTrackIndex === index && (
                   <div className="flex gap-[3px] items-end h-4 flex-shrink-0">
-                    {[1,2,3].map((b) => (
+                    {[60, 100, 75].map((h, b) => (
                       <div
                         key={b}
                         className={`w-[3px] bg-primary rounded-full ${isPlaying ? "animate-pulse" : ""}`}
-                        style={{ height: `${[60, 100, 75][b-1]}%`, animationDelay: `${b * 0.15}s` }}
+                        style={{ height: `${h}%`, animationDelay: `${b * 0.15}s` }}
                       />
                     ))}
                   </div>
@@ -326,72 +321,65 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            <div className="bg-card/50 backdrop-blur border border-white/5 rounded-2xl p-6 hover:border-primary/30 transition-colors">
-              <h3 className="text-xl font-display tracking-widest mb-6 text-white">Latest Album</h3>
-              {/* Replace this URL with actual Spotify embed URL */}
+          <div className="grid lg:grid-cols-2 gap-10">
+            {/* Spotify — Replace embed URL with your actual Spotify artist/album URL */}
+            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card">
+              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary" style={{ fontFamily: "var(--font-elite)" }}>Spotify</h3>
               <iframe
-                src="https://open.spotify.com/embed/album/4aawyAB9vmqN3uQ7FjRGTy"
+                src="https://open.spotify.com/embed/artist/0ALEPHbwPTJaqzNFMr5aMe?utm_source=generator"
                 width="100%"
-                height="352"
+                height="380"
                 frameBorder="0"
                 allowFullScreen
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                className="rounded-xl shadow-2xl"
+                className="rounded-sm"
                 title="Spotify Player"
-              ></iframe>
+              />
             </div>
 
-            <div className="bg-card/50 backdrop-blur border border-white/5 rounded-2xl p-6 hover:border-primary/30 transition-colors flex flex-col justify-center">
-              <h3 className="text-xl font-display tracking-widest mb-6 text-white">Featured Mix</h3>
-              {/* Replace this URL with actual SoundCloud embed URL */}
+            {/* SoundCloud — Replace embed URL with your actual SoundCloud user URL */}
+            <div className="bg-card/40 backdrop-blur border border-white/5 p-5 punk-card-alt flex flex-col justify-between">
+              <h3 className="text-sm uppercase tracking-widest mb-4 text-primary" style={{ fontFamily: "var(--font-elite)" }}>SoundCloud</h3>
               <iframe
                 width="100%"
-                height="166"
+                height="360"
                 scrolling="no"
                 frameBorder="no"
                 allow="autoplay"
-                src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&color=%2300f2fe&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
-                className="rounded-xl"
+                src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/users/1590490014&color=%23ff1a7a&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
+                className="rounded-sm"
                 title="SoundCloud Player"
-              ></iframe>
-              
-              <div className="mt-8">
-                <Button 
-                  variant="outline" 
-                  className="w-full h-14 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-display tracking-widest text-lg neon-glow"
-                  data-testid="button-buy-music"
-                >
-                  Buy Digital / Vinyl
-                </Button>
-              </div>
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Videos Section */}
-      <section id="videos" className="py-32 px-6 bg-black/50 border-y border-white/5">
-        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-10 transition-all duration-1000">
-          <h2 className="text-5xl md:text-7xl font-display text-white mb-16 flex items-center gap-6">
-            <span className="text-primary neon-text-glow">/</span> Visuals
+      <section id="videos" className="py-28 px-6 border-y border-white/5 bg-black/40 relative z-10">
+        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// recent chaos</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            VIDEOS
           </h2>
+          <div className="graffiti-divider" />
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="group relative aspect-video bg-muted rounded-xl overflow-hidden shadow-2xl border border-white/10 hover:border-primary/50 transition-colors duration-500">
-                {/* Replace this ID with actual YouTube video ID */}
+            {VIDEO_IDS.map((id, i) => (
+              <div
+                key={id}
+                className={`group relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}
+              >
                 <iframe
                   width="100%"
                   height="100%"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title={`YouTube video player ${item}`}
+                  src={`https://www.youtube.com/embed/${id}`}
+                  title={`Ash Johansen video ${i + 1}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  className="absolute inset-0 grayscale group-hover:grayscale-0 transition-all duration-700"
-                ></iframe>
-                <div className="absolute inset-0 pointer-events-none border-2 border-transparent group-hover:border-primary transition-colors duration-500 rounded-xl mix-blend-overlay"></div>
+                  className="absolute inset-0"
+                />
               </div>
             ))}
           </div>
@@ -399,146 +387,117 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-32 px-6 max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-16 items-center fade-in-section opacity-0 translate-y-10 transition-all duration-1000">
-          <div>
-            <h2 className="text-5xl md:text-7xl font-display text-white mb-8 flex items-center gap-6">
-              <span className="text-primary neon-text-glow">/</span> Identity
-            </h2>
-            <div className="prose prose-invert prose-lg max-w-none text-muted-foreground space-y-6">
-              <p>
-                Ash Johansen is an independent artist crafting raw, honest music that lives somewhere between late-night drives and the moment right before everything changes.
-              </p>
-              <p>
-                Drawing from a wide palette of influences — alternative, indie, and the kind of pop that doesn't apologize for its hooks — Ash writes songs that feel lived-in from the first listen. Equal parts vulnerability and nerve.
-              </p>
-              <p>
-                Currently independent and working on new music. Booking, press, and collaboration inquiries welcome.
-              </p>
+      <section id="about" className="py-28 px-6 max-w-7xl mx-auto relative z-10">
+        <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// who's screaming</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            ABOUT
+          </h2>
+          <div className="graffiti-divider" />
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Polaroid-style image */}
+            <div className="polaroid">
+              <img src={aboutImgSrc} alt="Ash Johansen" />
+              <p className="polaroid-caption">ASH &amp; JAY — 2025</p>
             </div>
 
-            <div className="mt-12 flex gap-6">
-              {/* Replace # with actual social links */}
-              {[
-                { Icon: SiInstagram, href: "#", name: "Instagram" },
-                { Icon: SiX, href: "#", name: "X" },
-                { Icon: SiSpotify, href: "#", name: "Spotify" },
-                { Icon: SiYoutube, href: "#", name: "YouTube" }
-              ].map(({ Icon, href, name }) => (
-                <a
-                  key={name}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary hover:neon-glow transition-all duration-300"
-                  aria-label={name}
-                  data-testid={`link-social-${name.toLowerCase()}`}
-                >
-                  <Icon size={20} />
-                </a>
-              ))}
+            {/* Bio */}
+            <div>
+              <div className="bio-block">
+                <p className="mb-5">
+                  <strong className="text-primary">Ash Johansen</strong> is a character and pseudonym birthed from the mind of veteran Texas artist, producer, musician, and singer,{" "}
+                  <strong className="text-primary">Jason M. Ashley</strong>. After a multi-year attempt to find a versatile pop vocalist for an ambitious project, Jason gave up — and the project was lost. Then AI music happened.
+                </p>
+                <p className="mb-5">
+                  Taking hours and hours of incomplete demos and songs, Jason was able to turn his music and own voice into Ash Johansen.{" "}
+                  <strong className="text-primary">Fierce, fun, and fucked up.</strong> The music is unmistakably Jason, but Ash adds that perfect edge: sweet and pleasing, but raw and unforgiving.
+                </p>
+              </div>
+
+              <div className="mt-10 flex gap-5 flex-wrap">
+                {[
+                  { Icon: SiInstagram, href: "https://www.instagram.com/ashjotheahole", name: "Instagram" },
+                  { Icon: SiFacebook, href: "#", name: "Facebook" },
+                  { Icon: SiSpotify, href: "https://open.spotify.com/artist/0ALEPHbwPTJaqzNFMr5aMe", name: "Spotify" },
+                  { Icon: SiYoutube, href: "#", name: "YouTube" },
+                ].map(({ Icon, href, name }) => (
+                  <a
+                    key={name}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded flex items-center justify-center border border-white/10 text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300"
+                    style={{ borderRadius: "2px 10px 2px 10px" }}
+                    aria-label={name}
+                    data-testid={`link-social-${name.toLowerCase()}`}
+                  >
+                    <Icon size={20} />
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-          
-          <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10">
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
-            <img 
-              src={aboutImgSrc}
-              alt="Ash Johansen" 
-              className="w-full h-full object-cover object-top"
-            />
-            <div className="absolute inset-0 mix-blend-overlay bg-primary/10" />
           </div>
         </div>
       </section>
 
-      {/* Contact Section */}
-      <section id="contact" className="py-32 px-6 bg-black/50 border-t border-white/5">
-        <div className="max-w-3xl mx-auto fade-in-section opacity-0 translate-y-10 transition-all duration-1000">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl md:text-7xl font-display text-white mb-4">
-              Connect
-            </h2>
-            <p className="text-muted-foreground">Booking, press, or just saying hi.</p>
-          </div>
+      {/* Contact Section — slide into my DMs */}
+      <section id="contact" className="py-28 px-6 bg-black/40 border-t border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// scream at me</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            CONTACT
+          </h2>
+          <div className="graffiti-divider" />
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 bg-background/50 p-8 rounded-2xl border border-white/5 backdrop-blur-sm">
-              <div className="grid md:grid-cols-2 gap-8">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/80 uppercase tracking-widest text-xs">Name</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="Your name" 
-                          {...field} 
-                          className="bg-black/50 border-white/10 focus:border-primary focus:ring-primary h-12"
-                          data-testid="input-contact-name"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/80 uppercase tracking-widest text-xs">Email</FormLabel>
-                      <FormControl>
-                        <Input 
-                          placeholder="your@email.com" 
-                          {...field} 
-                          className="bg-black/50 border-white/10 focus:border-primary focus:ring-primary h-12"
-                          data-testid="input-contact-email"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-destructive text-xs" />
-                    </FormItem>
-                  )}
-                />
-              </div>
+          <div className="dm-cta">
+            <p
+              className="text-muted-foreground mb-8 text-lg tracking-widest uppercase"
+              style={{ fontFamily: "var(--font-elite)" }}
+            >
+              No forms. Just slide into my DMs.
+            </p>
 
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white/80 uppercase tracking-widest text-xs">Message</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="What's on your mind?" 
-                        className="min-h-[150px] bg-black/50 border-white/10 focus:border-primary focus:ring-primary resize-none"
-                        {...field} 
-                        data-testid="input-contact-message"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-destructive text-xs" />
-                  </FormItem>
-                )}
-              />
-
-              <Button 
-                type="submit" 
-                className="w-full h-14 bg-white text-black hover:bg-primary hover:text-primary-foreground font-display tracking-widest text-xl transition-all duration-300"
-                data-testid="button-submit-contact"
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href="https://www.instagram.com/ashjotheahole"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 neon-glow"
+                style={{ fontFamily: "var(--font-marker)", fontSize: "1.2rem", borderRadius: "3px 14px 3px 14px", letterSpacing: "2px" }}
+                data-testid="link-instagram-dm"
               >
-                Send Transmission
-              </Button>
-            </form>
-          </Form>
+                <SiInstagram size={22} />
+                @ashjotheahole
+              </a>
+
+              <a
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-4 border-2 border-white/20 text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300"
+                style={{ fontFamily: "var(--font-marker)", fontSize: "1.2rem", borderRadius: "3px 14px 3px 14px", letterSpacing: "2px" }}
+                data-testid="link-facebook-dm"
+              >
+                <SiFacebook size={22} />
+                Facebook
+              </a>
+            </div>
+
+            <p
+              className="mt-8 text-xs uppercase tracking-widest text-muted-foreground"
+              style={{ fontFamily: "var(--font-elite)" }}
+            >
+              Booking · Press · Collabs · Just saying hi
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className={`text-center border-t border-white/5 bg-background ${currentTrack ? "py-8 pb-28" : "py-8"}`}>
-        <p className="text-xs uppercase tracking-widest text-muted-foreground font-display">
-          © {new Date().getFullYear()} Ash Johansen. All rights reserved.
+      <footer className={`text-center border-t border-white/5 bg-background relative z-10 ${currentTrack ? "py-8 pb-28" : "py-8"}`}>
+        <p className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>
+          © {new Date().getFullYear()} Ash Johansen — Sweet and pleasing. Raw and unforgiving.
         </p>
       </footer>
 
@@ -547,8 +506,7 @@ export default function Home() {
 
       {/* Sticky Bottom Player */}
       {currentTrack && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-white/10 px-4 py-3 shadow-2xl">
-          {/* Progress bar */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/96 backdrop-blur-xl border-t border-white/10 px-4 py-3 shadow-2xl">
           <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/10">
             <div
               className="h-full bg-primary transition-none"
@@ -557,38 +515,23 @@ export default function Home() {
           </div>
 
           <div className="max-w-7xl mx-auto flex items-center gap-4">
-            {/* Track info */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{currentTrack.title}</p>
+              <p className="text-sm font-medium text-white truncate" style={{ fontFamily: "var(--font-elite)" }}>{currentTrack.title}</p>
               <p className="text-xs text-muted-foreground truncate">{currentTrack.artist}</p>
             </div>
 
-            {/* Controls */}
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => skipTrack(-1)}
-                className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
-                data-testid="button-player-prev"
-              >
+              <button onClick={() => skipTrack(-1)} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-prev">
                 <SkipBack size={18} />
               </button>
-              <button
-                onClick={togglePlayPause}
-                className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-black hover:scale-105 transition-transform neon-glow"
-                data-testid="button-player-playpause"
-              >
+              <button onClick={togglePlayPause} className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-white hover:scale-105 transition-transform neon-glow" data-testid="button-player-playpause">
                 {isPlaying ? <Pause size={18} /> : <Play size={18} />}
               </button>
-              <button
-                onClick={() => skipTrack(1)}
-                className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
-                data-testid="button-player-next"
-              >
+              <button onClick={() => skipTrack(1)} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-next">
                 <SkipForward size={18} />
               </button>
             </div>
 
-            {/* Seek + time */}
             <div className="hidden md:flex items-center gap-3 flex-1">
               <span className="text-xs text-muted-foreground tabular-nums w-8 text-right">{formatTime(currentTime)}</span>
               <input
@@ -604,12 +547,7 @@ export default function Home() {
               <span className="text-xs text-muted-foreground tabular-nums w-8">{formatTime(duration)}</span>
             </div>
 
-            {/* Mute */}
-            <button
-              onClick={() => setIsMuted((m) => !m)}
-              className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors"
-              data-testid="button-player-mute"
-            >
+            <button onClick={() => setIsMuted((m) => !m)} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-mute">
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>

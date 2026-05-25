@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASH JOHANSEN — Feedback & Feral Pop</title>
+
+    <!-- Fonts: raw, handwritten, horror, typewriter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital@0;1&family=Creepster&family=Permanent+Marker&family=Rock+Salt&family=Special+Elite&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --basement-black: #080707;
+            --wet-concrete: #141211;
+            --blood-red: #c62828;
+            --blood-glow: rgba(198, 40, 40, 0.7);
+            --sick-green: #7a8b3c;
+            --sick-green-glow: rgba(122, 139, 60, 0.55);
+            --amber-street: #f4a261;
+            --amber-glow: rgba(244, 162, 97, 0.5);
+            --text-grime: #b3a68f;
+            --text-faded: #7a7265;
+            --card-grime: #1e1b1a;
+            --border-grime: #2e2926;
+            --font-marker: 'Permanent Marker', cursive;
+            --font-punk: 'Rock Salt', cursive;
+            --font-typewriter: 'Courier Prime', monospace;
+            --font-horror: 'Creepster', cursive;
+            --font-elite: 'Special Elite', monospace;
+            --nav-height: 85px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: var(--nav-height); }
+
+        body {
+            background: var(--basement-black);
+            color: #e8e0d5;
+            font-family: var(--font-typewriter);
+            line-height: 1.7;
+            position: relative;
+            overflow-x: hidden;
+            background-image:
+                linear-gradient(rgba(30, 28, 27, 0.7) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 28, 27, 0.7) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><filter id="noise"><feTurbulence baseFrequency="0.9" stitchTiles="stitch"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.13"/></svg>');
+            mix-blend-mode: overlay;
+        }
+
+        .amp-hum {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(150px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.28;
+            animation: humFlicker 6s infinite;
+        }
+        .amp-hum--red { width: 550px; height: 550px; background: var(--blood-red); top: -15%; left: -10%; }
+        .amp-hum--green { width: 450px; height: 450px; background: var(--sick-green); bottom: -10%; right: -10%; animation-delay: -3s; }
+
+        @keyframes humFlicker {
+            0%, 100% { opacity: 0.28; transform: scale(1); }
+            30% { opacity: 0.55; transform: scale(1.25); }
+            60% { opacity: 0.1; transform: scale(0.8); }
+        }
+
+        /* Navigation: spray‑painted on wet wall */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(14, 12, 11, 0.93);
+            backdrop-filter: blur(12px);
+            border-bottom: 3px solid #2e2926;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            height: var(--nav-height);
+            font-family: var(--font-marker);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.9);
+            transform: rotate(-0.2deg);
+        }
+        .nav__logo {
+            font-size: 2rem;
+            text-decoration: none;
+            color: var(--blood-red);
+            text-shadow: 0 0 12px var(--blood-glow);
+            letter-spacing: 3px;
+            background: rgba(0,0,0,0.6);
+            padding: 2px 12px;
+            border-radius: 2px 12px 2px 12px;
+            transform: rotate(1.5deg);
+            transition: text-shadow 0.2s;
+        }
+        .nav__logo:hover { text-shadow: 0 0 25px var(--blood-glow), 0 0 50px var(--blood-red); }
+        .nav__links { display: flex; list-style: none; gap: 2rem; align-items: center; }
+        .nav__link {
+            color: var(--text-faded);
+            text-decoration: none;
+            font-size: 1rem;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 3px 10px 3px 10px;
+            letter-spacing: 2px;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .nav__link:hover,
+        .nav__link--active {
+            color: var(--sick-green);
+            background: #000;
+            border-bottom-color: var(--sick-green);
+            box-shadow: 0 0 16px var(--sick-green-glow);
+            text-shadow: 0 0 6px var(--sick-green);
+        }
+        .nav__link--active::after {
+            content: "💢";
+            position: absolute;
+            top: -14px;
+            right: -10px;
+            font-size: 0.9rem;
+            color: var(--blood-red);
+            text-shadow: 0 0 10px var(--blood-red);
+        }
+        .nav__hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: 2px solid var(--blood-red);
+            padding: 7px;
+            border-radius: 3px;
+            cursor: pointer;
+            box-shadow: 0 0 14px var(--blood-glow);
+            background: rgba(0,0,0,0.7);
+        }
+        .nav__hamburger span { width: 28px; height: 3px; background: var(--blood-red); transition: 0.3s; }
+        .nav__hamburger--open span:nth-child(1) { transform: rotate(45deg) translate(5px,6px); }
+        .nav__hamburger--open span:nth-child(2) { opacity: 0; }
+        .nav__hamburger--open span:nth-child(3) { transform: rotate(-45deg) translate(6px,-7px); }
+        .nav__mobile-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(5,4,3,0.97);
+            z-index: 999; flex-direction: column; align-items: center; justify-content: center;
+            gap: 2.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .nav__mobile-overlay--visible { opacity: 1; pointer-events: auto; }
+        .nav__mobile-link {
+            font-family: var(--font-marker);
+            font-size: 2.3rem; color: var(--blood-red); text-decoration: none;
+            text-shadow: 0 0 18px var(--blood-glow); letter-spacing: 4px; transform: rotate(-2deg);
+        }
+
+        /* Sections */
+        .section { position: relative; z-index: 2; padding: 80px 25px; max-width: 1300px; margin: 0 auto; }
+        .section__tag {
+            display: inline-block; font-family: var(--font-elite);
+            font-size: 0.85rem; background: #000; color: var(--sick-green);
+            padding: 4px 14px; border: 1px solid var(--border-grime);
+            text-transform: uppercase; letter-spacing: 3px; text-shadow: 0 0 6px var(--sick-green);
+            margin-bottom: 0.5rem; transform: rotate(-0.5deg); border-radius: 2px 8px 2px 8px;
+        }
+        .section__title {
+            font-family: var(--font-punk);
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
+            color: var(--blood-red);
+            text-shadow: 0 0 14px var(--blood-glow), 0 0 35px rgba(198,40,40,0.4);
+            margin-bottom: 1.4rem; letter-spacing: 2px; line-height: 1.1;
+        }
+        .graffiti-divider {
+            height: 5px; background: repeating-linear-gradient(90deg, var(--sick-green), var(--sick-green) 8px, transparent 8px, transparent 16px);
+            width: 110px; margin: 20px 0 35px; box-shadow: 0 0 18px var(--sick-green-glow);
+        }
+        .reveal {
+            opacity: 0; transform: translateY(30px) rotate(0.4deg);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal--visible { opacity: 1; transform: translateY(0) rotate(0); }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center; position: relative; z-index: 2;
+            background: radial-gradient(circle at 30% 35%, rgba(198,40,40,0.15) 0%, transparent 55%);
+        }
+        .hero__bg-graffiti {
+            position: absolute; inset: 0; z-index: -1; font-family: var(--font-marker);
+            font-size: 2.4rem; color: rgba(255,255,255,0.03); white-space: pre-wrap;
+            text-align: center; pointer-events: none; transform: rotate(-5deg); line-height: 1.3;
+            user-select: none;
+        }
+        .hero__video-placeholder {
+            position: absolute; inset: 0; z-index: -2; background: #030202;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px dashed #2e2926; margin: 25px; color: #3a3532;
+            text-transform: uppercase; font-size: 1rem;
+        }
+        .hero__name {
+            font-family: var(--font-horror);
+            font-size: clamp(4rem, 9vw, 7.5rem);
+            color: #fff;
+            text-shadow: 4px 4px 0 var(--blood-red), 8px 8px 0 #000,
+                        0 0 25px var(--blood-red), 0 0 60px var(--blood-red);
+            letter-spacing: 6px;
+            animation: glitchScream 3s infinite;
+        }
+        @keyframes glitchScream {
+            0%,100% { text-shadow: 4px 4px 0 var(--blood-red), 8px 8px 0 #000, 0 0 25px var(--blood-red); }
+            15% { text-shadow: -4px -2px 0 var(--sick-green), 5px 6px 0 #000, 0 0 38px var(--sick-green); }
+            30% { text-shadow: 3px -5px 0 var(--amber-street), -4px 7px 0 #000, 0 0 45px var(--amber-street); }
+            45% { text-shadow: 4px 4px 0 var(--blood-red), 8px 8px 0 #000, 0 0 25px var(--blood-red); }
+        }
+        .hero__tagline {
+            font-family: var(--font-typewriter);
+            font-size: 1.15rem; background: rgba(0,0,0,0.85);
+            padding: 8px 20px; border: 1px solid var(--sick-green);
+            color: var(--sick-green); text-shadow: 0 0 8px var(--sick-green);
+            letter-spacing: 2px; margin-top: 0.8rem; transition: opacity 0.4s;
+            transform: rotate(-0.5deg); border-radius: 2px 8px 2px 8px;
+        }
+        .hero__tagline--fade { opacity: 0.2; }
+        .hero__scroll {
+            position: absolute; bottom: 30px; font-family: var(--font-elite);
+            color: var(--text-faded); font-size: 0.8rem; animation: bounce 2s infinite;
+            cursor: pointer; text-shadow: 0 0 6px var(--text-faded);
+        }
+        @keyframes bounce { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(14px); } }
+
+        /* MUSIC */
+        .music__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .music-card {
+            background: var(--card-grime); border: 3px solid var(--border-grime);
+            padding: 1.3rem; border-radius: 4px 22px 4px 22px;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.8), inset 0 0 20px rgba(198,40,40,0.1);
+            transform: rotate(0.6deg); transition: 0.3s; position: relative;
+        }
+        .music-card:hover { border-color: var(--blood-red); box-shadow: 0 0 35px var(--blood-glow); transform: rotate(0); }
+        .music-card::before { content: "🔊"; position: absolute; top: -22px; left: 15px; font-size: 2rem; filter: drop-shadow(0 0 8px var(--sick-green)); }
+        .music-card__label { font-family: var(--font-marker); color: var(--sick-green); font-size: 1.05rem; margin-bottom: 0.8rem; }
+        .music-card iframe { border-radius: 3px; width: 100%; border: 2px solid #3a3532; }
+
+        /* VIDEOS */
+        .videos__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        .video-card {
+            background: #161210; border: 3px solid #322d2a;
+            border-radius: 8px 22px 8px 22px; overflow: hidden;
+            transform: rotate(-1.2deg); box-shadow: 0 10px 20px #000;
+            transition: 0.3s;
+        }
+        .video-card:hover { border-color: var(--sick-green); box-shadow: 0 0 30px var(--sick-green-glow); transform: rotate(0); }
+        .video-card__embed { aspect-ratio: 16/9; background: #000; }
+        .video-card iframe { width: 100%; height: 100%; border: none; display: block; }
+        .video-card__title {
+            padding: 0.7rem; font-family: var(--font-elite); font-size: 0.85rem;
+            background: #000; color: var(--blood-red); text-align: center;
+            border-top: 2px dashed var(--border-grime); letter-spacing: 1px;
+            text-shadow: 0 0 6px var(--blood-red);
+        }
+        /* Loading / error state */
+        .videos__loading { text-align: center; color: var(--text-faded); grid-column: 1/-1; font-family: var(--font-punk); }
+
+        /* ABOUT */
+        .about__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; }
+        .about__polaroid {
+            background: #d6cdb8; padding: 10px 10px 35px 10px;
+            box-shadow: 6px 7px 18px #000; transform: rotate(2.8deg);
+            max-width: 300px; margin: 0 auto; border: 2px solid #8b7e6c;
+            font-family: var(--font-typewriter); color: #1a1815; font-size: 0.75rem;
+            text-align: center; position: relative;
+        }
+        .about__polaroid img { width:100%; display:block; filter: contrast(1.2) brightness(0.9); }
+        .about__polaroid::after { content: "📎"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 2rem; filter: drop-shadow(0 4px 4px #000); }
+        .about__bio {
+            font-size: 0.95rem; background: rgba(0,0,0,0.75);
+            padding: 1.5rem; border-left: 8px solid var(--blood-red);
+            border-radius: 0 18px 18px 0; line-height: 1.8;
+        }
+        .about__bio strong { color: var(--blood-red); font-weight: bold; }
+        .social-tags { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.8rem; }
+        .social-tag {
+            font-family: var(--font-marker); background: #000; color: var(--sick-green);
+            padding: 6px 18px; border: 2px solid var(--border-grime); text-decoration: none;
+            font-size: 0.85rem; text-shadow: 0 0 7px var(--sick-green);
+            border-radius: 0 12px 0 12px; transform: rotate(-0.8deg); transition: 0.2s;
+        }
+        .social-tag:hover { background: var(--sick-green); color: #000; text-shadow: none; box-shadow: 0 0 28px var(--sick-green-glow); }
+
+        /* INSTAGRAM CONTACT */
+        .instagram-cta {
+            text-align: center;
+            background: rgba(0,0,0,0.7);
+            padding: 2rem;
+            border: 2px solid var(--border-grime);
+            border-radius: 8px 24px 8px 24px;
+            transform: rotate(-0.5deg);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .instagram-cta p { font-family: var(--font-elite); color: var(--text-faded); margin-bottom: 1.2rem; }
+        .instagram-link {
+            display: inline-block;
+            font-family: var(--font-marker);
+            font-size: 1.5rem;
+            background: var(--blood-red);
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255,255,255,0.6);
+            padding: 10px 30px;
+            border-radius: 3px 15px 3px 15px;
+            text-decoration: none;
+            box-shadow: 0 0 25px var(--blood-glow);
+            transition: 0.2s;
+        }
+        .instagram-link:hover { background: #a32020; box-shadow: 0 0 45px var(--blood-glow); }
+
+        .footer {
+            text-align: center; padding: 2rem; background: #040303;
+            color: var(--text-faded); font-family: var(--font-elite);
+            border-top: 4px solid var(--border-grime); font-size: 0.8rem; letter-spacing: 1.5px;
+        }
+
+        @media (max-width: 768px) {
+            .nav__links { display: none; }
+            .nav__hamburger { display: flex; }
+            .nav__mobile-overlay { display: flex; }
+            .about__grid { grid-template-columns: 1fr; }
+            .hero__bg-graffiti { font-size: 1.5rem; }
+        }
+        @media (max-width:500px) {
+            .hero__name { font-size: 2.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="amp-hum amp-hum--red"></div>
+    <div class="amp-hum amp-hum--green"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="navbar">
+        <a href="#hero" class="nav__logo">ASH J.</a>
+        <ul class="nav__links" id="navLinks">
+            <li><a href="#music" class="nav__link" data-section="music">MUSIC</a></li>
+            <li><a href="#videos" class="nav__link" data-section="videos">VIDEOS</a></li>
+            <li><a href="#about" class="nav__link" data-section="about">ABOUT</a></li>
+            <li><a href="#contact" class="nav__link" data-section="contact">CONTACT</a></li>
+        </ul>
+        <button class="nav__hamburger" id="hamburgerBtn" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+    <div class="nav__mobile-overlay" id="mobileOverlay">
+        <a href="#hero" class="nav__mobile-link" data-mobile-link>HOME</a>
+        <a href="#music" class="nav__mobile-link" data-mobile-link>MUSIC</a>
+        <a href="#videos" class="nav__mobile-link" data-mobile-link>VIDEOS</a>
+        <a href="#about" class="nav__mobile-link" data-mobile-link>ABOUT</a>
+        <a href="#contact" class="nav__mobile-link" data-mobile-link>CONTACT</a>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero section" id="hero">
+        <div class="hero__video-placeholder">
+            <!-- ★ Replace with your own video background -->
+            🎥 BASEMENT LIVE VIDEO PLACEHOLDER
+        </div>
+        <div class="hero__bg-graffiti" aria-hidden="true">
+            FEEDBACK ☆ DISTORTION ☆ SCREAMED HOOKS ☆ BROKEN AMPS ☆ FERAL POP ☆ NO MERCY
+        </div>
+        <h1 class="hero__name">ASH JOHANSEN</h1>
+        <p class="hero__tagline" id="dynamicTagline">Songs for the fucked up, the burnt out, the last‑call lovers, the first‑punch fighters.</p>
+        <div class="hero__scroll" id="scrollIndicator">▼ TURN IT UP ▼</div>
+    </section>
+
+    <!-- Music -->
+    <section class="section" id="music">
+        <span class="section__tag reveal">🔊 PLAY LOUD</span>
+        <h2 class="section__title reveal">MUSIC</h2>
+        <div class="graffiti-divider reveal"></div>
+        <div class="music__grid">
+            <div class="music-card reveal">
+                <div class="music-card__label">SPOTIFY</div>
+                <iframe src="https://open.spotify.com/embed/artist/0ALEPHbwPTJaqzNFMr5aMe?utm_source=generator" height="380" allow="encrypted-media" loading="lazy" title="Spotify"></iframe>
+            </div>
+            <div class="music-card reveal">
+                <div class="music-card__label">SOUNDCLOUD</div>
+                <iframe width="100%" height="360" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/users/1590490014&color=%23c62828&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true" loading="lazy" title="SoundCloud"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Videos (dynamic, 6 most recent) -->
+    <section class="section" id="videos">
+        <span class="section__tag reveal">📹 RECENT CHAOS</span>
+        <h2 class="section__title reveal">VIDEOS</h2>
+        <div class="graffiti-divider reveal"></div>
+        <div class="videos__grid" id="videosContainer">
+            <div class="videos__loading">LOADING THE NOISE…</div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+        <span class="section__tag reveal">🖤 WHO'S SCREAMING</span>
+        <h2 class="section__title reveal">ABOUT</h2>
+        <div class="graffiti-divider reveal"></div>
+        <div class="about__grid">
+            <div class="about__polaroid reveal">
+                <!-- ★ Replace with your photo <img src="ash-face.jpg" alt="Ash Johansen"> -->
+                <div style="background:#4a4137; height:250px; display:flex; align-items:center; justify-content:center; color:#ccc; font-family:var(--font-punk);">ASH, IN THE WILD</div>
+                <span>BASEMENT, 3:12 AM, 2025</span>
+            </div>
+            <div class="reveal">
+                <div class="about__bio">
+                    <p><strong>Ash Johansen</strong> is a character and pseudonym birthed from the mind of veteran Texas artist, producer, musician, and singer, <strong>Jason M. Ashley</strong>. After a multi‑year attempt to find a versatile pop vocalist, Jason gave up — then AI music happened. Taking hours of incomplete demos, he turned his music and own voice into Ash Johansen. <strong>Fierce, fun, and fucked up.</strong> The music is unmistakably Jason, but Ash adds that perfect edge: sweet and pleasing, but raw and unforgiving.</p>
+                    <div class="social-tags">
+                        <a href="https://www.instagram.com/ashjotheahole" class="social-tag" target="_blank" rel="noopener">📷 INSTAGRAM</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact → Instagram -->
+    <section class="section" id="contact">
+        <span class="section__tag reveal">📩 SCREAM AT ME</span>
+        <h2 class="section__title reveal">CONTACT</h2>
+        <div class="graffiti-divider reveal"></div>
+        <div class="instagram-cta reveal">
+            <p>NO FORMS. JUST SLIDE INTO MY DMs.</p>
+            <a href="https://www.instagram.com/ashjotheahole" class="instagram-link" target="_blank" rel="noopener">💬 @ASHJOTHEAHOLE</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© <span id="year"></span> ASH JOHANSEN — SWEET AND PLEASING, RAW AND UNFORGIVING.</p>
+    </footer>
+
+    <script>
+        (() => {
+            // DOM elements
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const mobileLinks = document.querySelectorAll('[data-mobile-link]');
+            const navLinks = document.querySelectorAll('.nav__link');
+            const taglineEl = document.getElementById('dynamicTagline');
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            const yearSpan = document.getElementById('year');
+            const revealEls = document.querySelectorAll('.reveal');
+            const sections = document.querySelectorAll('section[id]');
+            const videosContainer = document.getElementById('videosContainer');
+
+            // ── Tagline rotation ──
+            const taglines = [
+                "Songs for the fucked up, the burnt out, the last‑call lovers, the first‑punch fighters.",
+                "Thick guitars. Fuzzy bass. Electronic heartbreak.",
+                "Blisteringly angry, disgustingly positive.",
+                "Three songs of fury and fear.",
+                "Raw singalongs from the gutter.",
+                "Melodic whispers and wrenching screams.",
+                "Feedback loop salvation.",
+                "Your favorite chaos goblin."
+            ];
+            let idx = 0;
+            setInterval(() => {
+                idx = (idx + 1) % taglines.length;
+                taglineEl.classList.add('hero__tagline--fade');
+                setTimeout(() => {
+                    taglineEl.textContent = taglines[idx];
+                    taglineEl.classList.remove('hero__tagline--fade');
+                }, 350);
+            }, 3500);
+
+            // ── Scroll to music ──
+            scrollIndicator.addEventListener('click', () => {
+                document.getElementById('music').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // ── Mobile menu ──
+            function openMobile() {
+                hamburgerBtn.classList.add('nav__hamburger--open');
+                mobileOverlay.classList.add('nav__mobile-overlay--visible');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMobile() {
+                hamburgerBtn.classList.remove('nav__hamburger--open');
+                mobileOverlay.classList.remove('nav__mobile-overlay--visible');
+                document.body.style.overflow = '';
+            }
+            hamburgerBtn.addEventListener('click', () => {
+                mobileOverlay.classList.contains('nav__mobile-overlay--visible') ? closeMobile() : openMobile();
+            });
+            mobileLinks.forEach(link => link.addEventListener('click', closeMobile));
+            window.addEventListener('resize', () => { if (window.innerWidth > 768) closeMobile(); });
+
+            // ── Active nav link spy ──
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => link.classList.toggle('nav__link--active', link.dataset.section === entry.target.id));
+                    }
+                });
+            }, { rootMargin: '-40% 0px -55% 0px' });
+            sections.forEach(s => sectionObserver.observe(s));
+
+            // ── Scroll reveal ──
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('reveal--visible'); revealObserver.unobserve(e.target); } });
+            }, { threshold: 0.12 });
+            revealEls.forEach(el => revealObserver.observe(el));
+
+            // ── DYNAMIC YOUTUBE VIDEOS (6 most recent) ──
+            async function loadRecentVideos() {
+                // ★★★ REPLACE WITH YOUR ACTUAL CHANNEL ID ★★★
+                // Find it at: https://www.youtube.com/@AshJohansen → view page source → search "channelId"
+                const channelId = 'UCXXXXXXXXXXXXXXXXXXXXXX'; // ← placeholder
+                const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+
+                try {
+                    const response = await fetch(rssUrl);
+                    if (!response.ok) throw new Error('RSS feed failed');
+                    const text = await response.text();
+                    const parser = new DOMParser();
+                    const xml = parser.parseFromString(text, 'application/xml');
+                    const entries = xml.querySelectorAll('entry');
+                    
+                    const videoIds = [];
+                    entries.forEach(entry => {
+                        const videoUrl = entry.querySelector('link')?.getAttribute('href');
+                        if (videoUrl) {
+                            const params = new URL(videoUrl).searchParams;
+                            const id = params.get('v');
+                            if (id) videoIds.push(id);
+                        }
+                    });
+
+                    // Take the first 6
+                    const recentSix = videoIds.slice(0, 6);
+                    if (recentSix.length === 0) throw new Error('No videos found');
+
+                    // Build the grid
+                    videosContainer.innerHTML = recentSix.map(id => `
+                        <div class="video-card reveal">
+                            <div class="video-card__embed">
+                                <iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy" title="Video"></iframe>
+                            </div>
+                            <div class="video-card__title">▶ RECENT UPLOAD</div>
+                        </div>
+                    `).join('');
+
+                    // Re‑observe newly added reveal elements
+                    document.querySelectorAll('.video-card.reveal').forEach(el => revealObserver.observe(el));
+
+                } catch (err) {
+                    console.warn('Could not load YouTube feed:', err);
+                    // Fallback static videos (your four provided)
+                    const fallbackIds = ['6ZJpSVg87ic', 'FlS3Eop3kp0', 'Mpo-ghb5Ggs', '2kWd3PFayWo'];
+                    videosContainer.innerHTML = fallbackIds.map(id => `
+                        <div class="video-card reveal">
+                            <div class="video-card__embed">
+                                <iframe src="https://www.youtube.com/embed/${id}" allowfullscreen loading="lazy" title="Video"></iframe>
+                            </div>
+                            <div class="video-card__title">▶ HIGHLIGHT</div>
+                        </div>
+                    `).join('');
+                    document.querySelectorAll('.video-card.reveal').forEach(el => revealObserver.observe(el));
+                }
+            }
+
+            loadRecentVideos();
+            yearSpan.textContent = new Date().getFullYear();
+        })();
+    </script>
+</body>
+</html>
