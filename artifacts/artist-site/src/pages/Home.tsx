@@ -11,8 +11,17 @@ const TRACKS = [
   { id: 3, title: "Future Famous", artist: "Ash Johansen", src: "/track-3.mp3" },
 ];
 
-// Fallback video IDs shown while live feed loads or if API is unavailable
-const FALLBACK_VIDEO_IDS = ["6ZJpSVg87ic", "mqWEPS37iyY", "FlS3Eop3kp0", "Mpo-ghb5Ggs", "dQw4w9WgXcQ", "Z8Z7n1r2e5s"];
+// Current video IDs — update these when you add new videos to the YouTube playlist
+const FALLBACK_VIDEO_IDS = [
+  { id: "FlS3Eop3kp0", title: "Don't Die Slow" },
+  { id: "BjlV6_L7VKw", title: "Long Cat is Long" },
+  { id: "Mpo-ghb5Ggs", title: "Black Lung" },
+  { id: "2kWd3PFayWo", title: "Get Lost (Get Free)" },
+  { id: "SluU_iW1EuU", title: "Island" },
+  { id: "t-8o4pItLtI", title: "UBU" },
+];
+
+const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
 
 const HERO_QUOTE = "I can't know how to hear any more about tables!";
 
@@ -105,21 +114,35 @@ export default function Home() {
     setIsNavOpen(false);
   };
 
-  // Intersection Observer for fade-in animations
-  // Live YouTube video feed
-  const [liveVideos, setLiveVideos] = useState<{ id: string; title: string }[]>(
-    FALLBACK_VIDEO_IDS.map((id, i) => ({ id, title: `Video ${i + 1}` }))
-  );
+  // Live YouTube video feed — fetched directly in the browser via a CORS proxy
+  const [liveVideos, setLiveVideos] = useState<{ id: string; title: string }[]>(FALLBACK_VIDEO_IDS);
   const [videosLoading, setVideosLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/youtube-feed")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.videos?.length) setLiveVideos(data.videos);
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
+    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+
+    fetch(proxyUrl, { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`proxy ${r.status}`);
+        return r.text();
       })
-      .catch(() => {})
-      .finally(() => setVideosLoading(false));
+      .then((xml) => {
+        const idMatches = [...xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)];
+        const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
+        const videos = idMatches.slice(0, 6).map((m, i) => ({
+          id: m[1],
+          title: titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`,
+        }));
+        if (videos.length > 0) setLiveVideos(videos);
+      })
+      .catch(() => { /* keep hardcoded fallback */ })
+      .finally(() => {
+        clearTimeout(timer);
+        setVideosLoading(false);
+      });
   }, []);
 
   const [heroParallax, setHeroParallax] = useState(0);
