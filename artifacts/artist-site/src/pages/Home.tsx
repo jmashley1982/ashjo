@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { Menu, X, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
 import { SiInstagram, SiSpotify, SiYoutube, SiApplemusic, SiYoutubemusic } from "react-icons/si";
-import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
-import heroBgSrc from "@assets/freepik_ashmullet-stands-in-an-empty-parking-lot-it-is-night-_1779741287440.jpeg";
-import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_1779741287440.jpeg";
+import logoSrc from "@assets/logo.webp";
+import heroBgSrc from "@assets/hero-bg.webp";
+import aboutImgSrc from "@assets/about.webp";
 
 const TRACKS = [
-  { id: 1, title: "TM2YL", artist: "Ash Johansen", src: "/Ash_Johansen_TM2YL_1779743569994.mp3" },
-  { id: 2, title: "Amanda Hugandkiss", artist: "Ash Johansen", src: "/Ash_Johansen_Amanda_Hugandkiss_1779743569994.mp3" },
-  { id: 3, title: "Future Famous", artist: "Ash Johansen", src: "/Ash_Johansen_Future_Famous_1779743569993.mp3" },
+  { id: 1, title: "TM2YL", artist: "Ash Johansen", src: "/track-1.mp3" },
+  { id: 2, title: "Amanda Hugandkiss", artist: "Ash Johansen", src: "/track-2.mp3" },
+  { id: 3, title: "Future Famous", artist: "Ash Johansen", src: "/track-3.mp3" },
 ];
 
 // Fallback video IDs shown while live feed loads or if API is unavailable
@@ -497,14 +497,14 @@ export default function Home() {
 
         <div className="bathroom-wall mt-8">
           {[
-            { src: "/pic-smoking.jpg", rotateDeg: -2, top: "4%", left: "3%", z: 5 },
-            { src: "/pic-myspace.jpeg", rotateDeg: 3, top: "2%", left: "28%", z: 3 },
-            { src: "/pic-sheet.jpeg", rotateDeg: 1.5, top: "6%", left: "55%", z: 6 },
-            { src: "/pic-parking.jpeg", rotateDeg: -1, top: "1%", left: "78%", z: 4 },
-            { src: "/pic-cinematic.png", rotateDeg: 2.5, top: "38%", left: "5%", z: 2 },
-            { src: "/pic-astronaut.png", rotateDeg: -3, top: "36%", left: "35%", z: 7 },
-            { src: "/pic-glitch.png", rotateDeg: 0.5, top: "40%", left: "62%", z: 1 },
-            { src: "/pic-saloon.jpeg", rotateDeg: -2.5, top: "35%", left: "82%", z: 5 },
+            { src: "/polaroid-1.webp", rotateDeg: -2, top: "4%", left: "3%", z: 5 },
+            { src: "/polaroid-2.webp", rotateDeg: 3, top: "2%", left: "28%", z: 3 },
+            { src: "/polaroid-3.webp", rotateDeg: 1.5, top: "6%", left: "55%", z: 6 },
+            { src: "/polaroid-4.webp", rotateDeg: -1, top: "1%", left: "78%", z: 4 },
+            { src: "/polaroid-5.webp", rotateDeg: 2.5, top: "38%", left: "5%", z: 2 },
+            { src: "/polaroid-6.webp", rotateDeg: -3, top: "36%", left: "35%", z: 7 },
+            { src: "/polaroid-7.webp", rotateDeg: 0.5, top: "40%", left: "62%", z: 1 },
+            { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5 },
           ].map((photo, i) => {
             const offset = dragOffsets[i] || { x: 0, y: 0 };
             const isDragging = draggingIndex === i;
