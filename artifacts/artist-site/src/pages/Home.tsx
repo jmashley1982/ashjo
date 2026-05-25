@@ -497,14 +497,14 @@ export default function Home() {
 
         <div className="bathroom-wall mt-8">
           {[
-            { src: "/polaroid-1.webp", rotateDeg: -2, top: "4%", left: "3%", z: 5 },
-            { src: "/polaroid-2.webp", rotateDeg: 3, top: "2%", left: "28%", z: 3 },
-            { src: "/polaroid-3.webp", rotateDeg: 1.5, top: "6%", left: "55%", z: 6 },
-            { src: "/polaroid-4.webp", rotateDeg: -1, top: "1%", left: "78%", z: 4 },
-            { src: "/polaroid-5.webp", rotateDeg: 2.5, top: "38%", left: "5%", z: 2 },
-            { src: "/polaroid-6.webp", rotateDeg: -3, top: "36%", left: "35%", z: 7 },
-            { src: "/polaroid-7.webp", rotateDeg: 0.5, top: "40%", left: "62%", z: 1 },
-            { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5 },
+            { src: "/polaroid-1.webp", rotateDeg: -2, top: "4%", left: "3%", z: 5, caption: "low tar" },
+            { src: "/polaroid-2.webp", rotateDeg: 3, top: "2%", left: "28%", z: 3, caption: "top 8" },
+            { src: "/polaroid-3.webp", rotateDeg: 1.5, top: "6%", left: "55%", z: 6, caption: "reference" },
+            { src: "/polaroid-4.webp", rotateDeg: -1, top: "1%", left: "78%", z: 4, caption: "loitering" },
+            { src: "/polaroid-5.webp", rotateDeg: 2.5, top: "38%", left: "5%", z: 2, caption: "fishbowl" },
+            { src: "/polaroid-6.webp", rotateDeg: -3, top: "36%", left: "35%", z: 7, caption: "liftoff" },
+            { src: "/polaroid-7.webp", rotateDeg: 0.5, top: "40%", left: "62%", z: 1, caption: "technical difficulties" },
+            { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5, caption: "last call" },
           ].map((photo, i) => {
             const offset = dragOffsets[i] || { x: 0, y: 0 };
             const isDragging = draggingIndex === i;
@@ -530,7 +530,7 @@ export default function Home() {
                     draggable={false}
                   />
                 </div>
-                <div className="polaroid-caption">ASH {String.fromCharCode(65 + i)}</div>
+                <div className="polaroid-caption">{photo.caption}</div>
               </div>
             );
           })}
