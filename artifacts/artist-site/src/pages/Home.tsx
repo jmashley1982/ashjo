@@ -5,10 +5,10 @@ import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
 import heroBgSrc from "@assets/freepik_ashmullet-stands-in-an-empty-parking-lot-it-is-night-_1779741287440.jpeg";
 import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_1779741287440.jpeg";
 
-// Replace src values with your actual audio file URLs
 const TRACKS = [
-  { id: 1, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { id: 2, title: "Replace with Track Title", artist: "Ash Johansen", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { id: 1, title: "TM2YL", artist: "Ash Johansen", src: "/Ash_Johansen_TM2YL_1779743569994.mp3" },
+  { id: 2, title: "Amanda Hugandkiss", artist: "Ash Johansen", src: "/Ash_Johansen_Amanda_Hugandkiss_1779743569994.mp3" },
+  { id: 3, title: "Future Famous", artist: "Ash Johansen", src: "/Ash_Johansen_Future_Famous_1779743569993.mp3" },
 ];
 
 // Fallback video IDs shown while live feed loads or if API is unavailable
