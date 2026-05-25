@@ -129,31 +129,43 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Polaroid drag state
+  // Polaroid drag state — offsets committed to state only on release; DOM updated directly during drag for zero-jank movement
   const [dragOffsets, setDragOffsets] = useState<Record<number, { x: number; y: number }>>({});
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const dragRef = useRef<{ index: number; startX: number; startY: number; initialOffset: { x: number; y: number } } | null>(null);
+  const dragRef = useRef<{
+    index: number;
+    startX: number;
+    startY: number;
+    initialOffset: { x: number; y: number };
+    rotateDeg: number;
+    el: HTMLElement;
+  } | null>(null);
+  const polaroidRefs = useRef<Record<number, HTMLElement | null>>({});
 
-  function handleDragStart(e: React.MouseEvent | React.TouchEvent, index: number) {
+  function handleDragStart(
+    e: React.MouseEvent | React.TouchEvent,
+    index: number,
+    rotateDeg: number
+  ) {
+    e.preventDefault();
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const offset = dragOffsets[index] || { x: 0, y: 0 };
-    dragRef.current = { index, startX: clientX, startY: clientY, initialOffset: offset };
+    const initialOffset = dragOffsets[index] || { x: 0, y: 0 };
+    const el = polaroidRefs.current[index];
+    if (!el) return;
+
+    dragRef.current = { index, startX: clientX, startY: clientY, initialOffset, rotateDeg, el };
     setDraggingIndex(index);
 
     const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
-      if (!dragRef.current) return;
-      const mx = "touches" in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
-      const my = "touches" in moveEvent ? moveEvent.touches[0].clientY : moveEvent.clientY;
-      const dx = mx - dragRef.current.startX;
-      const dy = my - dragRef.current.startY;
-      setDragOffsets((prev) => ({
-        ...prev,
-        [index]: {
-          x: dragRef.current!.initialOffset.x + dx,
-          y: dragRef.current!.initialOffset.y + dy,
-        },
-      }));
+      moveEvent.preventDefault();
+      const d = dragRef.current!;
+      const mx = "touches" in moveEvent ? (moveEvent as TouchEvent).touches[0].clientX : (moveEvent as MouseEvent).clientX;
+      const my = "touches" in moveEvent ? (moveEvent as TouchEvent).touches[0].clientY : (moveEvent as MouseEvent).clientY;
+      const x = d.initialOffset.x + (mx - d.startX);
+      const y = d.initialOffset.y + (my - d.startY);
+      // Direct DOM update — no React re-render during drag
+      d.el.style.transform = `rotate(${d.rotateDeg}deg) translate3d(${x}px, ${y}px, 0)`;
     };
 
     const handleEnd = () => {
@@ -161,7 +173,13 @@ export default function Home() {
       window.removeEventListener("mouseup", handleEnd);
       window.removeEventListener("touchmove", handleMove);
       window.removeEventListener("touchend", handleEnd);
+      // Read final transform to commit position
+      const d = dragRef.current!;
+      const match = d.el.style.transform.match(/translate3d\(([^,]+)px,\s*([^,]+)px/);
+      const x = match ? parseFloat(match[1]) : d.initialOffset.x;
+      const y = match ? parseFloat(match[2]) : d.initialOffset.y;
       dragRef.current = null;
+      setDragOffsets((prev) => ({ ...prev, [d.index]: { x, y } }));
       setDraggingIndex(null);
     };
 
@@ -511,16 +529,18 @@ export default function Home() {
             return (
               <div
                 key={i}
+                ref={(el) => { polaroidRefs.current[i] = el; }}
                 className={`polaroid-tile ${isDragging ? "dragging" : ""}`}
                 style={{
                   top: photo.top,
                   left: photo.left,
                   zIndex: isDragging ? 100 : photo.z,
                   transform: `rotate(${photo.rotateDeg}deg) translate3d(${offset.x}px, ${offset.y}px, 0)`,
+                  willChange: isDragging ? "transform" : "auto",
                 }}
                 data-testid={`img-gallery-${i}`}
-                onMouseDown={(e) => handleDragStart(e, i)}
-                onTouchStart={(e) => handleDragStart(e, i)}
+                onMouseDown={(e) => handleDragStart(e, i, photo.rotateDeg)}
+                onTouchStart={(e) => handleDragStart(e, i, photo.rotateDeg)}
               >
                 <div className="polaroid-img">
                   <img
