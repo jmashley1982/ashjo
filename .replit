@@ -30,3 +30,8 @@ externalPort = 80
 [[ports]]
 localPort = 19222
 externalPort = 3000
+
+[userenv]
+
+[userenv.shared]
+YOUTUBE_CHANNEL_ID = "UCxAUYa3cgDeOc2ndXIZgfPw"

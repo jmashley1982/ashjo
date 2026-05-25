@@ -373,7 +373,7 @@ export default function Home() {
                 frameBorder="0"
                 height="380"
                 sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                src="https://embed.music.apple.com/us/artist/ash-johansen/REPLACE_WITH_APPLE_MUSIC_ID"
+                src="https://embed.music.apple.com/us/artist/ash-johansen/1817699556"
                 width="100%"
                 className="rounded-sm"
                 title="Apple Music Player"
