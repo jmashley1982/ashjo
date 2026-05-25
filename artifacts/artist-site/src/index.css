@@ -326,8 +326,8 @@ body::after {
   margin: 0 auto;
   min-height: 900px;
   background:
-    linear-gradient(180deg, rgba(6,4,3,0.55) 0%, rgba(6,4,3,0.25) 100%),
-    url("/bathroom-wall_1779744044384.png");
+    linear-gradient(180deg, rgba(6,4,3,0.25) 0%, rgba(6,4,3,0.1) 100%),
+    url("/brick-wall.jpg");
   background-size: cover, cover;
   background-position: center, center;
   border: 3px solid hsl(20 12% 14%);

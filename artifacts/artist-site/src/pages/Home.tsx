@@ -429,6 +429,17 @@ export default function Home() {
               ))}
             </div>
           )}
+          <div className="mt-10 text-center">
+            <a
+              href="https://www.youtube.com/channel/UCxAUYa3cgDeOc2ndXIZgfPw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-6 py-3 border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary transition-colors uppercase tracking-widest text-sm"
+              style={{ fontFamily: "var(--font-elite)" }}
+            >
+              more chaos on youtube →
+            </a>
+          </div>
         </div>
       </section>
 
@@ -444,15 +455,14 @@ export default function Home() {
 
         <div className="bathroom-wall mt-8">
           {[
-            { src: "https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-2deg]", top: "4%", left: "3%", z: 5 },
-            { src: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[3deg]", top: "2%", left: "28%", z: 3 },
-            { src: "https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[1.5deg]", top: "6%", left: "55%", z: 6 },
-            { src: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-1deg]", top: "1%", left: "78%", z: 4 },
-            { src: "https://images.unsplash.com/photo-1501612780327-45045538702b?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[2.5deg]", top: "38%", left: "5%", z: 2 },
-            { src: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-3deg]", top: "36%", left: "35%", z: 7 },
-            { src: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[0.5deg]", top: "40%", left: "62%", z: 1 },
-            { src: "https://images.unsplash.com/photo-1493225255440-1b62b490e1d5?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[-2.5deg]", top: "35%", left: "82%", z: 5 },
-            { src: "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=800&auto=format&fit=crop&q=80", rotate: "rotate-[1deg]", top: "70%", left: "15%", z: 3 },
+            { src: "/pic-smoking.jpg", rotate: "rotate-[-2deg]", top: "4%", left: "3%", z: 5 },
+            { src: "/pic-myspace.jpeg", rotate: "rotate-[3deg]", top: "2%", left: "28%", z: 3 },
+            { src: "/pic-sheet.jpeg", rotate: "rotate-[1.5deg]", top: "6%", left: "55%", z: 6 },
+            { src: "/pic-parking.jpeg", rotate: "rotate-[-1deg]", top: "1%", left: "78%", z: 4 },
+            { src: "/pic-cinematic.png", rotate: "rotate-[2.5deg]", top: "38%", left: "5%", z: 2 },
+            { src: "/pic-astronaut.png", rotate: "rotate-[-3deg]", top: "36%", left: "35%", z: 7 },
+            { src: "/pic-glitch.png", rotate: "rotate-[0.5deg]", top: "40%", left: "62%", z: 1 },
+            { src: "/pic-saloon.jpeg", rotate: "rotate-[-2.5deg]", top: "35%", left: "82%", z: 5 },
           ].map((photo, i) => (
             <div
               key={i}
