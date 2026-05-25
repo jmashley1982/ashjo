@@ -5,6 +5,9 @@ import * as z from "zod";
 import { Menu, X } from "lucide-react";
 import { SiInstagram, SiSpotify, SiYoutube, SiX } from "react-icons/si";
 import { useToast } from "@/hooks/use-toast";
+import logoSrc from "@assets/signature_2_white-08_1779741152285.png";
+import heroBgSrc from "@assets/freepik_ashmullet-stands-in-an-empty-parking-lot-it-is-night-_1779741287440.jpeg";
+import aboutImgSrc from "@assets/ash-and-jay-6mI0AaW9z1GYBoHs6ZTZUg_1779741287440.jpeg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -93,10 +96,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
-            className="text-2xl font-display uppercase tracking-widest text-white hover:text-primary transition-colors"
+            className="flex items-center"
             data-testid="link-home"
           >
-            N3XUS
+            <img src={logoSrc} alt="Ash Johansen" className="h-10 w-auto" style={{ mixBlendMode: "screen" }} />
           </button>
 
           {/* Desktop Nav */}
@@ -144,21 +147,22 @@ export default function Home() {
         id="hero"
         className="relative h-screen w-full flex items-center justify-center overflow-hidden"
       >
-        {/* Replace this ID with actual YouTube video ID */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none">
-          <iframe
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1&loop=1&playlist=dQw4w9WgXcQ&controls=0&showinfo=0&rel=0"
-            className="w-[300vw] h-[300vh] -translate-x-[100vw] -translate-y-[100vh] sm:w-[150vw] sm:h-[150vh] sm:-translate-x-[25vw] sm:-translate-y-[25vh] object-cover opacity-50"
-            allow="autoplay; encrypted-media"
-            title="Background Video"
+        <div className="absolute inset-0 w-full h-full">
+          <img
+            src={heroBgSrc}
+            alt="Ash Johansen"
+            className="w-full h-full object-cover object-top"
           />
         </div>
         <div className="absolute inset-0 video-overlay" />
 
         <div className="relative z-10 text-center px-4 flex flex-col items-center">
-          <h1 className="text-7xl md:text-9xl lg:text-[12rem] font-display text-white leading-none tracking-tighter mb-4 neon-text-glow">
-            N3XUS
-          </h1>
+          <img
+            src={logoSrc}
+            alt="Ash Johansen"
+            className="w-[min(80vw,560px)] h-auto mb-4"
+            style={{ mixBlendMode: "screen" }}
+          />
           <div className="h-12 flex items-center justify-center">
             {taglines.map((tagline, index) => (
               <p
@@ -269,13 +273,13 @@ export default function Home() {
             </h2>
             <div className="prose prose-invert prose-lg max-w-none text-muted-foreground space-y-6">
               <p>
-                Emerging from the underground electronic scene, N3XUS builds immersive sonic landscapes that blur the line between organic emotion and digital precision.
+                Ash Johansen is an independent artist crafting raw, honest music that lives somewhere between late-night drives and the moment right before everything changes.
               </p>
               <p>
-                What started as late-night experiments in a cramped London apartment has evolved into a fully realized audio-visual project, pulling influences from synthwave, industrial techno, and ambient scores. The sound is characterized by punishing basslines, ethereal pads, and an unwavering commitment to atmosphere.
+                Drawing from a wide palette of influences — alternative, indie, and the kind of pop that doesn't apologize for its hooks — Ash writes songs that feel lived-in from the first listen. Equal parts vulnerability and nerve.
               </p>
               <p>
-                Following the breakout success of the debut EP "Terminal Systems," N3XUS is currently finalizing the highly anticipated full-length project.
+                Currently independent and working on new music. Booking, press, and collaboration inquiries welcome.
               </p>
             </div>
 
@@ -305,11 +309,11 @@ export default function Home() {
           <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-white/10">
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10" />
             <img 
-              src="https://images.unsplash.com/photo-1598387993281-cecf8b71a8f8?q=80&w=2000&auto=format&fit=crop" 
-              alt="Artist in studio" 
-              className="w-full h-full object-cover filter contrast-125 brightness-75 grayscale"
+              src={aboutImgSrc}
+              alt="Ash Johansen" 
+              className="w-full h-full object-cover object-top"
             />
-            <div className="absolute inset-0 mix-blend-overlay bg-primary/20" />
+            <div className="absolute inset-0 mix-blend-overlay bg-primary/10" />
           </div>
         </div>
       </section>
@@ -400,7 +404,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 text-center border-t border-white/5 bg-background">
         <p className="text-xs uppercase tracking-widest text-muted-foreground font-display">
-          © {new Date().getFullYear()} N3XUS. All frequencies reserved.
+          © {new Date().getFullYear()} Ash Johansen. All rights reserved.
         </p>
       </footer>
     </div>
