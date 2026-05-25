@@ -235,8 +235,19 @@ export default function Home() {
       <div className="amp-blob amp-blob--pink" />
       <div className="amp-blob amp-blob--red" />
 
+      {/* Announcement Banner — TEMPORARY */}
+      <div className="fixed top-0 left-0 w-full z-50 bg-primary text-primary-foreground text-center">
+        <button
+          onClick={() => scrollToSection("collab")}
+          className="w-full py-2.5 px-4 text-xs md:text-sm uppercase tracking-[0.25em] font-bold hover:bg-primary-foreground hover:text-primary transition-colors"
+        >
+          <span className="hidden sm:inline">TMSTRY x Ash Johansen collab + &ldquo;TM2YL&rdquo; single premiere — Fri May 29 →</span>
+          <span className="sm:hidden">New collab + single premiere — Fri May 29 →</span>
+        </button>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-md border-b border-white/5" style={{ transform: "rotate(-0.15deg)" }}>
+      <nav className="fixed top-10 w-full z-40 bg-background/90 backdrop-blur-md border-b border-white/5" style={{ transform: "rotate(-0.15deg)" }}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
