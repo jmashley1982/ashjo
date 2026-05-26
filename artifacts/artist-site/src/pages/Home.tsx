@@ -258,7 +258,14 @@ export default function Home() {
           </button>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex gap-8">
+          <div className="hidden md:flex gap-8 items-center">
+            <button
+              onClick={() => scrollToSection("collab")}
+              className="nav-link text-sm uppercase tracking-widest text-primary hover:text-white transition-colors"
+              data-testid="link-new-shit"
+            >
+              <span className="text-primary neon-text-glow">NEW SHIT</span>
+            </button>
             {["music", "videos", "pics", "about", "contact"].map((section) => (
               <button
                 key={section}
