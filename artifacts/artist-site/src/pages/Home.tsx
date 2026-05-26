@@ -145,6 +145,51 @@ export default function Home() {
       });
   }, []);
 
+  // Periodic "U OWE ME MONEY" flicker
+  const [moneyFlicker, setMoneyFlicker] = useState(false);
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const scheduleNext = () => {
+      const delay = 12000 + Math.random() * 18000;
+      timeoutId = setTimeout(() => {
+        setMoneyFlicker(true);
+        setTimeout(() => setMoneyFlicker(false), 280);
+        scheduleNext();
+      }, delay);
+    };
+    scheduleNext();
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  // Click expletives
+  const EXPLETIVES = [
+    "FUCK!", "SHIT!", "DAMN!", "HELL YEAH!", "BITCH!", "ASSHOLE!",
+    "GO TO HELL!", "PISS OFF!", "EAT SHIT!", "WHATEVER!", "SCREW IT!",
+    "GROSS!", "OUCH!", "OW!", "STOP IT!", "WHY?!", "NO!!!",
+    "U OWE ME MONEY", "PAY UP", "BRUH", "RUDE", "NASTY",
+  ];
+  type Pop = { id: number; text: string; x: number; y: number; rot: number };
+  const [pops, setPops] = useState<Pop[]>([]);
+  const popIdRef = useRef(0);
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement | null;
+      // Don't trigger when clicking real interactive elements
+      if (target && target.closest("a, button, input, textarea, select, iframe, audio, video, [role='button']")) {
+        return;
+      }
+      const id = ++popIdRef.current;
+      const text = EXPLETIVES[Math.floor(Math.random() * EXPLETIVES.length)];
+      const rot = (Math.random() * 30 - 15);
+      setPops((prev) => [...prev, { id, text, x: e.clientX, y: e.clientY, rot }]);
+      setTimeout(() => {
+        setPops((prev) => prev.filter((p) => p.id !== id));
+      }, 900);
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    return () => window.removeEventListener("pointerdown", onPointerDown);
+  }, []);
+
   const [heroParallax, setHeroParallax] = useState(0);
   useEffect(() => {
     const onScroll = () => setHeroParallax(window.scrollY * 0.35);
@@ -234,6 +279,30 @@ export default function Home() {
       {/* Ambient blobs */}
       <div className="amp-blob amp-blob--pink" />
       <div className="amp-blob amp-blob--red" />
+
+      {/* Periodic money flicker overlay */}
+      {moneyFlicker && (
+        <div className="money-flicker" aria-hidden="true">
+          <span className="money-flicker__text">U OWE ME MONEY</span>
+        </div>
+      )}
+
+      {/* Click expletive pops */}
+      <div className="pointer-events-none fixed inset-0 z-[9999]" aria-hidden="true">
+        {pops.map((p) => (
+          <span
+            key={p.id}
+            className="expletive-pop"
+            style={{
+              left: p.x,
+              top: p.y,
+              transform: `translate(-50%, -50%) rotate(${p.rot}deg)`,
+            }}
+          >
+            {p.text}
+          </span>
+        ))}
+      </div>
 
       {/* Announcement Banner — TEMPORARY */}
       <div className="fixed top-0 left-0 w-full z-50 bg-primary text-primary-foreground text-center">
