@@ -514,3 +514,8 @@ body::after {
   animation: expletivePop 900ms ease-out forwards;
   pointer-events: none;
 }
+
+/* Prevent iOS pull-to-refresh which can reload the page mid-scroll */
+html, body {
+  overscroll-behavior-y: contain;
+}

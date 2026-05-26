@@ -172,10 +172,11 @@ export default function Home() {
   const [pops, setPops] = useState<Pop[]>([]);
   const popIdRef = useRef(0);
   useEffect(() => {
-    const onPointerDown = (e: PointerEvent) => {
+    // Use click (not pointerdown) so this never fires during scroll gestures on mobile
+    const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       // Don't trigger when clicking real interactive elements
-      if (target && target.closest("a, button, input, textarea, select, iframe, audio, video, [role='button']")) {
+      if (target && target.closest("a, button, input, textarea, select, iframe, audio, video, [role='button'], label")) {
         return;
       }
       const id = ++popIdRef.current;
@@ -186,8 +187,8 @@ export default function Home() {
         setPops((prev) => prev.filter((p) => p.id !== id));
       }, 900);
     };
-    window.addEventListener("pointerdown", onPointerDown);
-    return () => window.removeEventListener("pointerdown", onPointerDown);
+    window.addEventListener("click", onClick);
+    return () => window.removeEventListener("click", onClick);
   }, []);
 
   const [heroParallax, setHeroParallax] = useState(0);
