@@ -313,65 +313,28 @@ export default function Home() {
     return () => clearTimeout(t);
   }, []);
 
-  // Polaroid drag state — offsets committed to state only on release; DOM updated directly during drag for zero-jank movement
-  const [dragOffsets, setDragOffsets] = useState<Record<number, { x: number; y: number }>>({});
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const dragRef = useRef<{
-    index: number;
-    startX: number;
-    startY: number;
-    initialOffset: { x: number; y: number };
-    rotateDeg: number;
-    el: HTMLElement;
-  } | null>(null);
-  const polaroidRefs = useRef<Record<number, HTMLElement | null>>({});
-
-  function handleDragStart(
-    e: React.MouseEvent | React.TouchEvent,
-    index: number,
-    rotateDeg: number
-  ) {
-    e.preventDefault();
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const initialOffset = dragOffsets[index] || { x: 0, y: 0 };
-    const el = polaroidRefs.current[index];
-    if (!el) return;
-
-    dragRef.current = { index, startX: clientX, startY: clientY, initialOffset, rotateDeg, el };
-    setDraggingIndex(index);
-
-    const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
-      moveEvent.preventDefault();
-      const d = dragRef.current!;
-      const mx = "touches" in moveEvent ? (moveEvent as TouchEvent).touches[0].clientX : (moveEvent as MouseEvent).clientX;
-      const my = "touches" in moveEvent ? (moveEvent as TouchEvent).touches[0].clientY : (moveEvent as MouseEvent).clientY;
-      const x = d.initialOffset.x + (mx - d.startX);
-      const y = d.initialOffset.y + (my - d.startY);
-      // Direct DOM update — no React re-render during drag
-      d.el.style.transform = `rotate(${d.rotateDeg}deg) translate3d(${x}px, ${y}px, 0)`;
+  // Lightbox state
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const PHOTOS = [
+    { src: "/polaroid-1.webp", rotateDeg: -2, top: "4%", left: "3%", z: 5, caption: "low tar" },
+    { src: "/polaroid-2.webp", rotateDeg: 3, top: "2%", left: "28%", z: 3, caption: "top 8" },
+    { src: "/polaroid-3.webp", rotateDeg: 1.5, top: "6%", left: "55%", z: 6, caption: "reference" },
+    { src: "/polaroid-4.webp", rotateDeg: -1, top: "1%", left: "78%", z: 4, caption: "loitering" },
+    { src: "/polaroid-5.webp", rotateDeg: 2.5, top: "38%", left: "5%", z: 2, caption: "fishbowl" },
+    { src: "/polaroid-6.webp", rotateDeg: -3, top: "36%", left: "35%", z: 7, caption: "liftoff" },
+    { src: "/polaroid-7.webp", rotateDeg: 0.5, top: "40%", left: "62%", z: 1, caption: "technical difficulties" },
+    { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5, caption: "last call" },
+  ];
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxIndex(null);
+      if (e.key === "ArrowRight") setLightboxIndex((i) => i === null ? null : (i + 1) % PHOTOS.length);
+      if (e.key === "ArrowLeft") setLightboxIndex((i) => i === null ? null : (i - 1 + PHOTOS.length) % PHOTOS.length);
     };
-
-    const handleEnd = () => {
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleEnd);
-      window.removeEventListener("touchmove", handleMove);
-      window.removeEventListener("touchend", handleEnd);
-      // Read final transform to commit position
-      const d = dragRef.current!;
-      const match = d.el.style.transform.match(/translate3d\(([^,]+)px,\s*([^,]+)px/);
-      const x = match ? parseFloat(match[1]) : d.initialOffset.x;
-      const y = match ? parseFloat(match[2]) : d.initialOffset.y;
-      dragRef.current = null;
-      setDragOffsets((prev) => ({ ...prev, [d.index]: { x, y } }));
-      setDraggingIndex(null);
-    };
-
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleEnd);
-    window.addEventListener("touchmove", handleMove, { passive: false });
-    window.addEventListener("touchend", handleEnd);
-  }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIndex]);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
@@ -824,47 +787,71 @@ export default function Home() {
         </div>
 
         <div className="bathroom-wall mt-8">
-          {[
-            { src: "/polaroid-1.webp", rotateDeg: -2, top: "4%", left: "3%", z: 5, caption: "low tar" },
-            { src: "/polaroid-2.webp", rotateDeg: 3, top: "2%", left: "28%", z: 3, caption: "top 8" },
-            { src: "/polaroid-3.webp", rotateDeg: 1.5, top: "6%", left: "55%", z: 6, caption: "reference" },
-            { src: "/polaroid-4.webp", rotateDeg: -1, top: "1%", left: "78%", z: 4, caption: "loitering" },
-            { src: "/polaroid-5.webp", rotateDeg: 2.5, top: "38%", left: "5%", z: 2, caption: "fishbowl" },
-            { src: "/polaroid-6.webp", rotateDeg: -3, top: "36%", left: "35%", z: 7, caption: "liftoff" },
-            { src: "/polaroid-7.webp", rotateDeg: 0.5, top: "40%", left: "62%", z: 1, caption: "technical difficulties" },
-            { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5, caption: "last call" },
-          ].map((photo, i) => {
-            const offset = dragOffsets[i] || { x: 0, y: 0 };
-            const isDragging = draggingIndex === i;
-            return (
-              <div
-                key={i}
-                ref={(el) => { polaroidRefs.current[i] = el; }}
-                className={`polaroid-tile ${isDragging ? "dragging" : ""}`}
-                style={{
-                  top: photo.top,
-                  left: photo.left,
-                  zIndex: isDragging ? 100 : photo.z,
-                  transform: `rotate(${photo.rotateDeg}deg) translate3d(${offset.x}px, ${offset.y}px, 0)`,
-                  willChange: isDragging ? "transform" : "auto",
-                }}
-                data-testid={`img-gallery-${i}`}
-                onMouseDown={(e) => handleDragStart(e, i, photo.rotateDeg)}
-                onTouchStart={(e) => handleDragStart(e, i, photo.rotateDeg)}
-              >
-                <div className="polaroid-img">
-                  <img
-                    src={photo.src}
-                    alt={`Ash Johansen photo ${i + 1}`}
-                    loading="lazy"
-                    draggable={false}
-                  />
-                </div>
-                <div className="polaroid-caption">{photo.caption}</div>
+          {PHOTOS.map((photo, i) => (
+            <button
+              key={i}
+              type="button"
+              className="polaroid-tile"
+              style={{
+                top: photo.top,
+                left: photo.left,
+                zIndex: photo.z,
+                transform: `rotate(${photo.rotateDeg}deg)`,
+              }}
+              data-testid={`img-gallery-${i}`}
+              onClick={() => setLightboxIndex(i)}
+              aria-label={`View photo: ${photo.caption}`}
+            >
+              <div className="polaroid-img">
+                <img
+                  src={photo.src}
+                  alt={`Ash Johansen — ${photo.caption}`}
+                  loading="lazy"
+                  draggable={false}
+                />
               </div>
-            );
-          })}
+              <div className="polaroid-caption">{photo.caption}</div>
+            </button>
+          ))}
         </div>
+
+        {/* Lightbox */}
+        {lightboxIndex !== null && (
+          <div
+            className="lightbox-overlay"
+            onClick={() => setLightboxIndex(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Photo viewer"
+          >
+            <button
+              className="lightbox-prev"
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + PHOTOS.length) % PHOTOS.length); }}
+              aria-label="Previous photo"
+            >‹</button>
+
+            <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
+              <img
+                src={PHOTOS[lightboxIndex].src}
+                alt={`Ash Johansen — ${PHOTOS[lightboxIndex].caption}`}
+                className="lightbox-img"
+              />
+              <p className="lightbox-caption">{PHOTOS[lightboxIndex].caption}</p>
+            </div>
+
+            <button
+              className="lightbox-next"
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % PHOTOS.length); }}
+              aria-label="Next photo"
+            >›</button>
+
+            <button
+              className="lightbox-close"
+              onClick={() => setLightboxIndex(null)}
+              aria-label="Close"
+            >✕</button>
+          </div>
+        )}
       </section>
 
       {/* About Section */}
