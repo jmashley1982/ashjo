@@ -200,7 +200,7 @@ export default function Home() {
     trashEnabledRef.current = hasFinePointer && !reducedMotion;
   }, []);
 
-  // Cursor spray trail (desktop only)
+  // Cursor spray trail (desktop only) — heavily throttled, lightweight
   type Drip = { id: number; x: number; y: number; size: number; hue: number };
   const [drips, setDrips] = useState<Drip[]>([]);
   const dripIdRef = useRef(0);
@@ -210,15 +210,15 @@ export default function Home() {
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
       const now = performance.now();
-      if (now - lastDripRef.current < 38) return;
+      if (now - lastDripRef.current < 90) return; // ~11fps spawn
       lastDripRef.current = now;
       const id = ++dripIdRef.current;
-      const size = 6 + Math.random() * 14;
+      const size = 5 + Math.random() * 7;
       const hue = Math.random() > 0.5 ? 330 : 0;
-      setDrips((prev) => [...prev.slice(-30), { id, x: e.clientX, y: e.clientY, size, hue }]);
-      setTimeout(() => setDrips((prev) => prev.filter((d) => d.id !== id)), 700);
+      setDrips((prev) => [...prev.slice(-9), { id, x: e.clientX, y: e.clientY, size, hue }]);
+      setTimeout(() => setDrips((prev) => prev.filter((d) => d.id !== id)), 450);
     };
-    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointermove", onMove, { passive: true });
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
 
