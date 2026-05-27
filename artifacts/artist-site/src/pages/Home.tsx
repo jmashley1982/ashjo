@@ -476,7 +476,6 @@ export default function Home() {
       <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <video
-            src="/hero.webm"
             poster={heroBgSrc}
             autoPlay
             loop
@@ -488,7 +487,10 @@ export default function Home() {
               transform: `translateY(${heroParallax}px)`,
               willChange: "transform",
             }}
-          />
+          >
+            <source src="/hero.mp4" type="video/mp4" />
+            <source src="/hero.webm" type="video/webm" />
+          </video>
         </div>
         <div className="absolute inset-0 video-overlay" />
 
