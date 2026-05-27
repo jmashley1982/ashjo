@@ -450,11 +450,19 @@ body::after {
   font-size: 0.95rem;
 }
 
-/* === Money flicker overlay === */
-@keyframes moneyFlickerAnim {
+/* === Money flicker overlay (split: wrapper opacity only, text transforms) === */
+@keyframes moneyFlickerBg {
+  0%   { opacity: 0; }
+  15%  { opacity: 1; }
+  35%  { opacity: 0.4; filter: hue-rotate(20deg); }
+  55%  { opacity: 1; filter: none; }
+  80%  { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+@keyframes moneyFlickerText {
   0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.9) skewX(-6deg); }
-  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.05) skewX(2deg); filter: hue-rotate(0deg); }
-  35%  { opacity: 0.4; transform: translate(-51%, -49%) scale(1) skewX(-3deg); filter: hue-rotate(20deg) blur(1px); }
+  15%  { opacity: 1; transform: translate(-50%, -50%) scale(1.05) skewX(2deg); filter: none; }
+  35%  { opacity: 0.4; transform: translate(-51%, -49%) scale(1) skewX(-3deg); filter: blur(1px); }
   55%  { opacity: 1; transform: translate(-49%, -51%) scale(1.08) skewX(4deg); filter: none; }
   80%  { opacity: 0.7; transform: translate(-50%, -50%) scale(1.02) skewX(-2deg); }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(0.95) skewX(0deg); }
@@ -464,14 +472,11 @@ body::after {
   inset: 0;
   z-index: 9998;
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   background:
     radial-gradient(circle at 50% 50%, rgba(255,26,140,0.18) 0%, transparent 60%),
     repeating-linear-gradient(0deg, rgba(0,0,0,0.0) 0px, rgba(0,0,0,0.0) 3px, rgba(0,0,0,0.25) 4px);
   mix-blend-mode: screen;
-  animation: moneyFlickerAnim 280ms steps(8, end) forwards;
+  animation: moneyFlickerBg 280ms steps(8, end) forwards;
 }
 .money-flicker__text {
   position: absolute;
@@ -489,7 +494,7 @@ body::after {
     3px 0 hsl(0 100% 50% / 0.8),
     -3px 0 hsl(180 100% 50% / 0.6);
   transform: translate(-50%, -50%);
-  animation: moneyFlickerAnim 280ms steps(8, end) forwards;
+  animation: moneyFlickerText 280ms steps(8, end) forwards;
 }
 
 /* === Click expletive pops === */
@@ -519,3 +524,232 @@ body::after {
 html, body {
   overscroll-behavior-y: contain;
 }
+
+/* ============================================================
+   === TRASH VIBE PASS — easy to remove: delete this block ===
+   ============================================================ */
+
+/* --- VHS scanlines + tracking jitter --- */
+.vhs-scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9995;
+  opacity: 0.18;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.04) 0px,
+      rgba(255,255,255,0.04) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 6px,
+      rgba(0,0,0,0.12) 7px,
+      rgba(0,0,0,0.12) 8px
+    );
+  mix-blend-mode: overlay;
+}
+@keyframes vhsTrackingJitter {
+  0%   { transform: translate(0, 0); filter: none; }
+  10%  { transform: translate(-6px, 2px); filter: hue-rotate(8deg) saturate(1.3); }
+  20%  { transform: translate(8px, -3px); filter: none; }
+  35%  { transform: translate(-4px, 0); filter: hue-rotate(-6deg); }
+  50%  { transform: translate(3px, 4px) skewX(0.6deg); filter: none; }
+  70%  { transform: translate(-2px, 0); }
+  100% { transform: translate(0, 0); filter: none; }
+}
+.vhs-jitter {
+  animation: vhsTrackingJitter 260ms steps(6, end);
+}
+@media (prefers-reduced-motion: reduce) {
+  .vhs-jitter { animation: none; }
+}
+
+/* --- Sticker collage --- */
+.trash-stickers {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+}
+.trash-sticker {
+  position: absolute;
+  font-family: var(--font-elite), monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: pre;
+  text-align: center;
+  padding: 8px 14px;
+  border: 2px solid #000;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.55);
+  line-height: 1.1;
+  font-size: 0.7rem;
+  opacity: 0.85;
+  filter: contrast(1.05);
+}
+.trash-sticker--advisory {
+  background: #000;
+  color: #fff;
+  top: auto;
+  bottom: 14%;
+  left: -10px;
+  transform: rotate(-14deg);
+  border-color: #fff;
+  font-size: 0.65rem;
+}
+.trash-sticker--sold {
+  background: hsl(var(--primary));
+  color: #fff;
+  top: 30%;
+  right: -8px;
+  transform: rotate(12deg);
+  border-color: #000;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+}
+.trash-sticker--xxx {
+  background: #ffd900;
+  color: #000;
+  bottom: 22%;
+  right: -6px;
+  transform: rotate(-18deg);
+  border-color: #000;
+  font-size: 1.4rem;
+  letter-spacing: 0.2em;
+  padding: 4px 12px;
+}
+.trash-sticker--smoke {
+  background: #e8e2d6;
+  color: #2a221c;
+  top: 16%;
+  left: -10px;
+  transform: rotate(8deg);
+  border-color: #2a221c;
+  font-family: var(--font-marker), cursive;
+  font-size: 0.85rem;
+}
+/* Hide stickers on small screens — they crowd mobile */
+@media (max-width: 768px) {
+  .trash-stickers { display: none; }
+}
+
+/* --- Cursor spray trail (desktop only) --- */
+.spray-drip {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  filter: blur(2px);
+  mix-blend-mode: screen;
+  animation: sprayFade 700ms ease-out forwards;
+  box-shadow: 0 0 8px currentColor;
+}
+@keyframes sprayFade {
+  0%   { opacity: 0.7; transform: translate(-50%, -50%) scale(0.6); }
+  30%  { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, calc(-50% + 14px)) scale(1.3); }
+}
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .spray-drip { display: none; }
+}
+
+/* --- Censor bars --- */
+.censor-bar {
+  position: absolute;
+  background: #000;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px #000, 1px 2px 4px rgba(0,0,0,0.6);
+  animation: censorIn 80ms ease-out, censorOut 200ms ease-in 450ms forwards;
+  transform-origin: left center;
+}
+@keyframes censorIn {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+@keyframes censorOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .censor-bar { display: none; }
+}
+
+/* --- Graffiti spray marks on sections (background bleed) --- */
+section#music::before,
+section#videos::before,
+section#about::before,
+section#contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.18;
+  mix-blend-mode: screen;
+}
+section#music::before {
+  background:
+    radial-gradient(ellipse 320px 90px at 12% 22%, hsl(var(--primary) / 0.35), transparent 70%),
+    radial-gradient(ellipse 200px 60px at 85% 70%, hsl(var(--sick-green) / 0.25), transparent 70%);
+}
+section#videos::before {
+  background:
+    radial-gradient(ellipse 260px 100px at 78% 15%, hsl(var(--blood-red) / 0.4), transparent 70%),
+    radial-gradient(ellipse 180px 70px at 18% 80%, hsl(var(--amber-street) / 0.25), transparent 70%);
+}
+section#about::before {
+  background:
+    radial-gradient(ellipse 280px 110px at 65% 85%, hsl(var(--primary) / 0.3), transparent 70%),
+    radial-gradient(ellipse 200px 70px at 8% 30%, hsl(var(--blood-red) / 0.22), transparent 70%);
+}
+section#contact::before {
+  background:
+    radial-gradient(ellipse 240px 90px at 50% 20%, hsl(var(--sick-green) / 0.3), transparent 70%);
+}
+
+/* --- Bathroom-stall scrawls --- */
+.trash-scrawl-host { position: relative; }
+.trash-scrawl {
+  position: absolute;
+  font-family: var(--font-marker), cursive;
+  color: hsl(var(--foreground) / 0.42);
+  font-size: 0.85rem;
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  z-index: 1;
+  max-width: 180px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+}
+.trash-scrawl--tl { top: 18px; left: 14px; transform: rotate(-7deg); }
+.trash-scrawl--tr { top: 18px; right: 14px; transform: rotate(6deg); text-align: right; }
+.trash-scrawl--bl { bottom: 18px; left: 14px; transform: rotate(4deg); }
+.trash-scrawl--br { bottom: 18px; right: 14px; transform: rotate(-5deg); text-align: right; }
+@media (max-width: 768px) {
+  .trash-scrawl { font-size: 0.7rem; max-width: 120px; opacity: 0.7; }
+}
+
+/* --- Custom cursor on hover zones --- */
+/* middle finger glyph (SVG data URI) */
+.cursor-finger {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='2' y='26' font-size='26'>%F0%9F%96%95</text></svg>") 8 8,
+    pointer;
+}
+/* lit cigarette glyph (SVG data URI) */
+.cursor-cig {
+  cursor:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><text x='2' y='26' font-size='24'>%F0%9F%9A%AC</text></svg>") 4 24,
+    pointer;
+}
+@media (hover: none), (pointer: coarse) {
+  .cursor-finger, .cursor-cig { cursor: pointer; }
+}
+/* ============================================================
+   === END TRASH VIBE PASS ====================================
+   ============================================================ */

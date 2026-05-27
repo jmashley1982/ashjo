@@ -191,6 +191,111 @@ export default function Home() {
     return () => window.removeEventListener("click", onClick);
   }, []);
 
+  // ===== TRASH EFFECTS =====
+  // Detect touch device (skip heavy/cursor effects on mobile) and reduced motion
+  const trashEnabledRef = useRef(false);
+  useEffect(() => {
+    const hasFinePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    trashEnabledRef.current = hasFinePointer && !reducedMotion;
+  }, []);
+
+  // Cursor spray trail (desktop only)
+  type Drip = { id: number; x: number; y: number; size: number; hue: number };
+  const [drips, setDrips] = useState<Drip[]>([]);
+  const dripIdRef = useRef(0);
+  const lastDripRef = useRef(0);
+  useEffect(() => {
+    if (!trashEnabledRef.current) return;
+    const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      const now = performance.now();
+      if (now - lastDripRef.current < 38) return;
+      lastDripRef.current = now;
+      const id = ++dripIdRef.current;
+      const size = 6 + Math.random() * 14;
+      const hue = Math.random() > 0.5 ? 330 : 0;
+      setDrips((prev) => [...prev.slice(-30), { id, x: e.clientX, y: e.clientY, size, hue }]);
+      setTimeout(() => setDrips((prev) => prev.filter((d) => d.id !== id)), 700);
+    };
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  // Periodic VHS tracking jitter
+  const [vhsJitter, setVhsJitter] = useState(false);
+  useEffect(() => {
+    if (!trashEnabledRef.current && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let t: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      const delay = 20000 + Math.random() * 20000;
+      t = setTimeout(() => {
+        setVhsJitter(true);
+        setTimeout(() => setVhsJitter(false), 260);
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => clearTimeout(t);
+  }, []);
+
+  // Random censor bars over visible words
+  type Bar = { id: number; x: number; y: number; w: number; h: number };
+  const [censorBars, setCensorBars] = useState<Bar[]>([]);
+  const barIdRef = useRef(0);
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let t: ReturnType<typeof setTimeout>;
+    const flash = () => {
+      const els = Array.from(document.querySelectorAll<HTMLElement>(".can-censor"));
+      const visible = els.filter((el) => {
+        const r = el.getBoundingClientRect();
+        return r.top < window.innerHeight && r.bottom > 0 && r.width > 0;
+      });
+      if (!visible.length) return;
+      const el = visible[Math.floor(Math.random() * visible.length)];
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const textNodes: Text[] = [];
+      let n: Node | null;
+      while ((n = walker.nextNode())) {
+        const tn = n as Text;
+        if (tn.nodeValue && tn.nodeValue.trim().length > 3) textNodes.push(tn);
+      }
+      if (!textNodes.length) return;
+      const tn = textNodes[Math.floor(Math.random() * textNodes.length)];
+      const text = tn.nodeValue || "";
+      const words: { s: number; e: number }[] = [];
+      const re = /\S+/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(text))) {
+        if (m[0].length >= 4) words.push({ s: m.index, e: m.index + m[0].length });
+      }
+      if (!words.length) return;
+      const w = words[Math.floor(Math.random() * words.length)];
+      const range = document.createRange();
+      try {
+        range.setStart(tn, w.s);
+        range.setEnd(tn, w.e);
+      } catch {
+        return;
+      }
+      const rect = range.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const id = ++barIdRef.current;
+      setCensorBars((prev) => [...prev, { id, x: rect.left - 2, y: rect.top - 1, w: rect.width + 4, h: rect.height + 2 }]);
+      setTimeout(() => setCensorBars((prev) => prev.filter((b) => b.id !== id)), 650);
+    };
+    const schedule = () => {
+      const delay = 15000 + Math.random() * 18000;
+      t = setTimeout(() => {
+        flash();
+        schedule();
+      }, delay);
+    };
+    schedule();
+    return () => clearTimeout(t);
+  }, []);
+
   const [heroParallax, setHeroParallax] = useState(0);
   useEffect(() => {
     const onScroll = () => setHeroParallax(window.scrollY * 0.35);
@@ -276,17 +381,56 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className={`min-h-screen bg-background text-foreground overflow-x-hidden ${vhsJitter ? "vhs-jitter" : ""}`}>
+      {/* === TRASH: VHS scanlines + tracking overlay === */}
+      <div className="vhs-scanlines" aria-hidden="true" />
+
+      {/* === TRASH: Sticker collage in corners === */}
+      <div className="trash-stickers" aria-hidden="true">
+        <span className="trash-sticker trash-sticker--advisory">PARENTAL{"\n"}ADVISORY{"\n"}EXPLICIT CONTENT</span>
+        <span className="trash-sticker trash-sticker--sold">SOLD OUT</span>
+        <span className="trash-sticker trash-sticker--xxx">XXX</span>
+        <span className="trash-sticker trash-sticker--smoke">SMOKE{"\n"}'EM</span>
+      </div>
+
       {/* Ambient blobs */}
       <div className="amp-blob amp-blob--pink" />
       <div className="amp-blob amp-blob--red" />
 
-      {/* Periodic money flicker overlay */}
+      {/* Periodic money flicker overlay (wrapper stays full-viewport; only text flickers) */}
       {moneyFlicker && (
         <div className="money-flicker" aria-hidden="true">
           <span className="money-flicker__text">U OWE ME MONEY</span>
         </div>
       )}
+
+      {/* === TRASH: Cursor spray trail (desktop only) === */}
+      <div className="pointer-events-none fixed inset-0 z-[9997]" aria-hidden="true">
+        {drips.map((d) => (
+          <span
+            key={d.id}
+            className="spray-drip"
+            style={{
+              left: d.x,
+              top: d.y,
+              width: d.size,
+              height: d.size,
+              background: d.hue === 0 ? "hsl(0 90% 55% / 0.55)" : "hsl(330 100% 55% / 0.55)",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* === TRASH: Censor bars === */}
+      <div className="pointer-events-none fixed inset-0 z-[9996]" aria-hidden="true">
+        {censorBars.map((b) => (
+          <span
+            key={b.id}
+            className="censor-bar"
+            style={{ left: b.x, top: b.y, width: b.w, height: b.h }}
+          />
+        ))}
+      </div>
 
       {/* Click expletive pops */}
       <div className="pointer-events-none fixed inset-0 z-[9999]" aria-hidden="true">
@@ -518,7 +662,9 @@ export default function Home() {
       </section>
 
       {/* Music Section */}
-      <section id="music" className="py-28 px-6 max-w-7xl mx-auto relative z-10">
+      <section id="music" className="py-28 px-6 max-w-7xl mx-auto relative z-10 trash-scrawl-host">
+        {/* === TRASH: bathroom-stall scrawl === */}
+        <span className="trash-scrawl trash-scrawl--br" aria-hidden="true">play it<br />LOUD</span>
         <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700">
           <span className="section-tag">// play loud</span>
           <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
@@ -535,7 +681,7 @@ export default function Home() {
               <button
                 key={track.id}
                 onClick={() => playTrack(index)}
-                className={`w-full flex items-center gap-4 px-6 py-4 border-b border-white/5 last:border-b-0 transition-all duration-200 group text-left ${
+                className={`cursor-finger w-full flex items-center gap-4 px-6 py-4 border-b border-white/5 last:border-b-0 transition-all duration-200 group text-left ${
                   currentTrackIndex === index ? "bg-primary/10 border-l-2 border-l-primary" : "hover:bg-white/5"
                 }`}
                 data-testid={`button-track-${track.id}`}
@@ -760,7 +906,10 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-28 px-6 max-w-7xl mx-auto relative z-10">
+      <section id="about" className="py-28 px-6 max-w-7xl mx-auto relative z-10 trash-scrawl-host">
+        {/* === TRASH: bathroom-stall scrawls === */}
+        <span className="trash-scrawl trash-scrawl--tl" aria-hidden="true">for a good time<br />call 555-ASH-XOXO</span>
+        <span className="trash-scrawl trash-scrawl--br" aria-hidden="true">Ash wuz here ♡</span>
         <div className="fade-in-section opacity-0 translate-y-8 transition-all duration-700">
           <span className="section-tag">// who's screaming</span>
           <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
@@ -778,11 +927,11 @@ export default function Home() {
             {/* Bio */}
             <div>
               <div className="bio-block">
-                <p className="mb-5">
+                <p className="mb-5 can-censor">
                   <strong className="text-primary">Ash Johansen</strong> is a character and pseudonym birthed from the mind of veteran Texas artist, producer, musician, and singer,{" "}
                   <strong className="text-primary">Jason M. Ashley</strong>. After a multi-year attempt to find a versatile pop vocalist for an ambitious project, Jason gave up — and the project was lost. Then AI music happened.
                 </p>
-                <p className="mb-5">
+                <p className="mb-5 can-censor">
                   Taking hours and hours of incomplete demos and songs, Jason was able to turn his music and own voice into Ash Johansen.{" "}
                   <strong className="text-primary">Fierce, fun, and fucked up.</strong> The music is unmistakably Jason, but Ash adds that perfect edge: sweet and pleasing, but raw and unforgiving.
                 </p>
@@ -799,7 +948,7 @@ export default function Home() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 rounded flex items-center justify-center border border-white/10 text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300"
+                    className="cursor-cig w-12 h-12 rounded flex items-center justify-center border border-white/10 text-muted-foreground hover:text-primary hover:border-primary transition-all duration-300"
                     style={{ borderRadius: "2px 10px 2px 10px" }}
                     aria-label={name}
                     data-testid={`link-social-${name.toLowerCase()}`}
@@ -814,7 +963,10 @@ export default function Home() {
       </section>
 
       {/* Contact Section — slide into my DMs */}
-      <section id="contact" className="py-28 px-6 bg-black/40 border-t border-white/5 relative z-10">
+      <section id="contact" className="py-28 px-6 bg-black/40 border-t border-white/5 relative z-10 trash-scrawl-host">
+        {/* === TRASH: bathroom-stall scrawls === */}
+        <span className="trash-scrawl trash-scrawl--tr" aria-hidden="true">A + ?<br />4ever</span>
+        <span className="trash-scrawl trash-scrawl--bl" aria-hidden="true">i ♡ haterz</span>
         <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
           <span className="section-tag">// scream at me</span>
           <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
@@ -835,7 +987,7 @@ export default function Home() {
                 href="https://www.instagram.com/ashjotheahole"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 neon-glow"
+                className="cursor-finger inline-flex items-center gap-3 px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 neon-glow"
                 style={{ fontFamily: "var(--font-marker)", fontSize: "1.2rem", borderRadius: "3px 14px 3px 14px", letterSpacing: "2px" }}
                 data-testid="link-instagram-dm"
               >
