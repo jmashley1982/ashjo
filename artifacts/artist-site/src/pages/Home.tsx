@@ -200,28 +200,6 @@ export default function Home() {
     trashEnabledRef.current = hasFinePointer && !reducedMotion;
   }, []);
 
-  // Cursor spray trail (desktop only) — heavily throttled, lightweight
-  type Drip = { id: number; x: number; y: number; size: number; hue: number };
-  const [drips, setDrips] = useState<Drip[]>([]);
-  const dripIdRef = useRef(0);
-  const lastDripRef = useRef(0);
-  useEffect(() => {
-    if (!trashEnabledRef.current) return;
-    const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
-      const now = performance.now();
-      if (now - lastDripRef.current < 90) return; // ~11fps spawn
-      lastDripRef.current = now;
-      const id = ++dripIdRef.current;
-      const size = 5 + Math.random() * 7;
-      const hue = Math.random() > 0.5 ? 330 : 0;
-      setDrips((prev) => [...prev.slice(-9), { id, x: e.clientX, y: e.clientY, size, hue }]);
-      setTimeout(() => setDrips((prev) => prev.filter((d) => d.id !== id)), 450);
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, []);
-
   // Periodic VHS tracking jitter
   const [vhsJitter, setVhsJitter] = useState(false);
   useEffect(() => {
@@ -395,23 +373,6 @@ export default function Home() {
           <span className="money-flicker__text">U OWE ME MONEY</span>
         </div>
       )}
-
-      {/* === TRASH: Cursor spray trail (desktop only) === */}
-      <div className="pointer-events-none fixed inset-0 z-[9997]" aria-hidden="true">
-        {drips.map((d) => (
-          <span
-            key={d.id}
-            className="spray-drip"
-            style={{
-              left: d.x,
-              top: d.y,
-              width: d.size,
-              height: d.size,
-              background: d.hue === 0 ? "hsl(0 90% 55% / 0.55)" : "hsl(330 100% 55% / 0.55)",
-            }}
-          />
-        ))}
-      </div>
 
       {/* === TRASH: Censor bars === */}
       <div className="pointer-events-none fixed inset-0 z-[9996]" aria-hidden="true">
