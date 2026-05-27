@@ -475,12 +475,16 @@ export default function Home() {
       {/* Hero Section */}
       <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full overflow-hidden">
-          <img
-            src={heroBgSrc}
-            alt="Ash Johansen"
-            className="w-full object-cover object-center grayscale"
+          <video
+            src="/hero.webm"
+            poster={heroBgSrc}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover object-center grayscale"
             style={{
-              height: "130%",
               transform: `translateY(${heroParallax}px)`,
               willChange: "transform",
             }}
