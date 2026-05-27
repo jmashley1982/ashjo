@@ -385,14 +385,6 @@ export default function Home() {
       {/* === TRASH: VHS scanlines + tracking overlay === */}
       <div className="vhs-scanlines" aria-hidden="true" />
 
-      {/* === TRASH: Sticker collage in corners === */}
-      <div className="trash-stickers" aria-hidden="true">
-        <span className="trash-sticker trash-sticker--advisory">PARENTAL{"\n"}ADVISORY{"\n"}EXPLICIT CONTENT</span>
-        <span className="trash-sticker trash-sticker--sold">SOLD OUT</span>
-        <span className="trash-sticker trash-sticker--xxx">XXX</span>
-        <span className="trash-sticker trash-sticker--smoke">SMOKE{"\n"}'EM</span>
-      </div>
-
       {/* Ambient blobs */}
       <div className="amp-blob amp-blob--pink" />
       <div className="amp-blob amp-blob--red" />
