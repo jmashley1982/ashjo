@@ -5,6 +5,45 @@ import logoSrc from "@assets/logo.webp";
 import heroBgSrc from "@assets/hero-bg.webp";
 import aboutImgSrc from "@assets/about.webp";
 
+function LiteYT({ id, title, className }: { id: string; title: string; className?: string }) {
+  const [activated, setActivated] = useState(false);
+  if (activated) {
+    return (
+      <iframe
+        width="100%"
+        height="100%"
+        src={`https://www.youtube.com/embed/${id}?autoplay=1`}
+        title={title}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className={className ?? "w-full h-full"}
+      />
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setActivated(true)}
+      aria-label={`Play ${title}`}
+      className={`group relative w-full h-full block bg-black overflow-hidden ${className ?? ""}`}
+      style={{
+        backgroundImage: `url(https://i.ytimg.com/vi/${id}/hqdefault.jpg)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <span className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
+      <span className="absolute inset-0 flex items-center justify-center">
+        <span className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary/90 group-hover:bg-primary group-hover:scale-110 transition-all shadow-[0_0_30px_rgba(255,26,140,0.6)]">
+          <Play size={32} className="text-black translate-x-[2px]" fill="currentColor" />
+        </span>
+      </span>
+      <span className="sr-only">{title}</span>
+    </button>
+  );
+}
+
 const TRACKS = [
   { id: 1, title: "TM2YL", artist: "Ash Johansen", src: "/track-1.mp3" },
   { id: 2, title: "Amanda Hugandkiss", artist: "Ash Johansen", src: "/track-2.mp3" },
@@ -274,13 +313,6 @@ export default function Home() {
     return () => clearTimeout(t);
   }, []);
 
-  const [heroParallax, setHeroParallax] = useState(0);
-  useEffect(() => {
-    const onScroll = () => setHeroParallax(window.scrollY * 0.35);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   // Polaroid drag state — offsets committed to state only on release; DOM updated directly during drag for zero-jank movement
   const [dragOffsets, setDragOffsets] = useState<Record<number, { x: number; y: number }>>({});
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
@@ -482,11 +514,7 @@ export default function Home() {
             muted
             playsInline
             preload="auto"
-            className="w-full h-full object-cover object-center grayscale"
-            style={{
-              transform: `translateY(${heroParallax}px)`,
-              willChange: "transform",
-            }}
+            className="w-full h-full object-cover object-center"
           >
             <source src="/hero.mp4" type="video/mp4" />
             <source src="/hero.webm" type="video/webm" />
@@ -564,16 +592,7 @@ export default function Home() {
           </div>
 
           <div className="w-full max-w-4xl aspect-video bg-muted overflow-hidden border border-white/10 shadow-2xl">
-            <iframe
-              width="100%"
-              height="100%"
-              src="https://www.youtube.com/embed/GDvx11wyT50"
-              title="Ash Johansen x TMSTRY — Lovin On Da Ladies"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
+            <LiteYT id="GDvx11wyT50" title="Ash Johansen x TMSTRY — Lovin On Da Ladies" />
           </div>
 
           <span
@@ -599,16 +618,7 @@ export default function Home() {
           </div>
 
           <div className="w-full max-w-4xl aspect-video bg-muted overflow-hidden border border-white/10 shadow-2xl">
-            <iframe
-              width="100%"
-              height="100%"
-              src="https://www.youtube.com/embed/6ZJpSVg87ic"
-              title="Ash Johansen – &quot;TM2YL&quot; (Official Music Video)"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
+            <LiteYT id="6ZJpSVg87ic" title={'Ash Johansen – "TM2YL" (Official Music Video)'} />
           </div>
 
           <span
@@ -782,16 +792,9 @@ export default function Home() {
                   key={video.id}
                   className={`group relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}
                 >
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${video.id}`}
-                    title={video.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className="absolute inset-0"
-                  />
+                  <div className="absolute inset-0">
+                    <LiteYT id={video.id} title={video.title} />
+                  </div>
                 </div>
               ))}
             </div>
