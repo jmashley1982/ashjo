@@ -118,15 +118,25 @@ export default function DebtPopup() {
             aria-label="Click to bow"
           >
             <div className="debt-game-scene">
+              {/* Both images always rendered so they preload — swap visibility instantly */}
+              <img
+                src="/person-praise.webp"
+                className="debt-person debt-person--solo"
+                style={{ opacity: isBowing ? 0 : 1 }}
+                alt="Praising"
+                draggable={false}
+              />
+              <img
+                src="/person-kneeling.webp"
+                className="debt-person debt-person--solo"
+                style={{ opacity: isBowing ? 1 : 0 }}
+                alt="Bowing"
+                draggable={false}
+              />
+              {/* Floats above the images */}
               {floats.map((f) => (
                 <span key={f.id} className="debt-float-money">-$1.00</span>
               ))}
-              <img
-                src={isBowing ? "/person-kneeling.webp" : "/person-praise.webp"}
-                className="debt-person debt-person--solo"
-                alt={isBowing ? "Bowing" : "Praising"}
-                draggable={false}
-              />
             </div>
             <p className="debt-game-instruction">
               {isBowing ? "BOW DEEPER." : "CLICK / TAP TO BOW BEFORE ASH"}
