@@ -902,22 +902,17 @@ section#contact::before {
   height: 260px;
   margin: 0 auto 1rem;
 }
-.debt-ash-legs {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  pointer-events: none;
-}
 .debt-person {
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translateX(-60%);
+  transform: translateX(-50%);
   width: 110px;
   pointer-events: none;
   transition: opacity 0.15s;
+}
+.debt-person--solo {
+  width: 200px;
 }
 .debt-float-money {
   position: absolute;

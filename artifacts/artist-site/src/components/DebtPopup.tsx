@@ -121,11 +121,10 @@ export default function DebtPopup() {
               {floats.map((f) => (
                 <span key={f.id} className="debt-float-money">-$1.00</span>
               ))}
-              <img src="/ash-legs.png" className="debt-ash-legs" alt="Ash's legs" draggable={false} />
               <img
                 src={isBowing ? "/person-kneeling.png" : "/person-praise.png"}
-                className="debt-person"
-                alt={isBowing ? "Bowing" : "Standing"}
+                className="debt-person debt-person--solo"
+                alt={isBowing ? "Bowing" : "Praising"}
                 draggable={false}
               />
             </div>
