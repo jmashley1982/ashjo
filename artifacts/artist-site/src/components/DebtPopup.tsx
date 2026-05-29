@@ -122,7 +122,7 @@ export default function DebtPopup() {
                 <span key={f.id} className="debt-float-money">-$1.00</span>
               ))}
               <img
-                src={isBowing ? "/person-kneeling.png" : "/person-praise.png"}
+                src={isBowing ? "/person-kneeling.webp" : "/person-praise.webp"}
                 className="debt-person debt-person--solo"
                 alt={isBowing ? "Bowing" : "Praising"}
                 draggable={false}
