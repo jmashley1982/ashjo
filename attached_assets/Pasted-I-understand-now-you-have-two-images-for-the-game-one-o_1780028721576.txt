@@ -1,0 +1,379 @@
+I understand — now you have two images for the game: one of the silhouette kneeling before Ash, and one of the silhouette raising its arms in praise. The plan will be updated so that on click/tap, the kneeling image is shown briefly (the bow), then automatically switches to the praising image (sitting back up), and repeats each time. I’ll also keep the floating “-$1.00” and cash register sound as before. The X close button remains always visible.
+
+Here is the revised, complete `project_plan.txt`. Just approve and I'll output it in the final code block for you to copy.
+
+```project_plan.txt
+===========================================
+PROJECT TITLE: AshJo Debt Pop-Up Integration
+===========================================
+OVERVIEW:
+Add an interactive debt-themed pop-up overlay to the existing ashjo.com static website. The pop-up appears once per page load (via sessionStorage), asks "Do you owe Ash money?", and leads to either a dismissive message or a mini-game where the user bows to Ash to work off debt. The mini-game shows a silhouette of a kneeling person (provided image) before Ash's legs; clicking/tapping shows the person bowing (kneeling image), then automatically switches to a second image of the person raising its arms in praise, giving the illusion of bowing and sitting back up. Floating "-$1.00" text appears and a cash register sound plays (synthesized via Web Audio API). An X button is always visible to close the pop-up and return to the main site. The existing index.html is modified only to add a <link> and <script> tag and a container div; all original content remains untouched.
+
+TECH STACK:
+- HTML5, CSS3, Vanilla JavaScript (no external libraries, no frameworks)
+- Web Audio API for cash register sound (generated dynamically, no sound files needed)
+- Session storage: window.sessionStorage to prevent popup re-triggering after dismissal
+
+FILE & FOLDER STRUCTURE (additions only, existing files untouched):
+ashjo.com/
+├── index.html (modify: add <link> and <script> references, insert popup HTML container at the end of <body>)
+├── popup.css   (new)
+└── popup.js    (new)
+
+===========================================
+STEP-BY-STEP IMPLEMENTATION INSTRUCTIONS
+===========================================
+
+Step 1: Create popup.css with the following complete code.
+
+```css
+/* popup.css */
+#debt-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #fff;
+  text-align: center;
+}
+#debt-popup .popup-inner {
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 0 30px rgba(255,0,0,0.3);
+  position: relative;
+}
+#debt-popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+}
+#debt-popup h2 {
+  margin: 10px 0 20px;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+#debt-popup p {
+  font-size: 1.2em;
+  margin: 10px 0 20px;
+}
+#debt-popup .btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+#debt-popup button {
+  background: #e63946;
+  border: none;
+  color: white;
+  padding: 10px 25px;
+  font-size: 1.2em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+#debt-popup button:hover {
+  background: #ff4d4d;
+}
+#debt-popup button.secondary {
+  background: #555;
+}
+#debt-popup button.secondary:hover {
+  background: #777;
+}
+/* Game state */
+#debt-popup .game-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  position: relative;
+}
+#debt-popup .scene {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+#debt-popup .ash-legs {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+}
+#debt-popup .person-img {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  transition: opacity 0.3s ease;
+}
+#debt-popup .person-kneeling {
+  /* shown during bow */
+}
+#debt-popup .person-praise {
+  /* shown after bow (sitting back up) */
+  display: none;
+}
+.floating-money {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2em;
+  font-weight: bold;
+  color: #4caf50;
+  animation: floatUp 1.2s forwards;
+  z-index: 5;
+}
+@keyframes floatUp {
+  0% { opacity: 1; top: 30%; }
+  100% { opacity: 0; top: 10%; }
+}
+.instruction {
+  margin-top: 15px;
+  font-size: 1.1em;
+  color: #ccc;
+}
+```
+
+Step 2: Create popup.js with the following complete code. This script creates the popup logic, game state, sound synthesis, and DOM manipulation.
+
+```javascript
+// popup.js
+(function() {
+  // Prevent re-trigger on internal navigation
+  if (sessionStorage.getItem('ashjo_debt_popup') === 'dismissed') return;
+
+  // ---------- Sound Synthesis (Web Audio API) ----------
+  function playCashSound() {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    const now = ctx.currentTime;
+    [800, 1200].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freq, now + i * 0.1);
+      gain.gain.setValueAtTime(0.3, now + i * 0.1);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now + i * 0.1);
+      osc.stop(now + i * 0.1 + 0.15);
+    });
+  }
+
+  // ---------- Create popup HTML dynamically ----------
+  const popupHTML = `
+    <div id="debt-popup">
+      <div class="popup-inner">
+        <button class="close-btn" id="popup-close-btn">&times;</button>
+        <div id="popup-content"></div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', popupHTML);
+  const popup = document.getElementById('debt-popup');
+  const content = document.getElementById('popup-content');
+  const closeBtn = document.getElementById('popup-close-btn');
+
+  // ---------- State ----------
+  let currentScreen = 'askDebt';
+
+  // ---------- Helper to close popup and remember ----------
+  function closePopup() {
+    sessionStorage.setItem('ashjo_debt_popup', 'dismissed');
+    if (popup) popup.remove();
+  }
+
+  closeBtn.addEventListener('click', closePopup);
+
+  // ---------- Render screens ----------
+  function render() {
+    switch (currentScreen) {
+      case 'askDebt':
+        content.innerHTML = `
+          <h2>Do you owe Ash money?</h2>
+          <div class="btn-group">
+            <button id="btn-yes-debt">YES</button>
+            <button id="btn-no-debt" class="secondary">NO</button>
+          </div>
+        `;
+        document.getElementById('btn-yes-debt').addEventListener('click', () => {
+          currentScreen = 'askWork';
+          render();
+        });
+        document.getElementById('btn-no-debt').addEventListener('click', () => {
+          currentScreen = 'debtResponse';
+          render();
+        });
+        break;
+
+      case 'debtResponse':
+        content.innerHTML = `
+          <h2>Better not.</h2>
+          <p>(closing soon...)</p>
+        `;
+        setTimeout(closePopup, 2000);
+        break;
+
+      case 'askWork':
+        content.innerHTML = `
+          <h2>Wanna work off some of the debt?</h2>
+          <div class="btn-group">
+            <button id="btn-yes-work">YES</button>
+            <button id="btn-no-work" class="secondary">NO</button>
+          </div>
+        `;
+        document.getElementById('btn-yes-work').addEventListener('click', () => {
+          currentScreen = 'game';
+          render();
+        });
+        document.getElementById('btn-no-work').addEventListener('click', () => {
+          currentScreen = 'workNoResponse';
+          render();
+        });
+        break;
+
+      case 'workNoResponse':
+        content.innerHTML = `
+          <h2>Pfft, well fine. Better pay up soon, loser.</h2>
+          <p>(closing soon...)</p>
+        `;
+        setTimeout(closePopup, 2500);
+        break;
+
+      case 'game':
+        renderGame();
+        break;
+    }
+  }
+
+  // ---------- Game render: two-image swap for bowing ----------
+  function renderGame() {
+    content.innerHTML = `
+      <div class="game-area">
+        <div class="scene">
+          <!-- Replace src with your actual image paths -->
+          <img src="ash-legs.png" class="ash-legs" alt="Ash's legs">
+          <img src="person-kneeling.png" class="person-img person-kneeling" id="person-kneeling" alt="Person kneeling">
+          <img src="person-praise.png" class="person-img person-praise" id="person-praise" alt="Person raising arms in praise" style="display:none;">
+        </div>
+        <p class="instruction">CLICK (computer) or TAP (mobile) TO BOW BEFORE ASH!</p>
+      </div>
+    `;
+
+    const kneelingImg = document.getElementById('person-kneeling');
+    const praiseImg = document.getElementById('person-praise');
+    const scene = document.querySelector('.scene');
+    let bowTimeout = null;
+
+    // Function to perform a bow
+    function bow() {
+      if (!kneelingImg || !praiseImg) return;
+      // Show kneeling, hide praise
+      kneelingImg.style.display = 'block';
+      praiseImg.style.display = 'none';
+      playCashSound();
+      // Show floating money
+      const money = document.createElement('div');
+      money.className = 'floating-money';
+      money.textContent = '-$1.00';
+      scene.appendChild(money);
+      money.addEventListener('animationend', () => money.remove());
+
+      // After a short delay, show praise (sitting back up)
+      clearTimeout(bowTimeout);
+      bowTimeout = setTimeout(() => {
+        kneelingImg.style.display = 'none';
+        praiseImg.style.display = 'block';
+      }, 500);
+    }
+
+    // Initially show praise image (person sitting up)
+    kneelingImg.style.display = 'none';
+    praiseImg.style.display = 'block';
+
+    // Listen for clicks/taps anywhere in the game area
+    const gameArea = document.querySelector('.game-area');
+    if (gameArea) {
+      gameArea.addEventListener('click', bow);
+      gameArea.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        bow();
+      });
+    }
+  }
+
+  // Start the popup with initial screen
+  render();
+
+  // Close popup if user clicks backdrop (outside the inner box)
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      closePopup();
+    }
+  });
+
+})();
+```
+
+Step 3: Modify your existing index.html to include the new files and the popup container.
+
+Locate the end of the `<body>` tag in your index.html (just before `</body>`), and insert the following lines:
+
+```html
+  <!-- Debt Popup Integration -->
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js"></script>
+```
+
+(If your index.html already has a `<head>` section, place the `<link>` there; otherwise, just before `</body>` is fine as modern browsers handle it.)
+
+Step 4: Place your artwork files.
+
+- Save your "Ash's legs" image as `ash-legs.png` (or .jpg/.svg) in the same directory as index.html.
+- Save your "person kneeling" image as `person-kneeling.png`.
+- Save your "person raising arms in praise" image as `person-praise.png`.
+- If you use different filenames, update the `src` attributes in `renderGame()` accordingly.
+
+Step 5: No terminal commands or package installations required. This is pure static front-end code.
+
+===========================================
+ENVIRONMENT VARIABLES:
+None. This project uses only client-side code; no API keys.
+
+===========================================
+RUN & DEPLOYMENT INSTRUCTIONS:
+1. This project is part of your existing Replit deployment for ashjo.com. Simply add the files (popup.css, popup.js, the three images, and the modified index.html) to your Replit project.
+2. Replit's built-in static server will automatically serve index.html when you run the project. No additional run command is needed.
+3. To test locally, open index.html in a browser.
+4. The popup will appear on first load. After dismissing or completing the flow, it won't reappear for the same browsing session unless you clear site data or open in a new private window.
+
+===========================================
+ADDITIONAL NOTES:
+- The sound is synthesized using Web Audio API. It works in all modern browsers; if AudioContext is unavailable, the sound will simply not play, but the game still functions.
+- The "Better not." and "Pfft, well fine..." messages auto-close after a short delay to reveal the site. You can adjust the timeout in popup.js if needed.
+- The X button and backdrop click both call `closePopup()`, which sets sessionStorage so the popup doesn't re-trigger on page reload within the same tab.
+- The two-person images swap: initially the praising (raised arms) image is shown. On click/tap, it switches to kneeling for 500ms (bow), then back to praising. Adjust the delay in `setTimeout` inside `bow()` if desired.
+- Ensure your Replit project is set to "static" or HTML/CSS/JS mode. No server-side code is required.
+```

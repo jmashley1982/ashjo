@@ -807,3 +807,141 @@ section#contact::before {
 .lightbox-next { right: 0.5rem; }
 .lightbox-prev:hover,
 .lightbox-next:hover { opacity: 1; }
+
+/* === Debt Popup === */
+.debt-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  padding: 1rem;
+  animation: lightboxFadeIn 0.2s ease;
+}
+.debt-popup-inner {
+  background: #111;
+  border: 2px solid hsl(var(--primary) / 0.5);
+  border-radius: 4px 18px 4px 18px;
+  padding: 2.5rem 2rem 2rem;
+  max-width: 420px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 60px hsl(var(--primary) / 0.25), 0 20px 60px rgba(0,0,0,0.9);
+  text-align: center;
+}
+.debt-popup-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+.debt-popup-close:hover { opacity: 1; }
+.debt-popup-heading {
+  font-family: var(--font-display);
+  color: hsl(var(--primary));
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+  margin: 0 0 1.25rem;
+  line-height: 1.2;
+  text-shadow: 0 0 12px hsl(var(--primary) / 0.5);
+}
+.debt-popup-sub {
+  color: hsl(var(--muted-foreground));
+  font-family: var(--font-elite);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+.debt-popup-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+.debt-btn {
+  font-family: var(--font-elite);
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.6rem 2rem;
+  border: none;
+  border-radius: 4px 14px 4px 14px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.debt-btn:active { transform: scale(0.96); }
+.debt-btn--yes {
+  background: hsl(var(--primary));
+  color: #000;
+}
+.debt-btn--yes:hover { background: hsl(330 100% 65%); }
+.debt-btn--no {
+  background: hsl(20 8% 18%);
+  color: hsl(var(--foreground));
+}
+.debt-btn--no:hover { background: hsl(20 8% 26%); }
+
+/* Game */
+.debt-game-area {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.debt-game-scene {
+  position: relative;
+  width: 280px;
+  height: 260px;
+  margin: 0 auto 1rem;
+}
+.debt-ash-legs {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  pointer-events: none;
+}
+.debt-person {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-60%);
+  width: 110px;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.debt-float-money {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: #4caf50;
+  text-shadow: 0 0 10px rgba(76,175,80,0.8);
+  pointer-events: none;
+  animation: debtFloatUp 1.2s ease-out forwards;
+  white-space: nowrap;
+}
+@keyframes debtFloatUp {
+  0%   { opacity: 1; top: 30%; }
+  100% { opacity: 0; top: 5%; }
+}
+.debt-game-instruction {
+  font-family: var(--font-elite);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+  min-height: 1.4em;
+}
