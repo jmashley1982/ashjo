@@ -162,9 +162,11 @@ export default function Home() {
     const parseXml = (xml: string) => {
       const idMatches = [...xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)];
       const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
+      const decodeXml = (str: string) =>
+        str.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&apos;/g, "'");
       return idMatches.slice(0, 3).map((m, i) => ({
         id: m[1],
-        title: titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`,
+        title: decodeXml(titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`),
       }));
     };
 
