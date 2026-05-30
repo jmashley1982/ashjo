@@ -659,9 +659,12 @@ export default function Home() {
 
           {videosLoading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="aspect-video bg-card/40 border border-white/5 punk-card animate-pulse flex items-center justify-center">
-                  <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Loading...</span>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex flex-col gap-2">
+                  <div className="aspect-video bg-card/40 border border-white/5 punk-card animate-pulse flex items-center justify-center">
+                    <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Loading...</span>
+                  </div>
+                  <div className="h-5 bg-card/40 border border-white/5 punk-card animate-pulse w-3/4" />
                 </div>
               ))}
             </div>
@@ -670,11 +673,16 @@ export default function Home() {
               {liveVideos.map((video, i) => (
                 <div
                   key={video.id}
-                  className={`group relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}
+                  className="flex flex-col gap-2"
                 >
-                  <div className="absolute inset-0">
-                    <LiteYT id={video.id} title={video.title} />
+                  <div className={`relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}>
+                    <div className="absolute inset-0">
+                      <LiteYT id={video.id} title={video.title} />
+                    </div>
                   </div>
+                  <p className="text-sm text-muted-foreground tracking-wide truncate px-1" style={{ fontFamily: "var(--font-elite)" }}>
+                    {video.title}
+                  </p>
                 </div>
               ))}
             </div>
