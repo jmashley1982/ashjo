@@ -59,7 +59,7 @@ const FALLBACK_VIDEO_IDS = [
 
 const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
 
-const HERO_QUOTE = "I can't know how to hear any more about tables!";
+const HERO_QUOTE = "we should be able to look at a little porn at work.";
 
 function formatTime(seconds: number): string {
   if (isNaN(seconds)) return "0:00";
