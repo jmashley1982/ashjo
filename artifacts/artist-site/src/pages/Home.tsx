@@ -55,9 +55,6 @@ const FALLBACK_VIDEO_IDS = [
   { id: "FlS3Eop3kp0", title: "Don't Die Slow" },
   { id: "BjlV6_L7VKw", title: "Long Cat is Long" },
   { id: "Mpo-ghb5Ggs", title: "Black Lung" },
-  { id: "2kWd3PFayWo", title: "Get Lost (Get Free)" },
-  { id: "SluU_iW1EuU", title: "Island" },
-  { id: "t-8o4pItLtI", title: "UBU" },
 ];
 
 const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
@@ -171,7 +168,7 @@ export default function Home() {
       .then((xml) => {
         const idMatches = [...xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)];
         const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
-        const videos = idMatches.slice(0, 6).map((m, i) => ({
+        const videos = idMatches.slice(0, 3).map((m, i) => ({
           id: m[1],
           title: titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`,
         }));
@@ -397,19 +394,8 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Announcement Banner — TEMPORARY */}
-      <div className="fixed top-0 left-0 w-full z-50 bg-primary text-primary-foreground text-center">
-        <button
-          onClick={() => scrollToSection("collab")}
-          className="w-full py-2.5 px-4 text-xs md:text-sm uppercase tracking-[0.25em] font-bold hover:bg-primary-foreground hover:text-primary transition-colors"
-        >
-          <span className="hidden sm:inline">TMSTRY x Ash Johansen collab + &ldquo;TM2YL&rdquo; single premiere — Fri May 29 →</span>
-          <span className="sm:hidden">New collab + single premiere — Fri May 29 →</span>
-        </button>
-      </div>
-
       {/* Navigation */}
-      <nav className="fixed top-10 w-full z-40 bg-background/90 backdrop-blur-md border-b border-white/5" style={{ transform: "rotate(-0.15deg)" }}>
+      <nav className="fixed top-0 w-full z-40 bg-background/90 backdrop-blur-md border-b border-white/5" style={{ transform: "rotate(-0.15deg)" }}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
@@ -421,13 +407,6 @@ export default function Home() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex gap-8 items-center">
-            <button
-              onClick={() => scrollToSection("collab")}
-              className="nav-link text-sm uppercase tracking-widest text-primary hover:text-white transition-colors"
-              data-testid="link-new-shit"
-            >
-              <span className="text-primary neon-text-glow">NEW SHIT</span>
-            </button>
             {["music", "videos", "pics", "about", "contact"].map((section) => (
               <button
                 key={section}
@@ -520,78 +499,6 @@ export default function Home() {
         </button>
       </section>
 
-      {/* Collab Banner — TEMPORARY */}
-      <section
-        id="collab"
-        className="relative py-16 md:py-20 px-6 overflow-hidden border-y border-primary/30"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(255,26,140,0.08) 0%, rgba(10,10,10,0.95) 50%, rgba(255,26,140,0.08) 100%)",
-        }}
-      >
-        <div className="absolute inset-0 pointer-events-none opacity-30" style={{
-          background: "radial-gradient(circle at 50% 50%, rgba(255,26,140,0.25) 0%, transparent 60%)",
-        }} />
-        <div className="relative max-w-5xl mx-auto flex flex-col items-center text-center gap-6">
-          <span className="section-tag text-primary">// new collab — premiering soon</span>
-
-          <img
-            src="/collab-logo.webp"
-            alt="TMSTRY x Ash Johansen — Collab"
-            className="w-full max-w-3xl h-auto"
-            loading="lazy"
-          />
-
-          <div className="flex flex-col items-center gap-1">
-            <span
-              className="text-xs uppercase tracking-[0.3em] text-muted-foreground"
-              style={{ fontFamily: "var(--font-elite)" }}
-            >
-              World Premiere
-            </span>
-            <span className="glitch-text text-2xl md:text-3xl text-primary neon-text-glow tracking-wider">
-              FRI · MAY 29 · 6:00 PM CDT
-            </span>
-          </div>
-
-          <div className="w-full max-w-4xl aspect-video bg-muted overflow-hidden border border-white/10 shadow-2xl">
-            <LiteYT id="GDvx11wyT50" title="Ash Johansen x TMSTRY — Lovin On Da Ladies" />
-          </div>
-
-          <span
-            className="text-xs uppercase tracking-[0.2em] text-muted-foreground"
-            style={{ fontFamily: "var(--font-elite)" }}
-          >
-            Ash Johansen x TMSTRY — &ldquo;Lovin On Da Ladies&rdquo;
-          </span>
-
-          {/* Second release block */}
-          <div className="w-full border-t border-primary/20 pt-8 mt-2" />
-
-          <div className="flex flex-col items-center gap-1">
-            <span
-              className="text-xs uppercase tracking-[0.3em] text-muted-foreground"
-              style={{ fontFamily: "var(--font-elite)" }}
-            >
-              Ash Johansen — New Single Premiere
-            </span>
-            <span className="glitch-text text-2xl md:text-3xl text-primary neon-text-glow tracking-wider">
-              FRI · MAY 29 · 7:00 PM CDT
-            </span>
-          </div>
-
-          <div className="w-full max-w-4xl aspect-video bg-muted overflow-hidden border border-white/10 shadow-2xl">
-            <LiteYT id="6ZJpSVg87ic" title={'Ash Johansen – "TM2YL" (Official Music Video)'} />
-          </div>
-
-          <span
-            className="text-xs uppercase tracking-[0.2em] text-muted-foreground"
-            style={{ fontFamily: "var(--font-elite)" }}
-          >
-            Ash Johansen — &ldquo;TM2YL&rdquo; (Official Music Video)
-          </span>
-        </div>
-      </section>
 
       {/* Music Section */}
       <section id="music" className="py-28 px-6 max-w-7xl mx-auto relative z-10 trash-scrawl-host">
