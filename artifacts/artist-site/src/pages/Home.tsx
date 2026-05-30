@@ -50,11 +50,11 @@ const TRACKS = [
   { id: 3, title: "Future Famous", artist: "Ash Johansen", src: "/track-3.mp3" },
 ];
 
-// Current video IDs — update these when you add new videos to the YouTube playlist
+// Fallback video IDs — shown if live playlist fetch fails. Keep in sync with top 3 in playlist.
 const FALLBACK_VIDEO_IDS = [
+  { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL"' },
+  { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies"' },
   { id: "FlS3Eop3kp0", title: "Don't Die Slow" },
-  { id: "BjlV6_L7VKw", title: "Long Cat is Long" },
-  { id: "Mpo-ghb5Ggs", title: "Black Lung" },
 ];
 
 const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
@@ -156,29 +156,39 @@ export default function Home() {
 
   useEffect(() => {
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
-    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const timer = setTimeout(() => controller.abort(), 10000);
 
-    fetch(proxyUrl, { signal: controller.signal })
-      .then((r) => {
-        if (!r.ok) throw new Error(`proxy ${r.status}`);
-        return r.text();
-      })
-      .then((xml) => {
-        const idMatches = [...xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)];
-        const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
-        const videos = idMatches.slice(0, 3).map((m, i) => ({
-          id: m[1],
-          title: titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`,
-        }));
-        if (videos.length > 0) setLiveVideos(videos);
-      })
+    const parseXml = (xml: string) => {
+      const idMatches = [...xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)];
+      const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
+      return idMatches.slice(0, 3).map((m, i) => ({
+        id: m[1],
+        title: titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`,
+      }));
+    };
+
+    const tryProxy = async () => {
+      // Primary: corsproxy.io
+      try {
+        const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`, { signal: controller.signal });
+        if (r.ok) {
+          const xml = await r.text();
+          if (xml.includes("yt:videoId")) return parseXml(xml);
+        }
+      } catch {}
+
+      // Backup: allorigins.win
+      const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`, { signal: controller.signal });
+      if (!r2.ok) throw new Error("both proxies failed");
+      const json = await r2.json() as { contents: string };
+      return parseXml(json.contents);
+    };
+
+    tryProxy()
+      .then((videos) => { if (videos.length > 0) setLiveVideos(videos); })
       .catch(() => { /* keep hardcoded fallback */ })
-      .finally(() => {
-        clearTimeout(timer);
-        setVideosLoading(false);
-      });
+      .finally(() => { clearTimeout(timer); setVideosLoading(false); });
   }, []);
 
   // Periodic "U OWE ME MONEY" flicker
