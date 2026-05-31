@@ -667,9 +667,9 @@ export default function Home() {
           <div className="graffiti-divider" />
 
           {videosLoading ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex flex-col gap-2">
+                <div key={i} className="flex flex-col gap-2 min-w-0 w-full overflow-hidden">
                   <div className="aspect-video bg-card/40 border border-white/5 punk-card animate-pulse flex items-center justify-center">
                     <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Loading...</span>
                   </div>
@@ -678,18 +678,18 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {liveVideos.map((video, i) => (
                 <div
                   key={video.id}
-                  className="flex flex-col gap-2"
+                  className="flex flex-col gap-2 min-w-0 w-full overflow-hidden"
                 >
-                  <div className={`relative aspect-video bg-muted overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`}>
+                  <div className={`relative w-full overflow-hidden border border-white/10 hover:border-primary/60 transition-all duration-500 shadow-2xl ${i % 2 === 0 ? "punk-card" : "punk-card-alt"}`} style={{ aspectRatio: "16/9" }}>
                     <div className="absolute inset-0">
                       <LiteYT id={video.id} title={video.title} />
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground tracking-wide truncate px-1" style={{ fontFamily: "var(--font-elite)" }}>
+                  <p className="text-sm text-muted-foreground tracking-wide truncate px-1 min-w-0" style={{ fontFamily: "var(--font-elite)" }}>
                     {video.title}
                   </p>
                 </div>
