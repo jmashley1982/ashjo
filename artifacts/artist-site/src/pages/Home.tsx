@@ -70,6 +70,7 @@ function formatTime(seconds: number): string {
 
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
   const [musicTab, setMusicTab] = useState("spotify");
   // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -143,6 +144,12 @@ export default function Home() {
   useEffect(() => {
     if (audioRef.current) audioRef.current.muted = isMuted;
   }, [isMuted]);
+
+  useEffect(() => {
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.6);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -407,14 +414,14 @@ export default function Home() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-40 bg-background/90 backdrop-blur-md border-b border-white/5" style={{ transform: "rotate(-0.15deg)" }}>
+      <nav className="fixed top-0 w-full z-40 backdrop-blur-md border-b border-primary/20" style={{ transform: "rotate(-0.15deg)", background: "rgba(12, 2, 6, 0.93)" }}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
             className="flex items-center"
             data-testid="link-home"
           >
-            <img src={logoSrc} alt="Ash Johansen" className="h-10 w-auto" style={{ mixBlendMode: "screen" }} />
+            <img src={logoSrc} alt="Ash Johansen" className={`w-auto transition-all duration-300 ${pastHero ? "h-14" : "h-10"}`} style={{ mixBlendMode: "screen" }} />
           </button>
 
           {/* Desktop Nav */}

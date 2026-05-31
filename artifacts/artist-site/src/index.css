@@ -352,10 +352,25 @@ body::after {
   border: none;
   text-align: left;
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
+  .bathroom-wall {
+    position: static;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.5rem 1rem;
+    overflow: visible;
+  }
   .polaroid-tile {
-    width: 140px;
-    padding: 5px 5px 20px;
+    position: static !important;
+    width: 100% !important;
+    transform: none !important;
+    top: auto !important;
+    left: auto !important;
+  }
+  .polaroid-tile:hover {
+    transform: scale(1.04) !important;
   }
 }
 .polaroid-tile:hover {
@@ -814,11 +829,6 @@ section#contact::before {
   background: #000;
   overflow: hidden;
   cursor: pointer;
-}
-.lite-yt::after {
-  content: "";
-  display: block;
-  padding-bottom: 56.25%;
 }
 .lite-yt__thumb {
   position: absolute;
