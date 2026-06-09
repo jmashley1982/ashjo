@@ -524,6 +524,16 @@ html, body {
   overscroll-behavior-y: contain;
 }
 
+/* Banner marquee ticker (mobile only) */
+@keyframes banner-scroll {
+  0%   { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+.banner-marquee {
+  display: inline-block;
+  animation: banner-scroll 28s linear infinite;
+}
+
 /* ============================================================
    === TRASH VIBE PASS -- easy to remove: delete this block ===
    ============================================================ */

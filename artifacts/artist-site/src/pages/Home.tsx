@@ -413,8 +413,15 @@ export default function Home() {
         ))}
       </div>
 
+      {/* Distributor notice banner */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-8 flex items-center bg-black/95 border-b border-primary/40 overflow-hidden">
+        <p className="banner-marquee text-[11px] text-white/75 whitespace-nowrap">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Our distributor, Emubands, has made the decision not to distribute our music because Ash&rsquo;s voice is AI. Bear with us as we seek a reputable, trustworthy distributor.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </p>
+      </div>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-40 backdrop-blur-md border-b border-primary/20" style={{ transform: "rotate(-0.15deg)", background: "rgba(12, 2, 6, 0.93)" }}>
+      <nav className="fixed top-8 w-full z-40 backdrop-blur-md border-b border-primary/20" style={{ transform: "rotate(-0.15deg)", background: "rgba(12, 2, 6, 0.93)" }}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
