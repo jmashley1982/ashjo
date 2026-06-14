@@ -384,15 +384,13 @@ export default function Home() {
   const handlePlayMe = () => {
     if (demoPlaying) return;
     setDemoPlaying(true);
-    demoAudioRef.current?.play().catch(() => {});
+    if (demoVideoRef.current) { demoVideoRef.current.currentTime = 0; }
+    if (demoAudioRef.current) { demoAudioRef.current.currentTime = 0; }
+    Promise.allSettled([
+      demoVideoRef.current?.play() ?? Promise.resolve(),
+      demoAudioRef.current?.play() ?? Promise.resolve(),
+    ]);
   };
-  useEffect(() => {
-    if (demoOpen) {
-      demoVideoRef.current?.play().catch(() => {});
-    } else {
-      if (demoVideoRef.current) { demoVideoRef.current.pause(); demoVideoRef.current.currentTime = 0; }
-    }
-  }, [demoOpen]);
   useEffect(() => {
     if (!demoOpen) return;
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") handleDemoClose(); };
@@ -560,13 +558,12 @@ export default function Home() {
           onClick={() => setDemoOpen(true)}
           aria-label="Hear new demo"
           className="absolute z-20 demo-sticker"
-          style={{ top: "35%", left: "58%", transform: "translate(-50%,-50%) rotate(8deg)" }}
         >
-          <div className="flex items-center justify-center w-[88px] h-[88px] rounded-full border-2 border-dashed border-primary bg-black/80 hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,26,140,0.5)]">
+          <div className="flex items-center justify-center w-[88px] h-[88px] md:w-[96px] md:h-[96px] rounded-full border-[3px] border-dashed border-primary bg-black/90 hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,26,140,0.5)]">
             <div className="text-center leading-tight select-none">
-              <span className="block text-[8px] tracking-[0.25em] text-primary/80 uppercase" style={{ fontFamily: "var(--font-elite)" }}>HEAR</span>
-              <span className="block text-[11px] font-bold tracking-[0.15em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>NEW</span>
-              <span className="block text-[8px] tracking-[0.2em] text-primary/80 uppercase" style={{ fontFamily: "var(--font-elite)" }}>DEMO</span>
+              <span className="block text-[10px] tracking-[0.25em] text-primary uppercase" style={{ fontFamily: "var(--font-elite)" }}>HEAR</span>
+              <span className="block text-[13px] font-bold tracking-[0.15em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>NEW</span>
+              <span className="block text-[10px] tracking-[0.2em] text-primary uppercase" style={{ fontFamily: "var(--font-elite)" }}>DEMO</span>
             </div>
           </div>
         </button>
@@ -1003,10 +1000,17 @@ export default function Home() {
         </div>
       )}
 
-      {/* Demo Player Overlay */}
+      {/* Demo Player Overlay — full surface is tappable to start playback */}
       {demoOpen && (
-        <div className="fixed inset-0 z-[9994] flex items-center justify-center">
-          {/* looping background video (muted, purely visual) */}
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="Play demo"
+          onClick={handlePlayMe}
+          onKeyDown={(e) => e.key === "Enter" && handlePlayMe()}
+          className="fixed inset-0 z-[9994] flex items-center justify-center cursor-pointer"
+        >
+          {/* looping background video — starts on PLAY ME tap */}
           <video
             ref={demoVideoRef}
             src="/demo-loop.mp4"
@@ -1030,21 +1034,17 @@ export default function Home() {
           {/* dark tint for text contrast */}
           <div className="absolute inset-0 bg-black/55" />
 
-          {/* close button */}
+          {/* close button — stopPropagation so it doesn't trigger handlePlayMe */}
           <button
-            onClick={handleDemoClose}
+            onClick={(e) => { e.stopPropagation(); handleDemoClose(); }}
             className="absolute top-6 right-6 z-10 w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/60 hover:scale-110 transition-all text-xl"
             aria-label="Close demo"
           >
             ✕
           </button>
 
-          {/* PLAY ME / playing state */}
-          <button
-            onClick={handlePlayMe}
-            disabled={demoPlaying}
-            className="relative z-10 flex flex-col items-center gap-3 cursor-pointer disabled:cursor-default"
-          >
+          {/* PLAY ME / playing state (non-interactive — overlay div handles the click) */}
+          <div className="relative z-10 flex flex-col items-center gap-3 pointer-events-none select-none">
             {demoPlaying ? (
               <span
                 className="text-4xl md:text-6xl font-black tracking-[0.2em] text-primary animate-pulse"
@@ -1057,7 +1057,7 @@ export default function Home() {
               </span>
             ) : (
               <span
-                className="text-6xl md:text-8xl font-black tracking-[0.15em] text-white hover:text-primary transition-colors duration-200"
+                className="text-6xl md:text-8xl font-black tracking-[0.15em] text-white"
                 style={{
                   fontFamily: "var(--font-elite)",
                   textShadow: "0 0 40px rgba(255,255,255,0.5)",
@@ -1068,10 +1068,10 @@ export default function Home() {
             )}
             {!demoPlaying && (
               <span className="text-xs tracking-[0.3em] text-white/50 uppercase" style={{ fontFamily: "var(--font-elite)" }}>
-                tap to play
+                tap anywhere to play
               </span>
             )}
-          </button>
+          </div>
 
           {/* hidden audio element */}
           <audio ref={demoAudioRef} src="/demo-track.mp3" loop />
