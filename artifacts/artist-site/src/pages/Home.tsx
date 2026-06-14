@@ -369,6 +369,37 @@ export default function Home() {
     return () => observerRef.current?.disconnect();
   }, []);
 
+  // Demo player state
+  const [demoOpen, setDemoOpen] = useState(false);
+  const [demoPlaying, setDemoPlaying] = useState(false);
+  const demoAudioRef = useRef<HTMLAudioElement>(null);
+  const demoVideoRef = useRef<HTMLVideoElement>(null);
+
+  const handleDemoClose = () => {
+    setDemoOpen(false);
+    setDemoPlaying(false);
+    if (demoAudioRef.current) { demoAudioRef.current.pause(); demoAudioRef.current.currentTime = 0; }
+    if (demoVideoRef.current) { demoVideoRef.current.pause(); demoVideoRef.current.currentTime = 0; }
+  };
+  const handlePlayMe = () => {
+    if (demoPlaying) return;
+    setDemoPlaying(true);
+    demoAudioRef.current?.play().catch(() => {});
+  };
+  useEffect(() => {
+    if (demoOpen) {
+      demoVideoRef.current?.play().catch(() => {});
+    } else {
+      if (demoVideoRef.current) { demoVideoRef.current.pause(); demoVideoRef.current.currentTime = 0; }
+    }
+  }, [demoOpen]);
+  useEffect(() => {
+    if (!demoOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") handleDemoClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [demoOpen]);
+
   return (
     <div className={`min-h-screen bg-background text-foreground overflow-x-hidden ${vhsJitter ? "vhs-jitter" : ""}`}>
       {/* === TRASH: VHS scanlines + tracking overlay === */}
@@ -522,6 +553,22 @@ export default function Home() {
         >
           <span className="text-xs uppercase tracking-widest text-muted-foreground mb-2" style={{ fontFamily: "var(--font-elite)" }}>Turn it up</span>
           <div className="w-[1px] h-10 bg-primary/50" />
+        </button>
+
+        {/* HEAR NEW DEMO sticker */}
+        <button
+          onClick={() => setDemoOpen(true)}
+          aria-label="Hear new demo"
+          className="absolute z-20 demo-sticker"
+          style={{ top: "35%", left: "58%", transform: "translate(-50%,-50%) rotate(8deg)" }}
+        >
+          <div className="flex items-center justify-center w-[88px] h-[88px] rounded-full border-2 border-dashed border-primary bg-black/80 hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,26,140,0.5)]">
+            <div className="text-center leading-tight select-none">
+              <span className="block text-[8px] tracking-[0.25em] text-primary/80 uppercase" style={{ fontFamily: "var(--font-elite)" }}>HEAR</span>
+              <span className="block text-[11px] font-bold tracking-[0.15em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>NEW</span>
+              <span className="block text-[8px] tracking-[0.2em] text-primary/80 uppercase" style={{ fontFamily: "var(--font-elite)" }}>DEMO</span>
+            </div>
+          </div>
         </button>
       </section>
 
@@ -953,6 +1000,81 @@ export default function Home() {
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Demo Player Overlay */}
+      {demoOpen && (
+        <div className="fixed inset-0 z-[9994] flex items-center justify-center">
+          {/* looping background video (muted, purely visual) */}
+          <video
+            ref={demoVideoRef}
+            src="/demo-loop.mp4"
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          {/* blurred cassette image on top of video */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: "url(/demo-cover.webp)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "blur(22px)",
+              transform: "scale(1.08)",
+              opacity: 0.72,
+            }}
+          />
+          {/* dark tint for text contrast */}
+          <div className="absolute inset-0 bg-black/55" />
+
+          {/* close button */}
+          <button
+            onClick={handleDemoClose}
+            className="absolute top-6 right-6 z-10 w-11 h-11 flex items-center justify-center rounded-full border border-white/20 text-white/70 hover:text-white hover:border-white/60 hover:scale-110 transition-all text-xl"
+            aria-label="Close demo"
+          >
+            ✕
+          </button>
+
+          {/* PLAY ME / playing state */}
+          <button
+            onClick={handlePlayMe}
+            disabled={demoPlaying}
+            className="relative z-10 flex flex-col items-center gap-3 cursor-pointer disabled:cursor-default"
+          >
+            {demoPlaying ? (
+              <span
+                className="text-4xl md:text-6xl font-black tracking-[0.2em] text-primary animate-pulse"
+                style={{
+                  fontFamily: "var(--font-elite)",
+                  textShadow: "0 0 50px hsl(var(--primary) / 0.9), 0 0 100px hsl(var(--primary) / 0.5)",
+                }}
+              >
+                ♬ PLAYING
+              </span>
+            ) : (
+              <span
+                className="text-6xl md:text-8xl font-black tracking-[0.15em] text-white hover:text-primary transition-colors duration-200"
+                style={{
+                  fontFamily: "var(--font-elite)",
+                  textShadow: "0 0 40px rgba(255,255,255,0.5)",
+                }}
+              >
+                PLAY ME.
+              </span>
+            )}
+            {!demoPlaying && (
+              <span className="text-xs tracking-[0.3em] text-white/50 uppercase" style={{ fontFamily: "var(--font-elite)" }}>
+                tap to play
+              </span>
+            )}
+          </button>
+
+          {/* hidden audio element */}
+          <audio ref={demoAudioRef} src="/demo-track.mp3" loop />
         </div>
       )}
     </div>
