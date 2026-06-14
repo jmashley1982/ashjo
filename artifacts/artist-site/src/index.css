@@ -559,7 +559,7 @@ html, body {
   }
 }
 .demo-sticker:hover {
-  animation: none;
+  animation-play-state: paused;
 }
 
 /* ============================================================
