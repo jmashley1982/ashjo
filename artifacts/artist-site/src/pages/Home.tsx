@@ -561,9 +561,9 @@ export default function Home() {
         >
           <div className="flex items-center justify-center w-[88px] h-[88px] md:w-[96px] md:h-[96px] rounded-full border-[3px] border-dashed border-primary bg-black/90 hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,26,140,0.5)]">
             <div className="text-center leading-tight select-none">
-              <span className="block text-[10px] tracking-[0.25em] text-primary uppercase" style={{ fontFamily: "var(--font-elite)" }}>HEAR</span>
-              <span className="block text-[13px] font-bold tracking-[0.15em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>NEW</span>
-              <span className="block text-[10px] tracking-[0.2em] text-primary uppercase" style={{ fontFamily: "var(--font-elite)" }}>DEMO</span>
+              <span className="block text-[10px] tracking-[0.25em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>HEAR</span>
+              <span className="block text-[13px] font-bold tracking-[0.15em] text-primary uppercase" style={{ fontFamily: "var(--font-elite)" }}>NEW</span>
+              <span className="block text-[10px] tracking-[0.2em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>DEMO</span>
             </div>
           </div>
         </button>
