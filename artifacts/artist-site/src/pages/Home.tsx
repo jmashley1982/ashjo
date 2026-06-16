@@ -954,7 +954,7 @@ export default function Home() {
               { name: "Aidan Yagu",          url: "https://aidanyagu.com/",             yt: "https://www.youtube.com/@AidanYagu",               tagline: "Beats and rap and songs about some deep shit I don't even get sometimes but fuck its cool.", image: "/frenz-aidan.png" },
               { name: "Saera Nova",          url: "https://saeranova.com/",             yt: "https://www.youtube.com/@saeranovastudios",         tagline: "Lynch-like weird shorts and trippy music videos and catchy fuckin songs and stuf.",         image: "/frenz-saera.png" },
               { name: "TMSTRY",              url: "https://tmstry.com/",                yt: "https://www.youtube.com/@TMSTRY-music",             tagline: "Electronic, deep bass shit that makes my head buzz and my eyes wobble, shit is cool af.",    image: "/frenz-tmstry.png" },
-              { name: "Professor Jacket",    url: "https://freshfridayfestival.com/",   yt: "https://www.youtube.com/@Professorjacketmusic",    tagline: "Catchy, funny, silly, and all the other dope shit I love to hear when I'm hhhhiiiiiii",     image: "/frenz-professor.png" },
+              { name: "Professor Jacket Music", url: "https://freshfridayfestival.com/",   yt: "https://www.youtube.com/@Professorjacketmusic",    tagline: "Catchy, funny, silly, and all the other dope shit I love to hear when I'm hhhhiiiiiii",     image: "/frenz-professor.png" },
             ].map(({ name, url, yt, tagline, image }) => (
               <div
                 key={name}
