@@ -462,7 +462,7 @@ export default function Home() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex gap-8 items-center">
-            {["music", "videos", "pics", "about", "contact"].map((section) => (
+            {["music", "videos", "pics", "about", "frenz", "contact"].map((section) => (
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
@@ -487,7 +487,7 @@ export default function Home() {
         {/* Mobile Nav Menu */}
         {isNavOpen && (
           <div className="md:hidden absolute top-20 left-0 w-full bg-background border-b border-white/5 py-6 px-6 flex flex-col gap-6">
-            {["music", "videos", "pics", "about", "contact"].map((section) => (
+            {["music", "videos", "pics", "about", "frenz", "contact"].map((section) => (
               <button
                 key={section}
                 onClick={() => scrollToSection(section)}
@@ -936,6 +936,46 @@ export default function Home() {
             >
               Press · Collabs · Just saying hi
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FRENZ */}
+      <section id="frenz" className="py-28 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// people i actually like</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            FRENZ
+          </h2>
+          <div className="graffiti-divider" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl">
+            {[
+              { name: "Aidan Yagu", url: "https://aidanyagu.com/" },
+              { name: "Saera Nova", url: "https://saeranova.com/" },
+              { name: "TMSTRY",     url: "https://tmstry.com/" },
+            ].map(({ name, url }) => (
+              <a
+                key={name}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group punk-card block border border-white/10 bg-black/50 px-6 py-8 hover:border-primary/60 transition-all duration-300"
+              >
+                <p
+                  className="text-xl md:text-2xl text-white group-hover:text-primary transition-colors leading-tight"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {name}
+                </p>
+                <p
+                  className="mt-2 text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary/70 transition-colors"
+                  style={{ fontFamily: "var(--font-elite)" }}
+                >
+                  {url.replace(/https?:\/\//, "").replace(/\/$/, "")}
+                </p>
+              </a>
+            ))}
           </div>
         </div>
       </section>
