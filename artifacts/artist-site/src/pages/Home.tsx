@@ -949,68 +949,65 @@ export default function Home() {
           </h2>
           <div className="graffiti-divider" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl">
             {[
-              { name: "Aidan Yagu", url: "https://aidanyagu.com/",  tagline: "Beats and rap and songs about some deep shit I don't even get sometimes but fuck its cool.", image: "/frenz-aidan.png" },
-              { name: "Saera Nova", url: "https://saeranova.com/",  tagline: "Lynch-like weird shorts and trippy music videos and catchy fuckin songs and stuf.",         image: "/frenz-saera.png" },
-              { name: "TMSTRY",     url: "https://tmstry.com/",     tagline: "Electronic, deep bass shit that makes my head buzz and my eyes wobble, shit is cool af.",    image: "/frenz-tmstry.png" },
-            ].map(({ name, url, tagline, image }) => (
-              <a
+              { name: "Aidan Yagu",          url: "https://aidanyagu.com/",             yt: "https://www.youtube.com/@AidanYagu",               tagline: "Beats and rap and songs about some deep shit I don't even get sometimes but fuck its cool.", image: "/frenz-aidan.png" },
+              { name: "Saera Nova",          url: "https://saeranova.com/",             yt: "https://www.youtube.com/@saeranovastudios",         tagline: "Lynch-like weird shorts and trippy music videos and catchy fuckin songs and stuf.",         image: "/frenz-saera.png" },
+              { name: "TMSTRY",              url: "https://tmstry.com/",                yt: "https://www.youtube.com/@TMSTRY-music",             tagline: "Electronic, deep bass shit that makes my head buzz and my eyes wobble, shit is cool af.",    image: "/frenz-tmstry.png" },
+              { name: "Professor Jacket",    url: "https://freshfridayfestival.com/",   yt: "https://www.youtube.com/@Professorjacketmusic",    tagline: "Catchy, funny, silly, and all the other dope shit I love to hear when I'm hhhhiiiiiii",     image: "/frenz-professor.png" },
+            ].map(({ name, url, yt, tagline, image }) => (
+              <div
                 key={name}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="group punk-card relative flex flex-col border border-white/10 overflow-hidden hover:border-primary/60 transition-all duration-300"
                 style={{ aspectRatio: "9/16" }}
               >
-                {/* Full-bleed background: photo or placeholder */}
-                {image ? (
-                  <div
-                    className="absolute inset-0 bg-cover bg-top"
-                    style={{ backgroundImage: `url(${image})` }}
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-[#0d0b0a]">
-                    <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.025)_0px,rgba(255,255,255,0.025)_1px,transparent_1px,transparent_14px)]" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <svg className="w-20 h-20 text-white/8" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-                      </svg>
-                    </div>
-                    <span
-                      className="absolute bottom-[46%] right-4 text-[9px] uppercase tracking-widest text-white/15"
-                      style={{ fontFamily: "var(--font-elite)" }}
-                    >
-                      photo coming
-                    </span>
-                  </div>
-                )}
+                {/* Full-bleed background photo */}
+                <div
+                  className="absolute inset-0 bg-cover bg-top"
+                  style={{ backgroundImage: `url(${image})` }}
+                />
 
-                {/* Gradient: transparent top → semi-dark bottom half */}
+                {/* Gradient: transparent top → semi-dark bottom */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent from-[40%] via-[52%] to-black/80 to-[75%]" />
 
-                {/* Text anchored to bottom */}
-                <div className="absolute bottom-0 left-0 right-0 px-5 pb-6 pt-4">
+                {/* Text + links anchored to bottom */}
+                <div className="absolute bottom-0 left-0 right-0 px-4 pb-5 pt-4">
                   <p
-                    className="text-2xl text-white group-hover:text-primary transition-colors leading-tight drop-shadow-lg"
+                    className="text-xl text-white group-hover:text-primary transition-colors leading-tight drop-shadow-lg"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {name}
                   </p>
                   <p
-                    className="mt-1 text-[10px] uppercase tracking-widest text-white/50 group-hover:text-primary/70 transition-colors"
-                    style={{ fontFamily: "var(--font-elite)" }}
-                  >
-                    {url.replace(/https?:\/\//, "").replace(/\/$/, "")}
-                  </p>
-                  <p
-                    className="mt-3 text-xs text-white/60 group-hover:text-white/80 transition-colors italic leading-snug"
+                    className="mt-2 text-[10px] text-white/55 italic leading-snug"
                     style={{ fontFamily: "var(--font-elite)" }}
                   >
                     {tagline}
                   </p>
+                  <div className="mt-3 flex gap-2">
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[9px] uppercase tracking-widest px-2 py-1 border border-white/30 text-white/70 hover:border-primary hover:text-primary transition-colors"
+                      style={{ fontFamily: "var(--font-elite)" }}
+                    >
+                      Website
+                    </a>
+                    <a
+                      href={yt}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-[9px] uppercase tracking-widest px-2 py-1 border border-white/30 text-white/70 hover:border-primary hover:text-primary transition-colors"
+                      style={{ fontFamily: "var(--font-elite)" }}
+                    >
+                      YouTube
+                    </a>
+                  </div>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
         </div>
