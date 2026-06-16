@@ -951,8 +951,8 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl">
             {[
-              { name: "Aidan Yagu", url: "https://aidanyagu.com/",  tagline: "Beats and rap and songs about some deep shit I don't even get sometimes but fuck its cool.", image: null },
-              { name: "Saera Nova", url: "https://saeranova.com/",  tagline: "Lynch-like weird shorts and trippy music videos and catchy fuckin songs and stuf.",         image: null },
+              { name: "Aidan Yagu", url: "https://aidanyagu.com/",  tagline: "Beats and rap and songs about some deep shit I don't even get sometimes but fuck its cool.", image: "/frenz-aidan.png" },
+              { name: "Saera Nova", url: "https://saeranova.com/",  tagline: "Lynch-like weird shorts and trippy music videos and catchy fuckin songs and stuf.",         image: "/frenz-saera.png" },
               { name: "TMSTRY",     url: "https://tmstry.com/",     tagline: "Electronic, deep bass shit that makes my head buzz and my eyes wobble, shit is cool af.",    image: "/frenz-tmstry.png" },
             ].map(({ name, url, tagline, image }) => (
               <a
@@ -986,8 +986,8 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Gradient: transparent top → near-black bottom half */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent from-[40%] via-[50%] to-black to-[72%]" />
+                {/* Gradient: transparent top → semi-dark bottom half */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent from-[40%] via-[52%] to-black/80 to-[75%]" />
 
                 {/* Text anchored to bottom */}
                 <div className="absolute bottom-0 left-0 right-0 px-5 pb-6 pt-4">
