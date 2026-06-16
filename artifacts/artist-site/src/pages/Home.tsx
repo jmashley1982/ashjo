@@ -951,10 +951,10 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl">
             {[
-              { name: "Aidan Yagu", url: "https://aidanyagu.com/" },
-              { name: "Saera Nova", url: "https://saeranova.com/" },
-              { name: "TMSTRY",     url: "https://tmstry.com/" },
-            ].map(({ name, url }) => (
+              { name: "Aidan Yagu", url: "https://aidanyagu.com/",  tagline: "Beats and rap and songs about some deep shit I don't even get sometimes but fuck its cool." },
+              { name: "Saera Nova", url: "https://saeranova.com/",  tagline: "Lynch-like weird shorts and trippy music videos and catchy fuckin songs and stuf." },
+              { name: "TMSTRY",     url: "https://tmstry.com/",     tagline: "Electronic, deep bass shit that makes my head buzz and my eyes wobble, shit is cool af." },
+            ].map(({ name, url, tagline }) => (
               <a
                 key={name}
                 href={url}
@@ -973,6 +973,12 @@ export default function Home() {
                   style={{ fontFamily: "var(--font-elite)" }}
                 >
                   {url.replace(/https?:\/\//, "").replace(/\/$/, "")}
+                </p>
+                <p
+                  className="mt-3 text-sm text-muted-foreground/70 group-hover:text-primary/50 transition-colors italic leading-snug"
+                  style={{ fontFamily: "var(--font-elite)" }}
+                >
+                  {tagline}
                 </p>
               </a>
             ))}
