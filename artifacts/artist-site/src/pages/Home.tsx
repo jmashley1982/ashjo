@@ -896,50 +896,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section — slide into my DMs */}
-      <section id="contact" className="py-28 px-6 bg-black/40 border-t border-white/5 relative z-10 trash-scrawl-host">
-        {/* === TRASH: bathroom-stall scrawls === */}
-        <span className="trash-scrawl trash-scrawl--tr" aria-hidden="true">A + ?<br />4ever</span>
-        <span className="trash-scrawl trash-scrawl--bl" aria-hidden="true">i ♡ haterz</span>
-        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
-          <span className="section-tag">// scream at me</span>
-          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
-            CONTACT
-          </h2>
-          <div className="graffiti-divider" />
-
-          <div className="dm-cta">
-            <p
-              className="text-muted-foreground mb-8 text-lg tracking-widest uppercase"
-              style={{ fontFamily: "var(--font-elite)" }}
-            >
-              No forms. Just slide into my DMs.
-            </p>
-
-            <div className="flex justify-center">
-              <a
-                href="https://www.instagram.com/ashjotheahole"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="cursor-finger inline-flex items-center gap-3 px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 neon-glow"
-                style={{ fontFamily: "var(--font-marker)", fontSize: "1.2rem", borderRadius: "3px 14px 3px 14px", letterSpacing: "2px" }}
-                data-testid="link-instagram-dm"
-              >
-                <SiInstagram size={22} />
-                @ashjotheahole
-              </a>
-            </div>
-
-            <p
-              className="mt-8 text-xs uppercase tracking-widest text-muted-foreground"
-              style={{ fontFamily: "var(--font-elite)" }}
-            >
-              Press · Collabs · Just saying hi
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* FRENZ */}
       <section id="frenz" className="py-28 px-6 relative z-10">
         <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
@@ -1009,6 +965,50 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section — slide into my DMs */}
+      <section id="contact" className="py-28 px-6 bg-black/40 border-t border-white/5 relative z-10 trash-scrawl-host">
+        {/* === TRASH: bathroom-stall scrawls === */}
+        <span className="trash-scrawl trash-scrawl--tr" aria-hidden="true">A + ?<br />4ever</span>
+        <span className="trash-scrawl trash-scrawl--bl" aria-hidden="true">i ♡ haterz</span>
+        <div className="max-w-7xl mx-auto fade-in-section opacity-0 translate-y-8 transition-all duration-700">
+          <span className="section-tag">// scream at me</span>
+          <h2 className="text-4xl md:text-6xl text-primary neon-text-glow mt-2 mb-3 leading-tight">
+            CONTACT
+          </h2>
+          <div className="graffiti-divider" />
+
+          <div className="dm-cta">
+            <p
+              className="text-muted-foreground mb-8 text-lg tracking-widest uppercase"
+              style={{ fontFamily: "var(--font-elite)" }}
+            >
+              No forms. Just slide into my DMs.
+            </p>
+
+            <div className="flex justify-center">
+              <a
+                href="https://www.instagram.com/ashjotheahole"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cursor-finger inline-flex items-center gap-3 px-8 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 neon-glow"
+                style={{ fontFamily: "var(--font-marker)", fontSize: "1.2rem", borderRadius: "3px 14px 3px 14px", letterSpacing: "2px" }}
+                data-testid="link-instagram-dm"
+              >
+                <SiInstagram size={22} />
+                @ashjotheahole
+              </a>
+            </div>
+
+            <p
+              className="mt-8 text-xs uppercase tracking-widest text-muted-foreground"
+              style={{ fontFamily: "var(--font-elite)" }}
+            >
+              Press · Collabs · Just saying hi
+            </p>
           </div>
         </div>
       </section>
