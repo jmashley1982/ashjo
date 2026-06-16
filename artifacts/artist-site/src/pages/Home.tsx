@@ -960,26 +960,42 @@ export default function Home() {
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group punk-card block border border-white/10 bg-black/50 px-6 py-8 hover:border-primary/60 transition-all duration-300"
+                className="group punk-card flex flex-col border border-white/10 bg-black/50 overflow-hidden hover:border-primary/60 transition-all duration-300"
               >
-                <p
-                  className="text-xl md:text-2xl text-white group-hover:text-primary transition-colors leading-tight"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {name}
-                </p>
-                <p
-                  className="mt-2 text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary/70 transition-colors"
-                  style={{ fontFamily: "var(--font-elite)" }}
-                >
-                  {url.replace(/https?:\/\//, "").replace(/\/$/, "")}
-                </p>
-                <p
-                  className="mt-3 text-sm text-muted-foreground/70 group-hover:text-primary/50 transition-colors italic leading-snug"
-                  style={{ fontFamily: "var(--font-elite)" }}
-                >
-                  {tagline}
-                </p>
+                {/* Placeholder image */}
+                <div className="w-full aspect-square bg-white/5 border-b border-white/10 flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_12px)]" />
+                  <svg className="w-16 h-16 text-white/10 group-hover:text-primary/20 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                  </svg>
+                  <span
+                    className="absolute bottom-2 right-3 text-[9px] uppercase tracking-widest text-white/20 group-hover:text-primary/30 transition-colors"
+                    style={{ fontFamily: "var(--font-elite)" }}
+                  >
+                    photo coming
+                  </span>
+                </div>
+                {/* Card text */}
+                <div className="px-5 py-5 flex flex-col gap-1">
+                  <p
+                    className="text-xl md:text-2xl text-white group-hover:text-primary transition-colors leading-tight"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {name}
+                  </p>
+                  <p
+                    className="text-xs uppercase tracking-widest text-muted-foreground group-hover:text-primary/70 transition-colors"
+                    style={{ fontFamily: "var(--font-elite)" }}
+                  >
+                    {url.replace(/https?:\/\//, "").replace(/\/$/, "")}
+                  </p>
+                  <p
+                    className="mt-2 text-sm text-muted-foreground/70 group-hover:text-primary/50 transition-colors italic leading-snug"
+                    style={{ fontFamily: "var(--font-elite)" }}
+                  >
+                    {tagline}
+                  </p>
+                </div>
               </a>
             ))}
           </div>
