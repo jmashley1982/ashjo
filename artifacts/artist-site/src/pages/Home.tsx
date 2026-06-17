@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { Menu, X, Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from "lucide-react";
-import { SiInstagram, SiSpotify, SiYoutube, SiApplemusic, SiYoutubemusic } from "react-icons/si";
+import { SiInstagram, SiYoutube, SiSpotify } from "react-icons/si";
 import logoSrc from "@assets/logo.webp";
 import heroBgSrc from "@assets/hero-bg.webp";
 import aboutImgSrc from "@assets/about.webp";
@@ -44,10 +44,34 @@ function LiteYT({ id, title, className }: { id: string; title: string; className
   );
 }
 
-const TRACKS = [
-  { id: 1, title: "TM2YL", artist: "Ash Johansen", src: "/track-1.mp3" },
-  { id: 2, title: "Amanda Hugandkiss", artist: "Ash Johansen", src: "/track-2.mp3" },
-  { id: 3, title: "Future Famous", artist: "Ash Johansen", src: "/track-3.mp3" },
+const ARTIST = "Ash Johansen";
+
+type Track = { title: string; src: string };
+type Release = { id: string; title: string; year?: string; cover: string; tracks: Track[] };
+
+// === RELEASES — newest first ===
+// To add an album: drop its audio into public/audio/<slug>/ and its cover webp into
+// public/, then PREPEND a new entry here (newest release goes at the top).
+const RELEASES: Release[] = [
+  {
+    id: "must-go-on",
+    title: "Must Go On",
+    cover: "/album-must-go-on.webp",
+    tracks: [
+      { title: "TM2YL", src: "/audio/must-go-on/01-tm2yl.mp3" },
+      { title: "Pity Party Like It's 1999", src: "/audio/must-go-on/02-pity-party.mp3" },
+      { title: "Future Famous", src: "/audio/must-go-on/03-future-famous.mp3" },
+      { title: "Shame", src: "/audio/must-go-on/04-shame.mp3" },
+      { title: "Amanda Hugandkiss", src: "/audio/must-go-on/05-amanda-hugandkiss.mp3" },
+      { title: "Cannibal", src: "/audio/must-go-on/06-cannibal.mp3" },
+      { title: "RDY2DIE", src: "/audio/must-go-on/07-rdy2die.mp3" },
+      { title: "Night of the Living Martyr", src: "/audio/must-go-on/08-night-of-the-living-martyr.mp3" },
+      { title: "Two Faces", src: "/audio/must-go-on/09-two-faces.mp3" },
+      { title: "Give Blood!", src: "/audio/must-go-on/10-give-blood.mp3" },
+      { title: "Duck'n Cover", src: "/audio/must-go-on/11-duckn-cover.mp3" },
+      { title: "Don't Die Slow", src: "/audio/must-go-on/12-dont-die-slow.mp3" },
+    ],
+  },
 ];
 
 // Fallback video IDs — shown if live playlist fetch fails. Keep in sync with top 3 in playlist.
@@ -71,23 +95,28 @@ function formatTime(seconds: number): string {
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [pastHero, setPastHero] = useState(false);
-  const [musicTab, setMusicTab] = useState("spotify");
   // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [selectedReleaseIndex, setSelectedReleaseIndex] = useState(0);
+  const [playingReleaseIndex, setPlayingReleaseIndex] = useState<number | null>(null);
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
 
-  const currentTrack = currentTrackIndex !== null ? TRACKS[currentTrackIndex] : null;
+  const selectedRelease = RELEASES[selectedReleaseIndex];
+  const playingRelease = playingReleaseIndex !== null ? RELEASES[playingReleaseIndex] : null;
+  const currentTrack =
+    playingRelease && currentTrackIndex !== null ? playingRelease.tracks[currentTrackIndex] : null;
 
-  function playTrack(index: number) {
-    if (currentTrackIndex === index) {
+  function playTrack(releaseIndex: number, trackIndex: number) {
+    if (playingReleaseIndex === releaseIndex && currentTrackIndex === trackIndex) {
       togglePlayPause();
       return;
     }
-    setCurrentTrackIndex(index);
+    setPlayingReleaseIndex(releaseIndex);
+    setCurrentTrackIndex(trackIndex);
     setCurrentTime(0);
     setIsPlaying(true);
   }
@@ -104,12 +133,16 @@ export default function Home() {
   }
 
   function skipTrack(dir: 1 | -1) {
-    if (currentTrackIndex === null) return;
-    const next = (currentTrackIndex + dir + TRACKS.length) % TRACKS.length;
+    if (playingReleaseIndex === null || currentTrackIndex === null) return;
+    const tracks = RELEASES[playingReleaseIndex].tracks;
+    const next = (currentTrackIndex + dir + tracks.length) % tracks.length;
     setCurrentTrackIndex(next);
     setCurrentTime(0);
     setIsPlaying(true);
   }
+
+  const skipTrackRef = useRef(skipTrack);
+  skipTrackRef.current = skipTrack;
 
   function handleSeek(e: React.ChangeEvent<HTMLInputElement>) {
     const val = parseFloat(e.target.value);
@@ -119,18 +152,18 @@ export default function Home() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || currentTrackIndex === null) return;
-    audio.src = TRACKS[currentTrackIndex].src;
+    if (!audio || playingReleaseIndex === null || currentTrackIndex === null) return;
+    audio.src = RELEASES[playingReleaseIndex].tracks[currentTrackIndex].src;
     audio.load();
     if (isPlaying) audio.play().catch(() => {});
-  }, [currentTrackIndex]);
+  }, [playingReleaseIndex, currentTrackIndex]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const onTime = () => setCurrentTime(audio.currentTime);
     const onMeta = () => setDuration(audio.duration);
-    const onEnd = () => skipTrack(1);
+    const onEnd = () => skipTrackRef.current(1);
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onMeta);
     audio.addEventListener("ended", onEnd);
@@ -581,128 +614,95 @@ export default function Home() {
           </h2>
           <div className="graffiti-divider" />
 
-          {/* Track list */}
-          <div className="mb-10 bg-card/40 backdrop-blur border border-white/5 overflow-hidden punk-card">
-            <div className="px-6 py-3 border-b border-white/5 flex items-center justify-between">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>Tracks — Preview</span>
-            </div>
-            {TRACKS.map((track, index) => (
-              <button
-                key={track.id}
-                onClick={() => playTrack(index)}
-                className={`cursor-finger w-full flex items-center gap-4 px-6 py-4 border-b border-white/5 last:border-b-0 transition-all duration-200 group text-left ${
-                  currentTrackIndex === index ? "bg-primary/10 border-l-2 border-l-primary" : "hover:bg-white/5"
-                }`}
-                data-testid={`button-track-${track.id}`}
-              >
-                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border border-white/10 group-hover:border-primary/50 transition-colors">
-                  {currentTrackIndex === index && isPlaying ? (
-                    <Pause size={14} className="text-primary" />
-                  ) : (
-                    <Play size={14} className={currentTrackIndex === index ? "text-primary" : "text-muted-foreground group-hover:text-white"} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium truncate ${currentTrackIndex === index ? "text-primary" : "text-white"}`} style={{ fontFamily: "var(--font-elite)" }}>
-                    {track.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">{track.artist}</p>
-                </div>
-                {currentTrackIndex === index && (
-                  <div className="flex gap-[3px] items-end h-4 flex-shrink-0">
-                    {[60, 100, 75].map((h, b) => (
-                      <div
-                        key={b}
-                        className={`w-[3px] bg-primary rounded-full ${isPlaying ? "animate-pulse" : ""}`}
-                        style={{ height: `${h}%`, animationDelay: `${b * 0.15}s` }}
-                      />
-                    ))}
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Streaming tabs */}
-          <div className="bg-card/40 backdrop-blur border border-white/5 overflow-hidden punk-card">
-            <div className="flex border-b border-white/5 overflow-x-auto">
-              {[
-                { key: "spotify", label: "Spotify", icon: SiSpotify },
-                { key: "soundcloud", label: "SoundCloud", icon: null as any },
-                { key: "apple", label: "Apple Music", icon: SiApplemusic },
-                { key: "ytm", label: "YouTube Music", icon: SiYoutubemusic },
-              ].map((t) => {
-                const TabIcon = t.icon;
+          {/* Release browser — shown when there is more than one album */}
+          {RELEASES.length > 1 && (
+            <div className="mb-8 flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+              {RELEASES.map((release, rIndex) => {
+                const active = rIndex === selectedReleaseIndex;
                 return (
                   <button
-                    key={t.key}
-                    className={`flex items-center gap-2 px-5 py-3 text-xs uppercase tracking-widest whitespace-nowrap transition-all duration-200 ${musicTab === t.key ? "text-primary bg-white/5 border-b-2 border-primary" : "text-muted-foreground hover:text-white hover:bg-white/[0.03]"}`}
-                    style={{ fontFamily: "var(--font-elite)" }}
-                    onClick={() => setMusicTab(t.key)}
+                    key={release.id}
+                    onClick={() => setSelectedReleaseIndex(rIndex)}
+                    className={`cursor-finger group flex-shrink-0 w-32 sm:w-40 snap-start text-left transition-all duration-200 ${active ? "" : "opacity-60 hover:opacity-100"}`}
+                    data-testid={`button-release-${release.id}`}
                   >
-                    {TabIcon && <TabIcon size={14} />}
-                    {t.label}
+                    <div className={`relative aspect-square overflow-hidden border ${active ? "border-primary neon-glow" : "border-white/10 group-hover:border-primary/50"} transition-colors`}>
+                      <img src={release.cover} alt={`${release.title} cover`} loading="lazy" className="w-full h-full object-cover" />
+                    </div>
+                    <p className={`mt-2 text-xs uppercase tracking-widest truncate ${active ? "text-primary" : "text-white"}`} style={{ fontFamily: "var(--font-elite)" }}>{release.title}</p>
                   </button>
                 );
               })}
             </div>
-            <div className="p-5">
-              {musicTab === "spotify" && (
-                <iframe
-                  src="https://open.spotify.com/embed/artist/0ALEPHbwPTJaqzNFMr5aMe?utm_source=generator"
-                  width="100%"
-                  height="380"
-                  frameBorder="0"
-                  allowFullScreen
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  className="rounded-sm"
-                  title="Spotify Player"
-                />
-              )}
-              {musicTab === "soundcloud" && (
-                <iframe
-                  width="100%"
-                  height="360"
-                  scrolling="no"
-                  frameBorder="no"
-                  allow="autoplay"
-                  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/users/1590490014&color=%23ff1a7a&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
-                  className="rounded-sm"
-                  title="SoundCloud Player"
-                />
-              )}
-              {musicTab === "apple" && (
-                <iframe
-                  allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
-                  frameBorder="0"
-                  height="380"
-                  sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
-                  src="https://embed.music.apple.com/us/artist/ash-johansen/1817699556"
-                  width="100%"
-                  className="rounded-sm"
-                  title="Apple Music Player"
-                />
-              )}
-              {musicTab === "ytm" && (
-                <div className="flex flex-col items-center justify-center gap-6 py-14">
-                  <div className="w-20 h-20 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-                    <SiYoutubemusic size={36} className="text-primary" />
-                  </div>
-                  <p className="text-sm text-muted-foreground text-center max-w-xs" style={{ fontFamily: "var(--font-elite)" }}>
-                    Stream Ash Johansen on YouTube Music — all tracks, all the chaos.
-                  </p>
-                  <a
-                    href="https://music.youtube.com/search?q=Ash+Johansen"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
-                    style={{ fontFamily: "var(--font-elite)" }}
-                  >
-                    <SiYoutubemusic size={16} />
-                    Listen Now
-                  </a>
+          )}
+
+          {/* Selected release — cover + tracklist */}
+          <div className="bg-card/40 backdrop-blur border border-white/5 overflow-hidden punk-card">
+            <div className="flex flex-col md:flex-row">
+              {/* Cover + album meta */}
+              <div className="md:w-72 lg:w-80 flex-shrink-0 p-5 md:border-r border-b md:border-b-0 border-white/5">
+                <div className="relative aspect-square overflow-hidden border border-white/10">
+                  <img src={selectedRelease.cover} alt={`${selectedRelease.title} cover`} className="w-full h-full object-cover" />
                 </div>
-              )}
+                <h3 className="mt-4 text-2xl text-primary neon-text-glow leading-tight" style={{ fontFamily: "var(--font-elite)" }}>
+                  {selectedRelease.title}
+                </h3>
+                <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1" style={{ fontFamily: "var(--font-elite)" }}>
+                  {ARTIST}{selectedRelease.year ? ` — ${selectedRelease.year}` : ""} · {selectedRelease.tracks.length} tracks
+                </p>
+                <button
+                  onClick={() => playTrack(selectedReleaseIndex, 0)}
+                  className="cursor-finger mt-4 w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
+                  style={{ fontFamily: "var(--font-elite)" }}
+                  data-testid="button-play-album"
+                >
+                  <Play size={16} /> Play album
+                </button>
+              </div>
+
+              {/* Tracklist */}
+              <div className="flex-1 min-w-0">
+                {selectedRelease.tracks.map((track, index) => {
+                  const isCurrent = playingReleaseIndex === selectedReleaseIndex && currentTrackIndex === index;
+                  return (
+                    <button
+                      key={track.src}
+                      onClick={() => playTrack(selectedReleaseIndex, index)}
+                      className={`cursor-finger w-full flex items-center gap-4 px-5 py-4 border-b border-white/5 last:border-b-0 transition-all duration-200 group text-left ${
+                        isCurrent ? "bg-primary/10 border-l-2 border-l-primary" : "hover:bg-white/5"
+                      }`}
+                      data-testid={`button-track-${index}`}
+                    >
+                      <span className="w-6 text-xs tabular-nums text-muted-foreground flex-shrink-0 text-center group-hover:hidden" style={{ display: isCurrent ? "none" : undefined }}>
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div className={`w-6 h-6 items-center justify-center flex-shrink-0 ${isCurrent ? "flex" : "hidden group-hover:flex"}`}>
+                        {isCurrent && isPlaying ? (
+                          <Pause size={14} className="text-primary" />
+                        ) : (
+                          <Play size={14} className={isCurrent ? "text-primary" : "text-white"} />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-medium truncate ${isCurrent ? "text-primary" : "text-white"}`} style={{ fontFamily: "var(--font-elite)" }}>
+                          {track.title}
+                        </p>
+                      </div>
+                      {isCurrent && (
+                        <div className="flex gap-[3px] items-end h-4 flex-shrink-0">
+                          {[60, 100, 75].map((h, b) => (
+                            <div
+                              key={b}
+                              className={`w-[3px] bg-primary rounded-full ${isPlaying ? "animate-pulse" : ""}`}
+                              style={{ height: `${h}%`, animationDelay: `${b * 0.15}s` }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -1014,7 +1014,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className={`text-center border-t border-white/5 bg-background relative z-10 ${currentTrack ? "py-8 pb-28" : "py-8"}`}>
+      <footer className={`text-center border-t border-white/5 bg-background relative z-10 ${currentTrack ? "py-8 pb-36" : "py-8"}`}>
         <p className="text-xs uppercase tracking-widest text-muted-foreground" style={{ fontFamily: "var(--font-elite)" }}>
           © {new Date().getFullYear()} Ash Johansen — Sweet and pleasing. Raw and unforgiving.
         </p>
@@ -1033,26 +1033,38 @@ export default function Home() {
             />
           </div>
 
-          <div className="max-w-7xl mx-auto flex items-center gap-4">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate" style={{ fontFamily: "var(--font-elite)" }}>{currentTrack.title}</p>
-              <p className="text-xs text-muted-foreground truncate">{currentTrack.artist}</p>
+          <div className="max-w-7xl mx-auto flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              {playingRelease && (
+                <img
+                  src={playingRelease.cover}
+                  alt={`${playingRelease.title} cover`}
+                  className="w-11 h-11 flex-shrink-0 object-cover border border-white/10"
+                />
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-white truncate" style={{ fontFamily: "var(--font-elite)" }}>{currentTrack.title}</p>
+                <p className="text-xs text-muted-foreground truncate">{playingRelease ? `${ARTIST} — ${playingRelease.title}` : ARTIST}</p>
+              </div>
+
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <button onClick={() => skipTrack(-1)} aria-label="Previous track" className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-prev">
+                  <SkipBack size={18} />
+                </button>
+                <button onClick={togglePlayPause} aria-label={isPlaying ? "Pause" : "Play"} className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-white hover:scale-105 transition-transform neon-glow" data-testid="button-player-playpause">
+                  {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+                </button>
+                <button onClick={() => skipTrack(1)} aria-label="Next track" className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-next">
+                  <SkipForward size={18} />
+                </button>
+                <button onClick={() => setIsMuted((m) => !m)} aria-label={isMuted ? "Unmute" : "Mute"} className="hidden sm:flex w-9 h-9 items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-mute">
+                  {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button onClick={() => skipTrack(-1)} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-prev">
-                <SkipBack size={18} />
-              </button>
-              <button onClick={togglePlayPause} className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-white hover:scale-105 transition-transform neon-glow" data-testid="button-player-playpause">
-                {isPlaying ? <Pause size={18} /> : <Play size={18} />}
-              </button>
-              <button onClick={() => skipTrack(1)} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-next">
-                <SkipForward size={18} />
-              </button>
-            </div>
-
-            <div className="hidden md:flex items-center gap-3 flex-1">
-              <span className="text-xs text-muted-foreground tabular-nums w-8 text-right">{formatTime(currentTime)}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground tabular-nums w-9 text-right">{formatTime(currentTime)}</span>
               <input
                 type="range"
                 min={0}
@@ -1062,13 +1074,10 @@ export default function Home() {
                 onChange={handleSeek}
                 className="flex-1 h-1 accent-[hsl(var(--primary))] cursor-pointer"
                 data-testid="input-player-seek"
+                aria-label="Seek"
               />
-              <span className="text-xs text-muted-foreground tabular-nums w-8">{formatTime(duration)}</span>
+              <span className="text-xs text-muted-foreground tabular-nums w-9">{formatTime(duration)}</span>
             </div>
-
-            <button onClick={() => setIsMuted((m) => !m)} className="w-9 h-9 flex items-center justify-center text-muted-foreground hover:text-white transition-colors" data-testid="button-player-mute">
-              {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-            </button>
           </div>
         </div>
       )}

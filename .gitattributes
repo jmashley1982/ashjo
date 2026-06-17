@@ -1,2 +1,3 @@
 attached_assets/Must_Go_On_-_Warm_-_High_-_himp3_1781659007640.zip filter=lfs diff=lfs merge=lfs -text
 attached_assets/must_go_on_cover_1781659018709.png filter=lfs diff=lfs merge=lfs -text
+ash-johansen-website.tar.gz filter=lfs diff=lfs merge=lfs -text

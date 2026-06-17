@@ -30,7 +30,26 @@ _Populate as you build — non-obvious choices a reader couldn't infer from the 
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Single-page artist website for **Ash Johansen** (www.ashjo.com) — dark punk aesthetic, hot pink (`#ff1a8c`). Lives in `artifacts/artist-site` (React + Vite). Sections: hero (with a "PLAY ME" demo overlay), MUSIC (self-hosted album player), VIDEOS, PICS, ABOUT, FRENZ, CONTACT. Deployed as a static bundle (`ash-johansen-website.tar.gz`) for cPanel hosting.
+
+### Self-hosted music player
+
+Music streams directly from the site (no external streaming-service embeds/tabs). Albums are defined in the `RELEASES` array in `artifacts/artist-site/src/pages/Home.tsx` (newest first). A sticky bottom now-playing bar provides play/pause, prev/next, and a seek slider; it is mobile-friendly. The album switcher only renders when more than one release exists.
+
+**To add an album:**
+1. Web-optimize the audio to ~192kbps MP3 and drop the files in `artifacts/artist-site/public/audio/<slug>/` (named `NN-track-slug.mp3`).
+2. Resize the cover to ~900px and save as `artifacts/artist-site/public/album-<slug>.webp`.
+3. **Prepend** a new entry to the `RELEASES` array (newest release goes at the top).
+4. Rebuild the tarball (see "Building the distributable").
+
+### Building the distributable
+
+```
+cd artifacts/artist-site && npx vite build --config vite.config.static.ts \
+  && cp -r public/. dist/static/ \
+  && cd dist && tar -czf /home/runner/workspace/ash-johansen-website.tar.gz -C static .
+```
+Upload the contents of `ash-johansen-website.tar.gz` to the cPanel web root.
 
 ## User preferences
 
