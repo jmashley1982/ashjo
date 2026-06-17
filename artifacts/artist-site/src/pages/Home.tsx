@@ -156,6 +156,7 @@ export default function Home() {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [trackDurations, setTrackDurations] = useState<Record<string, number>>({});
 
   const selectedRelease = RELEASES[selectedReleaseIndex];
   const playingRelease = playingReleaseIndex !== null ? RELEASES[playingReleaseIndex] : null;
@@ -229,6 +230,26 @@ export default function Home() {
   useEffect(() => {
     if (audioRef.current) audioRef.current.muted = isMuted;
   }, [isMuted]);
+
+  useEffect(() => {
+    const controllers: (() => void)[] = [];
+    for (const release of RELEASES) {
+      for (const track of release.tracks) {
+        const a = new Audio();
+        a.preload = "metadata";
+        const onMeta = () => {
+          setTrackDurations((prev) => ({ ...prev, [track.src]: a.duration }));
+        };
+        a.addEventListener("loadedmetadata", onMeta);
+        a.src = track.src;
+        controllers.push(() => {
+          a.removeEventListener("loadedmetadata", onMeta);
+          a.src = "";
+        });
+      }
+    }
+    return () => controllers.forEach((fn) => fn());
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.6);
@@ -740,7 +761,7 @@ export default function Home() {
                           {track.title}
                         </p>
                       </div>
-                      {isCurrent && (
+                      {isCurrent ? (
                         <div className="flex gap-[3px] items-end h-4 flex-shrink-0">
                           {[60, 100, 75].map((h, b) => (
                             <div
@@ -750,6 +771,10 @@ export default function Home() {
                             />
                           ))}
                         </div>
+                      ) : (
+                        <span className="text-xs tabular-nums text-muted-foreground flex-shrink-0 w-9 text-right">
+                          {trackDurations[track.src] != null ? formatTime(trackDurations[track.src]) : ""}
+                        </span>
                       )}
                     </button>
                   );
