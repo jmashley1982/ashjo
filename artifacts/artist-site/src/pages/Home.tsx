@@ -54,6 +54,19 @@ type Release = { id: string; title: string; year?: string; cover: string; tracks
 // public/, then PREPEND a new entry here (newest release goes at the top).
 const RELEASES: Release[] = [
   {
+    id: "positively-toxic",
+    title: "Positively Toxic",
+    cover: "/album-positively-toxic.webp",
+    tracks: [
+      { title: "Island", src: "/audio/positively-toxic/01-island.mp3" },
+      { title: "Get Lost", src: "/audio/positively-toxic/02-get-lost.mp3" },
+      { title: "UBU", src: "/audio/positively-toxic/03-ubu.mp3" },
+      { title: "Drugs!", src: "/audio/positively-toxic/04-drugs.mp3" },
+      { title: "Black Lung", src: "/audio/positively-toxic/05-black-lung.mp3" },
+      { title: "Skeleton Boys", src: "/audio/positively-toxic/06-skeleton-boys.mp3" },
+    ],
+  },
+  {
     id: "must-go-on",
     title: "Must Go On",
     cover: "/album-must-go-on.webp",
@@ -70,6 +83,45 @@ const RELEASES: Release[] = [
       { title: "Give Blood!", src: "/audio/must-go-on/10-give-blood.mp3" },
       { title: "Duck'n Cover", src: "/audio/must-go-on/11-duckn-cover.mp3" },
       { title: "Don't Die Slow", src: "/audio/must-go-on/12-dont-die-slow.mp3" },
+    ],
+  },
+  {
+    id: "you-come-first",
+    title: "You Come First",
+    cover: "/album-you-come-first.webp",
+    tracks: [
+      { title: "Run On Me", src: "/audio/you-come-first/01-run-on-me.mp3" },
+      { title: "Bad Trip Yuh", src: "/audio/you-come-first/02-bad-trip-yuh.mp3" },
+      { title: "Seeing Shadows", src: "/audio/you-come-first/03-seeing-shadows.mp3" },
+    ],
+  },
+  {
+    id: "90s-kid",
+    title: "90's Kid",
+    cover: "/album-90s-kid.webp",
+    tracks: [
+      { title: "Yer Highness", src: "/audio/90s-kid/01-yer-highness.mp3" },
+      { title: "Dis It (Act Uv Gawd)", src: "/audio/90s-kid/02-dis-it.mp3" },
+      { title: "I Lied About Heaven", src: "/audio/90s-kid/03-i-lied-about-heaven.mp3" },
+      { title: "GOAT (The Misery Feed)", src: "/audio/90s-kid/04-goat.mp3" },
+      { title: "Bottoms Up", src: "/audio/90s-kid/05-bottoms-up.mp3" },
+      { title: "Dead Inside", src: "/audio/90s-kid/06-dead-inside.mp3" },
+    ],
+  },
+  {
+    id: "bad-luck-chuck",
+    title: "Bad Luck Chuck",
+    cover: "/album-bad-luck-chuck.webp",
+    tracks: [
+      { title: "The Wrench Thrower", src: "/audio/bad-luck-chuck/01-the-wrench-thrower.mp3" },
+      { title: "The Pessimist", src: "/audio/bad-luck-chuck/02-the-pessimist.mp3" },
+      { title: "Commit", src: "/audio/bad-luck-chuck/03-commit.mp3" },
+      { title: "Bad Luck Chuck!", src: "/audio/bad-luck-chuck/04-bad-luck-chuck.mp3" },
+      { title: "Hate You, Mean It!", src: "/audio/bad-luck-chuck/05-hate-you-mean-it.mp3" },
+      { title: "Strong Female Lead", src: "/audio/bad-luck-chuck/06-strong-female-lead.mp3" },
+      { title: "Open Hand / Closed Fist", src: "/audio/bad-luck-chuck/07-open-hand-closed-fist.mp3" },
+      { title: "The More You Know Me", src: "/audio/bad-luck-chuck/08-the-more-you-know-me.mp3" },
+      { title: "Wait an Blanc", src: "/audio/bad-luck-chuck/09-wait-an-blanc.mp3" },
     ],
   },
 ];
