@@ -54,19 +54,6 @@ type Release = { id: string; title: string; year?: string; cover: string; tracks
 // public/, then PREPEND a new entry here (newest release goes at the top).
 const RELEASES: Release[] = [
   {
-    id: "positively-toxic",
-    title: "Positively Toxic",
-    cover: "/album-positively-toxic.webp",
-    tracks: [
-      { title: "Island", src: "/audio/positively-toxic/01-island.mp3" },
-      { title: "Get Lost", src: "/audio/positively-toxic/02-get-lost.mp3" },
-      { title: "UBU", src: "/audio/positively-toxic/03-ubu.mp3" },
-      { title: "Drugs!", src: "/audio/positively-toxic/04-drugs.mp3" },
-      { title: "Black Lung", src: "/audio/positively-toxic/05-black-lung.mp3" },
-      { title: "Skeleton Boys", src: "/audio/positively-toxic/06-skeleton-boys.mp3" },
-    ],
-  },
-  {
     id: "must-go-on",
     title: "Must Go On",
     cover: "/album-must-go-on.webp",
@@ -83,6 +70,19 @@ const RELEASES: Release[] = [
       { title: "Give Blood!", src: "/audio/must-go-on/10-give-blood.mp3" },
       { title: "Duck'n Cover", src: "/audio/must-go-on/11-duckn-cover.mp3" },
       { title: "Don't Die Slow", src: "/audio/must-go-on/12-dont-die-slow.mp3" },
+    ],
+  },
+  {
+    id: "positively-toxic",
+    title: "Positively Toxic",
+    cover: "/album-positively-toxic.webp",
+    tracks: [
+      { title: "Island", src: "/audio/positively-toxic/01-island.mp3" },
+      { title: "Get Lost", src: "/audio/positively-toxic/02-get-lost.mp3" },
+      { title: "UBU", src: "/audio/positively-toxic/03-ubu.mp3" },
+      { title: "Drugs!", src: "/audio/positively-toxic/04-drugs.mp3" },
+      { title: "Black Lung", src: "/audio/positively-toxic/05-black-lung.mp3" },
+      { title: "Skeleton Boys", src: "/audio/positively-toxic/06-skeleton-boys.mp3" },
     ],
   },
   {
@@ -128,9 +128,9 @@ const RELEASES: Release[] = [
 
 // Fallback video IDs — shown if live playlist fetch fails. Keep in sync with top 3 in playlist.
 const FALLBACK_VIDEO_IDS = [
-  { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL"' },
-  { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies"' },
-  { id: "FlS3Eop3kp0", title: "Don't Die Slow" },
+  { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
+  { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
+  { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies" (Official Music Video)' },
 ];
 
 const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
