@@ -77,12 +77,12 @@ const RELEASES: Release[] = [
     title: "Positively Toxic",
     cover: "/album-positively-toxic.webp",
     tracks: [
-      { title: "Island", src: "/audio/positively-toxic/01-island.mp3" },
-      { title: "Get Lost", src: "/audio/positively-toxic/02-get-lost.mp3" },
+      { title: "ISLAND", src: "/audio/positively-toxic/01-island.mp3" },
+      { title: "GET LOST", src: "/audio/positively-toxic/02-get-lost.mp3" },
       { title: "UBU", src: "/audio/positively-toxic/03-ubu.mp3" },
-      { title: "Drugs!", src: "/audio/positively-toxic/04-drugs.mp3" },
-      { title: "Black Lung", src: "/audio/positively-toxic/05-black-lung.mp3" },
-      { title: "Skeleton Boys", src: "/audio/positively-toxic/06-skeleton-boys.mp3" },
+      { title: "DRUGS!", src: "/audio/positively-toxic/04-drugs.mp3" },
+      { title: "BLACK LUNG", src: "/audio/positively-toxic/05-black-lung.mp3" },
+      { title: "SKELETON BOYS", src: "/audio/positively-toxic/06-skeleton-boys.mp3" },
     ],
   },
   {
