@@ -70,7 +70,7 @@ export default function Lookbook() {
         <h1
           className="text-4xl md:text-6xl lg:text-7xl uppercase leading-none mb-4"
           style={{
-            fontFamily: "var(--font-display)",
+            fontFamily: "var(--font-elite)",
             color: "#fff",
             letterSpacing: "0.04em",
           }}
@@ -100,12 +100,11 @@ export default function Lookbook() {
       <main className="max-w-[1400px] mx-auto px-3 md:px-5 pb-24 space-y-3 md:space-y-4">
 
         {/* 1 — Full-width hero: magazine spread */}
-        <figure className="relative w-full overflow-hidden" style={{ borderRadius: "2px" }}>
+        <figure className="relative w-full" style={{ borderRadius: "2px" }}>
           <img
             src={IMAGES.magazineSpread}
             alt="Ash Johansen Summer 2026 Lookbook — Magazine Spread"
-            className="w-full block object-cover"
-            style={{ aspectRatio: "16/9", objectPosition: "center top" }}
+            className="w-full block"
           />
           <figcaption
             className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
@@ -118,14 +117,13 @@ export default function Lookbook() {
         {/* 2 — Two columns: alley (2/3) + portrait (1/3) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
           <figure
-            className="md:col-span-2 relative overflow-hidden"
+            className="md:col-span-2 relative"
             style={{ borderRadius: "2px" }}
           >
             <img
               src={IMAGES.alley}
               alt="Ash Johansen — Graffiti Alley Editorial"
-              className="w-full block object-cover"
-              style={{ aspectRatio: "4/3", objectPosition: "center" }}
+              className="w-full block"
             />
             <figcaption
               className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
@@ -136,14 +134,13 @@ export default function Lookbook() {
           </figure>
 
           <figure
-            className="relative overflow-hidden"
+            className="relative"
             style={{ borderRadius: "2px" }}
           >
             <img
               src={IMAGES.portrait}
               alt="Ash Johansen — Portrait"
-              className="w-full block object-cover"
-              style={{ aspectRatio: "4/3", objectPosition: "center top" }}
+              className="w-full block"
             />
             <figcaption
               className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
@@ -155,12 +152,11 @@ export default function Lookbook() {
         </div>
 
         {/* 3 — Full-width: character card / reference sheet */}
-        <figure className="relative w-full overflow-hidden" style={{ borderRadius: "2px" }}>
+        <figure className="relative w-full" style={{ borderRadius: "2px" }}>
           <img
             src={IMAGES.characterCard}
             alt="Ash Johansen Summer 2026 — Character Reference"
-            className="w-full block object-cover"
-            style={{ aspectRatio: "16/7", objectPosition: "center 15%" }}
+            className="w-full block"
           />
           <figcaption
             className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
@@ -172,12 +168,11 @@ export default function Lookbook() {
 
         {/* 4 — Two columns: diner (1/2) + skatepark (1/2) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-          <figure className="relative overflow-hidden" style={{ borderRadius: "2px" }}>
+          <figure className="relative" style={{ borderRadius: "2px" }}>
             <img
               src={IMAGES.diner}
               alt="Ash Johansen — Diner / Vintage Store"
-              className="w-full block object-cover"
-              style={{ aspectRatio: "4/3", objectPosition: "center" }}
+              className="w-full block"
             />
             <figcaption
               className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
@@ -187,12 +182,11 @@ export default function Lookbook() {
             </figcaption>
           </figure>
 
-          <figure className="relative overflow-hidden" style={{ borderRadius: "2px" }}>
+          <figure className="relative" style={{ borderRadius: "2px" }}>
             <img
               src={IMAGES.skatepark}
               alt="Ash Johansen — Skate Park Days"
-              className="w-full block object-cover"
-              style={{ aspectRatio: "4/3", objectPosition: "center" }}
+              className="w-full block"
             />
             <figcaption
               className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
@@ -204,12 +198,11 @@ export default function Lookbook() {
         </div>
 
         {/* 5 — Full-width closing collage */}
-        <figure className="relative w-full overflow-hidden" style={{ borderRadius: "2px" }}>
+        <figure className="relative w-full" style={{ borderRadius: "2px" }}>
           <img
             src={IMAGES.collage}
             alt="Ash Johansen Summer 2026 — Full Lookbook Collage"
-            className="w-full block object-cover"
-            style={{ aspectRatio: "16/9", objectPosition: "center" }}
+            className="w-full block"
           />
           <figcaption
             className="absolute bottom-4 left-5 text-[10px] tracking-[0.3em] uppercase"
