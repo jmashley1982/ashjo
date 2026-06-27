@@ -1,13 +1,13 @@
 import { useLocation } from "wouter";
 
 const IMAGES = {
-  magazineSpread: "/lookbook/05-magazine-spread.png",
-  alley: "/lookbook/02-alley.png",
-  portrait: "/lookbook/04-portrait.png",
-  characterCard: "/lookbook/03-character-card.png",
-  diner: "/lookbook/07-diner.png",
-  skatepark: "/lookbook/01-skatepark.png",
-  collage: "/lookbook/06-collage.png",
+  magazineSpread: "/lookbook/05-magazine-spread.webp",
+  alley: "/lookbook/02-alley.webp",
+  portrait: "/lookbook/04-portrait.webp",
+  characterCard: "/lookbook/03-character-card.webp",
+  diner: "/lookbook/07-diner.webp",
+  skatepark: "/lookbook/01-skatepark.webp",
+  collage: "/lookbook/06-collage.webp",
 };
 
 export default function Lookbook() {
