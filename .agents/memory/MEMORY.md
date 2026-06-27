@@ -1,0 +1,1 @@
+- [Image processing tools](image-tooling.md) — `sharp` is NOT installed; use ImageMagick (`magick`/`convert`) for resizing/WebP in this repo.

@@ -2,14 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 
 const IMAGES = {
-  magazineSpread: "/lookbook/05-magazine-spread.webp",
-  alley: "/lookbook/02-alley.webp",
-  portrait: "/lookbook/04-portrait.webp",
-  characterCard: "/lookbook/03-character-card.webp",
-  diner: "/lookbook/07-diner.webp",
-  skatepark: "/lookbook/01-skatepark.webp",
-  collage: "/lookbook/06-collage.webp",
+  magazineSpread: "/lookbook/05-magazine-spread",
+  alley: "/lookbook/02-alley",
+  portrait: "/lookbook/04-portrait",
+  characterCard: "/lookbook/03-character-card",
+  diner: "/lookbook/07-diner",
+  skatepark: "/lookbook/01-skatepark",
+  collage: "/lookbook/06-collage",
 };
+
+// Each base resolves to three WebP variants: -600w, -1200w, and the 1800px original.
+const srcset = (base: string) =>
+  `${base}-600w.webp 600w, ${base}-1200w.webp 1200w, ${base}.webp 1800w`;
 
 const LOOKBOOK_CSS = `
   /* ── Entrance animations ── */
@@ -275,7 +279,15 @@ export default function Lookbook() {
           className="lb-reveal lb-fig relative w-full"
           style={{ borderRadius: "2px" }}
         >
-          <img src={IMAGES.magazineSpread} alt="Ash Johansen Summer 2026 Lookbook — Magazine Spread" className="w-full block" />
+          <img
+            src={`${IMAGES.magazineSpread}.webp`}
+            srcSet={srcset(IMAGES.magazineSpread)}
+            sizes="(min-width: 1400px) 1400px, 100vw"
+            alt="Ash Johansen Summer 2026 Lookbook — Magazine Spread"
+            className="w-full block"
+            loading="lazy"
+            decoding="async"
+          />
           <figcaption>The Look</figcaption>
         </figure>
 
@@ -286,7 +298,15 @@ export default function Lookbook() {
             className="lb-reveal lb-fig md:col-span-2 relative"
             style={{ borderRadius: "2px" }}
           >
-            <img src={IMAGES.alley} alt="Ash Johansen — Graffiti Alley Editorial" className="w-full block" />
+            <img
+              src={`${IMAGES.alley}.webp`}
+              srcSet={srcset(IMAGES.alley)}
+              sizes="(min-width: 1400px) 900px, (min-width: 768px) 64vw, 100vw"
+              alt="Ash Johansen — Graffiti Alley Editorial"
+              className="w-full block"
+              loading="lazy"
+              decoding="async"
+            />
             <figcaption>Street Essential</figcaption>
           </figure>
 
@@ -295,7 +315,15 @@ export default function Lookbook() {
             className="lb-reveal lb-reveal-delay lb-fig relative"
             style={{ borderRadius: "2px" }}
           >
-            <img src={IMAGES.portrait} alt="Ash Johansen — Portrait" className="w-full block" />
+            <img
+              src={`${IMAGES.portrait}.webp`}
+              srcSet={srcset(IMAGES.portrait)}
+              sizes="(min-width: 1400px) 460px, (min-width: 768px) 32vw, 100vw"
+              alt="Ash Johansen — Portrait"
+              className="w-full block"
+              loading="lazy"
+              decoding="async"
+            />
             <figcaption>The Attitude</figcaption>
           </figure>
         </div>
@@ -306,7 +334,15 @@ export default function Lookbook() {
           className="lb-reveal lb-fig relative w-full"
           style={{ borderRadius: "2px" }}
         >
-          <img src={IMAGES.characterCard} alt="Ash Johansen Summer 2026 — Character Reference" className="w-full block" />
+          <img
+            src={`${IMAGES.characterCard}.webp`}
+            srcSet={srcset(IMAGES.characterCard)}
+            sizes="(min-width: 1400px) 1400px, 100vw"
+            alt="Ash Johansen Summer 2026 — Character Reference"
+            className="w-full block"
+            loading="lazy"
+            decoding="async"
+          />
           <figcaption>White Trash, But Make It Fashion</figcaption>
         </figure>
 
@@ -317,7 +353,15 @@ export default function Lookbook() {
             className="lb-reveal lb-fig relative"
             style={{ borderRadius: "2px" }}
           >
-            <img src={IMAGES.diner} alt="Ash Johansen — Diner / Vintage Store" className="w-full block" />
+            <img
+              src={`${IMAGES.diner}.webp`}
+              srcSet={srcset(IMAGES.diner)}
+              sizes="(min-width: 1400px) 690px, (min-width: 768px) 50vw, 100vw"
+              alt="Ash Johansen — Diner / Vintage Store"
+              className="w-full block"
+              loading="lazy"
+              decoding="async"
+            />
             <figcaption>Mood Board</figcaption>
           </figure>
 
@@ -326,7 +370,15 @@ export default function Lookbook() {
             className="lb-reveal lb-reveal-delay lb-fig relative"
             style={{ borderRadius: "2px" }}
           >
-            <img src={IMAGES.skatepark} alt="Ash Johansen — Skate Park Days" className="w-full block" />
+            <img
+              src={`${IMAGES.skatepark}.webp`}
+              srcSet={srcset(IMAGES.skatepark)}
+              sizes="(min-width: 1400px) 690px, (min-width: 768px) 50vw, 100vw"
+              alt="Ash Johansen — Skate Park Days"
+              className="w-full block"
+              loading="lazy"
+              decoding="async"
+            />
             <figcaption>Skate Park Days</figcaption>
           </figure>
         </div>
@@ -337,7 +389,15 @@ export default function Lookbook() {
           className="lb-reveal lb-fig relative w-full"
           style={{ borderRadius: "2px" }}
         >
-          <img src={IMAGES.collage} alt="Ash Johansen Summer 2026 — Full Lookbook Collage" className="w-full block" />
+          <img
+            src={`${IMAGES.collage}.webp`}
+            srcSet={srcset(IMAGES.collage)}
+            sizes="(min-width: 1400px) 1400px, 100vw"
+            alt="Ash Johansen Summer 2026 — Full Lookbook Collage"
+            className="w-full block"
+            loading="lazy"
+            decoding="async"
+          />
           <figcaption>Bad Decisions — Good Times</figcaption>
         </figure>
 
