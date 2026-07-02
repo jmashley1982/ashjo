@@ -438,14 +438,22 @@ export default function Home() {
   // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const PHOTOS = [
-    { src: "/polaroid-1.webp", rotateDeg: -2, top: "4%", left: "3%", z: 5, caption: "low tar" },
-    { src: "/polaroid-2.webp", rotateDeg: 3, top: "2%", left: "28%", z: 3, caption: "top 8" },
-    { src: "/polaroid-3.webp", rotateDeg: 1.5, top: "6%", left: "55%", z: 6, caption: "reference" },
-    { src: "/polaroid-4.webp", rotateDeg: -1, top: "1%", left: "78%", z: 4, caption: "loitering" },
-    { src: "/polaroid-5.webp", rotateDeg: 2.5, top: "38%", left: "5%", z: 2, caption: "fishbowl" },
-    { src: "/polaroid-6.webp", rotateDeg: -3, top: "36%", left: "35%", z: 7, caption: "liftoff" },
-    { src: "/polaroid-7.webp", rotateDeg: 0.5, top: "40%", left: "62%", z: 1, caption: "technical difficulties" },
-    { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5, caption: "last call" },
+    { src: "/polaroid-1.webp", rotateDeg: -2,   top: "4%",  left: "3%",  z: 5,  caption: "low tar" },
+    { src: "/polaroid-2.webp", rotateDeg: 3,    top: "2%",  left: "28%", z: 3,  caption: "top 8" },
+    { src: "/polaroid-3.webp", rotateDeg: 1.5,  top: "6%",  left: "55%", z: 6,  caption: "reference" },
+    { src: "/polaroid-4.webp", rotateDeg: -1,   top: "1%",  left: "78%", z: 4,  caption: "loitering" },
+    { src: "/polaroid-5.webp", rotateDeg: 2.5,  top: "38%", left: "5%",  z: 2,  caption: "fishbowl" },
+    { src: "/polaroid-6.webp", rotateDeg: -3,   top: "36%", left: "35%", z: 7,  caption: "liftoff" },
+    { src: "/polaroid-7.webp", rotateDeg: 0.5,  top: "40%", left: "62%", z: 1,  caption: "technical difficulties" },
+    { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5,  caption: "last call" },
+    { src: "/polaroid-9.webp",  rotateDeg: 5,    top: "9%",  left: "8%",  z: 14, caption: "ass vibes" },
+    { src: "/polaroid-10.webp", rotateDeg: -3.5, top: "6%",  left: "22%", z: 11, caption: "retail therapy" },
+    { src: "/polaroid-11.webp", rotateDeg: 2,    top: "11%", left: "48%", z: 16, caption: "outnumbered" },
+    { src: "/polaroid-12.webp", rotateDeg: -5,   top: "4%",  left: "73%", z: 12, caption: "smokes in space" },
+    { src: "/polaroid-13.webp", rotateDeg: 4,    top: "43%", left: "1%",  z: 10, caption: "tuesday" },
+    { src: "/polaroid-14.webp", rotateDeg: -2,   top: "34%", left: "31%", z: 18, caption: "divebar selfie" },
+    { src: "/polaroid-15.webp", rotateDeg: -4,   top: "45%", left: "58%", z: 15, caption: "normal face" },
+    { src: "/polaroid-16.webp", rotateDeg: 3.5,  top: "37%", left: "78%", z: 13, caption: "one eye open" },
   ];
   useEffect(() => {
     if (lightboxIndex === null) return;
