@@ -625,24 +625,6 @@ export default function Home() {
         </div>
         <div className="absolute inset-0 video-overlay" />
 
-        <div className="absolute bottom-24 left-0 right-0 z-10 text-center px-4 flex flex-col items-center">
-          <p
-            className="hero-quote glitch-text px-5 py-2 border text-sm md:text-base tracking-[0.12em] uppercase"
-            data-text={HERO_QUOTE}
-            style={{
-              fontFamily: "var(--font-mono)",
-              color: "hsl(var(--primary))",
-              borderColor: "hsl(var(--primary) / 0.5)",
-              textShadow: "0 0 10px hsl(var(--primary) / 0.7)",
-              borderRadius: "2px 10px 2px 10px",
-              background: "rgba(0,0,0,0.75)",
-              transform: "rotate(-0.4deg)",
-              maxWidth: "min(90vw, 640px)",
-            }}
-          >
-            {HERO_QUOTE}
-          </p>
-        </div>
 
         <button
           onClick={() => scrollToSection("music")}
