@@ -626,12 +626,6 @@ export default function Home() {
         <div className="absolute inset-0 video-overlay" />
 
         <div className="relative z-10 text-center px-4 flex flex-col items-center">
-          <img
-            src={logoSrc}
-            alt="Ash Johansen"
-            className="w-[min(82vw,580px)] h-auto mb-6 glitch-text"
-            style={{ mixBlendMode: "screen" }}
-          />
           <p
             className="hero-quote glitch-text px-5 py-2 border text-sm md:text-base tracking-[0.12em] uppercase"
             data-text={HERO_QUOTE}
