@@ -625,7 +625,7 @@ export default function Home() {
         </div>
         <div className="absolute inset-0 video-overlay" />
 
-        <div className="relative z-10 text-center px-4 flex flex-col items-center">
+        <div className="absolute bottom-24 left-0 right-0 z-10 text-center px-4 flex flex-col items-center">
           <p
             className="hero-quote glitch-text px-5 py-2 border text-sm md:text-base tracking-[0.12em] uppercase"
             data-text={HERO_QUOTE}
