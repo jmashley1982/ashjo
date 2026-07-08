@@ -616,20 +616,33 @@ export default function Home() {
           <div className="w-[1px] h-10 bg-primary/50" />
         </button>
 
-        {/* NEW MUSIC VIDEO sticker */}
+        {/* NEW MUSIC VIDEO thumbnail card */}
         <a
-          href={`https://www.youtube.com/watch?v=${liveVideos[0]?.id ?? FALLBACK_VIDEO_IDS[0].id}`}
+          href="https://www.youtube.com/watch?v=7gbCnCOREBk"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Watch new music video"
-          className="absolute z-20 mv-sticker"
+          className="absolute z-20 mv-sticker group"
         >
-          <div className="flex items-center justify-center w-[88px] h-[88px] md:w-[96px] md:h-[96px] rounded-full border-[3px] border-dashed border-primary bg-black/90 hover:scale-110 transition-transform shadow-[0_0_20px_rgba(255,26,140,0.5)]">
-            <div className="text-center leading-tight select-none">
-              <span className="block text-[9px] tracking-[0.2em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>NEW</span>
-              <span className="block text-[11px] font-bold tracking-[0.1em] text-primary uppercase" style={{ fontFamily: "var(--font-elite)" }}>MUSIC</span>
-              <span className="block text-[9px] tracking-[0.15em] text-white uppercase" style={{ fontFamily: "var(--font-elite)" }}>VIDEO</span>
+          {/* thumbnail image */}
+          <div className="relative overflow-hidden" style={{ width: "148px", boxShadow: "0 6px 24px rgba(0,0,0,0.8), 0 0 0 3px #ff1a8c" }}>
+            <img
+              src="https://img.youtube.com/vi/7gbCnCOREBk/mqdefault.jpg"
+              alt="New music video"
+              width={148}
+              height={83}
+              style={{ display: "block", width: "100%", height: "83px", objectFit: "cover" }}
+            />
+            {/* play icon overlay */}
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors">
+              <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "#ff1a8c", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 14px rgba(255,26,140,0.7)" }}>
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="white"><polygon points="3,1 11,6 3,11" /></svg>
+              </div>
             </div>
+          </div>
+          {/* label below */}
+          <div style={{ background: "#ff1a8c", padding: "3px 8px", textAlign: "center" }}>
+            <span style={{ fontFamily: "var(--font-elite)", fontSize: "9px", letterSpacing: "0.22em", color: "#fff", textTransform: "uppercase", display: "block" }}>NEW MUSIC VIDEO</span>
           </div>
         </a>
       </section>
