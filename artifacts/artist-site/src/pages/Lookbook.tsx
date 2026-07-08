@@ -242,6 +242,61 @@ const LOOKBOOK_CSS = `
   .zi { width:100%; display:block; }
   .zi-cover { width:100%; height:100%; object-fit:cover; display:block; }
 
+  /* ══ Mobile (≤767px) fixes ══════════════════════════════════════ */
+  @media(max-width:767px) {
+
+    /* Hard-stop any overflow caused by rotated elements */
+    .lb-page-root { overflow-x:hidden; }
+
+    /* Hero image — reduce rotation so it doesn't clip */
+    .lb-hero-rot { transform:rotate(0.6deg) !important; margin:0 !important; }
+
+    /* Freeform (Section 6) — clear all child transforms & spacing */
+    .zine-freeform > * {
+      transform:none !important;
+      margin-top:0 !important;
+      margin-left:0 !important;
+      z-index:auto !important;
+    }
+
+    /* Contact strip — 2 across instead of 4 cramped */
+    .zine-strip { flex-wrap:wrap !important; }
+    .zine-strip > * { flex:0 0 50% !important; }
+
+    /* Scattered-opener overflow extra — don't let it bleed right */
+    .lb-scatter-extra {
+      width:55% !important;
+      margin-top:6px !important;
+      transform:rotate(2deg) !important;
+    }
+
+    /* Grid-mess bleed — remove negative left margin on mobile */
+    .lb-bleed-left { margin-left:0 !important; }
+
+    /* "the reference" label — keep it on-screen */
+    .lb-ref-label { margin-left:30% !important; }
+
+    /* Closing collage corner — larger, less tilt, less overlap */
+    .lb-closing-corner {
+      width:38% !important;
+      margin-top:-18px !important;
+      transform:rotate(3deg) !important;
+    }
+
+    /* Stamps — scale down for narrow cards */
+    .zine-stamp { font-size:.6rem !important; padding:3px 7px !important; letter-spacing:.1em !important; }
+
+    /* Scrawl — cap font size */
+    .zine-scrawl { font-size:11px !important; }
+
+    /* Tape — slightly smaller */
+    .zine-tape { width:44px !important; height:15px !important; }
+
+    /* zine-frame borders thinner on mobile */
+    .zine-frame { border-width:6px !important; }
+    .zine-frame-lg { border-width:8px !important; border-bottom-width:24px !important; }
+  }
+
   /* ── Reduced motion ── */
   @media(prefers-reduced-motion:reduce) {
     .lb-hero-word,.lb-hero-word.lb-in,
@@ -268,7 +323,7 @@ export default function Lookbook() {
   const d = [0, 120, 240, 360, 480];
 
   return (
-    <div style={{ background: "#0a0a0a", fontFamily: "var(--font-elite)", overflowX: "clip" }}>
+    <div className="lb-page-root" style={{ background: "#0a0a0a", fontFamily: "var(--font-elite)", overflowX: "hidden" }}>
       <style>{LOOKBOOK_CSS}</style>
       {/* ── Sticky nav ──────────────────────────────────────────── */}
       <header className="lb-header sticky top-0 z-50 flex items-center justify-between px-5 py-3"
@@ -315,7 +370,7 @@ export default function Lookbook() {
       </section>
       {/* ══ 1. HERO IMAGE — zine-34 (big hero shot), tilted ═══════ */}
       <div ref={reveal(0) as React.Ref<HTMLDivElement>}
-        className="lb-reveal relative"
+        className="lb-reveal lb-hero-rot relative"
         style={{ margin: "0 -10px", transform: "rotate(1.4deg)", transformOrigin: "left center", zIndex: 2 }}>
         <div className="zine-frame-lg" style={{ position: "relative", overflow: "hidden" }}>
           <Tape cls="zt-tl" />
@@ -365,7 +420,7 @@ export default function Lookbook() {
         </div>
         {/* Overflow extra below-right */}
         <div ref={reveal(4) as React.Ref<HTMLDivElement>}
-          className="lb-reveal lb-d3"
+          className="lb-reveal lb-d3 lb-scatter-extra"
           style={{ width: "40%", marginLeft: "auto", position: "relative", transform: "rotate(4.5deg)", marginTop: "-28px", zIndex: 5 }}>
           <div className="zine-frame" style={{ position: "relative" }}>
             <img src={`${Z(4)}.webp`} srcSet={srcsetZ(4)} sizes="40vw" alt="" className="zi" />
@@ -505,7 +560,7 @@ export default function Lookbook() {
           </div>
           {/* Bottom-left: bleeds into gutter */}
           <div ref={reveal(12) as React.Ref<HTMLDivElement>}
-            className="lb-reveal lb-d2"
+            className="lb-reveal lb-d2 lb-bleed-left"
             style={{ position: "relative", transform: "rotate(1.8deg)", marginLeft: "-18px", marginTop: "-16px", zIndex: 5 }}>
             <div className="zine-frame" style={{ position: "relative" }}>
               <img src={`${Z(19)}.webp`} srcSet={srcsetZ(19)} sizes="50vw" alt="" className="zi" />
@@ -568,7 +623,7 @@ export default function Lookbook() {
       </div>
       {/* ══ 10. CHARACTER CARD full-bleed ══════════════════════════ */}
       <div className="px-2 md:px-3 mt-5">
-        <div style={{ transform: "rotate(-1.8deg)", display: "inline-block", marginLeft: "58%", marginBottom: "8px" }}>
+        <div className="lb-ref-label" style={{ transform: "rotate(-1.8deg)", display: "inline-block", marginLeft: "58%", marginBottom: "8px" }}>
           <span className="zine-label">the reference</span>
         </div>
         <div ref={reveal(18) as React.Ref<HTMLDivElement>}
@@ -696,7 +751,7 @@ export default function Lookbook() {
         </div>
         {/* Corner overflow — zine-35 character art */}
         <div ref={reveal(32) as React.Ref<HTMLDivElement>}
-          className="lb-reveal lb-d1"
+          className="lb-reveal lb-d1 lb-closing-corner"
           style={{ width: "28%", marginLeft: "auto", position: "relative", transform: "rotate(6.5deg)", marginTop: "-44px", zIndex: 5 }}>
           <div className="zine-frame-lg" style={{ position: "relative" }}>
             <img src={`${Z(35)}.webp`} srcSet={srcsetZ(35)} sizes="28vw" alt="" className="zi" />
