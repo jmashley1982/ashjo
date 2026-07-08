@@ -21,10 +21,10 @@ const Z = (n: number) => `/lookbook/zine-${String(n).padStart(2, "0")}`;
 const srcset = (base: string) =>
   `${base}-600w.webp 600w, ${base}-1200w.webp 1200w, ${base}.webp 1800w`;
 
-// Srcset for zine shots (2 sizes: 600/1024)
+// Srcset for zine shots (3 sizes: 600/1200/1024-full — matches editorial pattern)
 const srcsetZ = (n: number) => {
   const base = Z(n);
-  return `${base}-600w.webp 600w, ${base}.webp 1024w`;
+  return `${base}-600w.webp 600w, ${base}-1200w.webp 1200w, ${base}.webp 1024w`;
 };
 
 /* ── IntersectionObserver reveal ───────────────────────────────── */
