@@ -148,6 +148,21 @@ function formatTime(seconds: number): string {
 export default function Home() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [pastHero, setPastHero] = useState(false);
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    const handleTimeUpdate = () => {
+      if (video.duration && video.currentTime >= video.duration - 0.15) {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      }
+    };
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    return () => video.removeEventListener("timeupdate", handleTimeUpdate);
+  }, []);
+
   // Audio player state
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [selectedReleaseIndex, setSelectedReleaseIndex] = useState(0);
@@ -592,9 +607,9 @@ export default function Home() {
       <section id="hero" className="relative h-screen w-full flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 w-full h-full overflow-hidden">
           <video
+            ref={heroVideoRef}
             poster={heroBgSrc}
             autoPlay
-            loop
             muted
             playsInline
             preload="auto"
