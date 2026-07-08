@@ -54,6 +54,14 @@ type Release = { id: string; title: string; year?: string; cover: string; tracks
 // public/, then PREPEND a new entry here (newest release goes at the top).
 const RELEASES: Release[] = [
   {
+    id: "doomsayer",
+    title: "DOOMSAYER",
+    cover: "/album-doomsayer.webp",
+    tracks: [
+      { title: "White Truck", src: "/audio/doomsayer/01-white-truck.mp3" },
+    ],
+  },
+  {
     id: "must-go-on",
     title: "Must Go On",
     cover: "/album-must-go-on.webp",
