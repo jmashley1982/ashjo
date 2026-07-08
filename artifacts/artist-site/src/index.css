@@ -543,14 +543,14 @@ html, body {
   25%       { transform: rotate(11deg) scale(1.04); }
   75%       { transform: rotate(5deg) scale(0.97); }
 }
-.demo-sticker {
+.mv-sticker {
   top: 30%;
   right: 18%;
   transform: rotate(8deg);
   animation: sticker-wobble 4s ease-in-out infinite;
 }
 @media (min-width: 768px) {
-  .demo-sticker {
+  .mv-sticker {
     right: auto;
     left: 58%;
     transform: translate(-50%, -50%) rotate(8deg);
@@ -561,7 +561,7 @@ html, body {
     75%       { transform: translate(-50%, -50%) rotate(5deg) scale(0.97); }
   }
 }
-.demo-sticker:hover {
+.mv-sticker:hover {
   animation-play-state: paused;
 }
 
