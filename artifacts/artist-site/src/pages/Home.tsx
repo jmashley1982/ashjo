@@ -128,6 +128,7 @@ const RELEASES: Release[] = [
 
 // Fallback video IDs — shown if live playlist fetch fails. Keep in sync with top 3 in playlist.
 const FALLBACK_VIDEO_IDS = [
+  { id: "7gbCnCOREBk", title: 'Ash Johansen – Latest Music Video' },
   { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
   { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
   { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies" (Official Music Video)' },
