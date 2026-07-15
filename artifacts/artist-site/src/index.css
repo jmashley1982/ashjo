@@ -320,7 +320,7 @@ body::after {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  min-height: 900px;
+  min-height: 1200px;
   background:
     linear-gradient(180deg, rgba(6,4,3,0.25) 0%, rgba(6,4,3,0.1) 100%),
     url("/wall-bg.webp");

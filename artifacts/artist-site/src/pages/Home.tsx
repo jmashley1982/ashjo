@@ -461,34 +461,71 @@ export default function Home() {
 
   // Lightbox state
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [igPhotos, setIgPhotos] = useState<{ src: string; rotateDeg: number; top: string; left: string; z: number; caption: string }[]>([]);
+
   const PHOTOS = [
-    { src: "/polaroid-1.webp", rotateDeg: -2,   top: "4%",  left: "3%",  z: 5,  caption: "low tar" },
-    { src: "/polaroid-2.webp", rotateDeg: 3,    top: "2%",  left: "28%", z: 3,  caption: "top 8" },
-    { src: "/polaroid-3.webp", rotateDeg: 1.5,  top: "6%",  left: "55%", z: 6,  caption: "reference" },
-    { src: "/polaroid-4.webp", rotateDeg: -1,   top: "1%",  left: "78%", z: 4,  caption: "loitering" },
-    { src: "/polaroid-5.webp", rotateDeg: 2.5,  top: "38%", left: "5%",  z: 2,  caption: "fishbowl" },
-    { src: "/polaroid-6.webp", rotateDeg: -3,   top: "36%", left: "35%", z: 7,  caption: "liftoff" },
-    { src: "/polaroid-7.webp", rotateDeg: 0.5,  top: "40%", left: "62%", z: 1,  caption: "technical difficulties" },
-    { src: "/polaroid-8.webp", rotateDeg: -2.5, top: "35%", left: "82%", z: 5,  caption: "last call" },
-    { src: "/polaroid-9.webp",  rotateDeg: 5,    top: "9%",  left: "8%",  z: 14, caption: "ass vibes" },
-    { src: "/polaroid-10.webp", rotateDeg: -3.5, top: "6%",  left: "22%", z: 11, caption: "retail therapy" },
-    { src: "/polaroid-11.webp", rotateDeg: 2,    top: "11%", left: "48%", z: 16, caption: "outnumbered" },
-    { src: "/polaroid-12.webp", rotateDeg: -5,   top: "4%",  left: "73%", z: 12, caption: "smokes in space" },
-    { src: "/polaroid-13.webp", rotateDeg: 4,    top: "43%", left: "1%",  z: 10, caption: "tuesday" },
-    { src: "/polaroid-14.webp", rotateDeg: -2,   top: "34%", left: "31%", z: 18, caption: "divebar selfie" },
-    { src: "/polaroid-15.webp", rotateDeg: -4,   top: "45%", left: "58%", z: 15, caption: "normal face" },
-    { src: "/polaroid-16.webp", rotateDeg: 3.5,  top: "37%", left: "78%", z: 13, caption: "one eye open" },
+    // Row 1 (~3–8%)
+    { src: "/polaroid-1.webp",  rotateDeg: -2,   top: "3%",  left: "2%",  z: 5,  caption: "low tar" },
+    { src: "/polaroid-2.webp",  rotateDeg: 3,    top: "2%",  left: "26%", z: 3,  caption: "top 8" },
+    { src: "/polaroid-3.webp",  rotateDeg: 1.5,  top: "7%",  left: "52%", z: 6,  caption: "reference" },
+    { src: "/polaroid-4.webp",  rotateDeg: -1,   top: "3%",  left: "76%", z: 4,  caption: "loitering" },
+    // Row 1b (~13–18%)
+    { src: "/polaroid-9.webp",  rotateDeg: 5,    top: "15%", left: "11%", z: 14, caption: "ass vibes" },
+    { src: "/polaroid-10.webp", rotateDeg: -3.5, top: "13%", left: "36%", z: 11, caption: "retail therapy" },
+    { src: "/polaroid-11.webp", rotateDeg: 2,    top: "17%", left: "61%", z: 16, caption: "outnumbered" },
+    { src: "/polaroid-12.webp", rotateDeg: -5,   top: "12%", left: "80%", z: 12, caption: "smokes in space" },
+    // Row 2 (~34–42%)
+    { src: "/polaroid-5.webp",  rotateDeg: 2.5,  top: "35%", left: "4%",  z: 2,  caption: "fishbowl" },
+    { src: "/polaroid-6.webp",  rotateDeg: -3,   top: "38%", left: "29%", z: 7,  caption: "liftoff" },
+    { src: "/polaroid-7.webp",  rotateDeg: 0.5,  top: "41%", left: "56%", z: 1,  caption: "technical difficulties" },
+    { src: "/polaroid-8.webp",  rotateDeg: -2.5, top: "34%", left: "78%", z: 5,  caption: "last call" },
+    // Row 3 (~57–64%)
+    { src: "/polaroid-13.webp", rotateDeg: 4,    top: "59%", left: "2%",  z: 10, caption: "tuesday" },
+    { src: "/polaroid-14.webp", rotateDeg: -2,   top: "57%", left: "27%", z: 18, caption: "divebar selfie" },
+    { src: "/polaroid-15.webp", rotateDeg: -4,   top: "63%", left: "54%", z: 15, caption: "normal face" },
+    { src: "/polaroid-16.webp", rotateDeg: 3.5,  top: "58%", left: "77%", z: 13, caption: "one eye open" },
   ];
+
+  const IG_SLOTS = [
+    { top: "72%", left: "3%",  rotateDeg: -3   },
+    { top: "69%", left: "26%", rotateDeg:  2   },
+    { top: "75%", left: "51%", rotateDeg: -4.5 },
+    { top: "70%", left: "74%", rotateDeg:  1   },
+    { top: "81%", left: "11%", rotateDeg:  3.5 },
+    { top: "80%", left: "38%", rotateDeg: -2   },
+    { top: "83%", left: "62%", rotateDeg:  4   },
+    { top: "78%", left: "80%", rotateDeg: -1.5 },
+  ];
+
+  const allPhotos = [...PHOTOS, ...igPhotos];
+
+  useEffect(() => {
+    fetch("/api/instagram-feed")
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((data: { posts: Array<{ imageUrl: string; caption: string }> }) => {
+        const photos = data.posts.slice(0, 8).map((post, i) => ({
+          src: post.imageUrl,
+          caption: (post.caption ?? "").slice(0, 60),
+          ...IG_SLOTS[i % IG_SLOTS.length],
+          z: 20 + i,
+        }));
+        setIgPhotos(photos);
+      })
+      .catch(() => { /* silent fail — static photos still show */ });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (lightboxIndex === null) return;
+    const total = allPhotos.length;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxIndex(null);
-      if (e.key === "ArrowRight") setLightboxIndex((i) => i === null ? null : (i + 1) % PHOTOS.length);
-      if (e.key === "ArrowLeft") setLightboxIndex((i) => i === null ? null : (i - 1 + PHOTOS.length) % PHOTOS.length);
+      if (e.key === "ArrowRight") setLightboxIndex((i) => i === null ? null : (i + 1) % total);
+      if (e.key === "ArrowLeft") setLightboxIndex((i) => i === null ? null : (i - 1 + total) % total);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightboxIndex]);
+  }, [lightboxIndex, igPhotos.length]);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
@@ -844,7 +881,7 @@ export default function Home() {
         </div>
 
         <div className="bathroom-wall mt-8">
-          {PHOTOS.map((photo, i) => (
+          {allPhotos.map((photo, i) => (
             <button
               key={i}
               type="button"
@@ -883,22 +920,22 @@ export default function Home() {
           >
             <button
               className="lightbox-prev"
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + PHOTOS.length) % PHOTOS.length); }}
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex - 1 + allPhotos.length) % allPhotos.length); }}
               aria-label="Previous photo"
             >‹</button>
 
             <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
               <img
-                src={PHOTOS[lightboxIndex].src}
-                alt={`Ash Johansen — ${PHOTOS[lightboxIndex].caption}`}
+                src={allPhotos[lightboxIndex].src}
+                alt={`Ash Johansen — ${allPhotos[lightboxIndex].caption}`}
                 className="lightbox-img"
               />
-              <p className="lightbox-caption">{PHOTOS[lightboxIndex].caption}</p>
+              <p className="lightbox-caption">{allPhotos[lightboxIndex].caption}</p>
             </div>
 
             <button
               className="lightbox-next"
-              onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % PHOTOS.length); }}
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % allPhotos.length); }}
               aria-label="Next photo"
             >›</button>
 

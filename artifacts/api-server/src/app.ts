@@ -18,6 +18,9 @@ const allowedOrigins: string[] = (process.env.REPLIT_DOMAINS ?? "")
   .filter(Boolean)
   .map((d) => `https://${d}`);
 
+// Allow the cPanel-hosted site to call the API
+allowedOrigins.push("https://www.ashjo.com", "https://ashjo.com");
+
 // In development allow localhost on any port
 if (process.env.NODE_ENV !== "production") {
   allowedOrigins.push("http://localhost");
