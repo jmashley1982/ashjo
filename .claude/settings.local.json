@@ -10,7 +10,24 @@
       "Bash(ANTHROPIC_API_KEY=sk-ant-invalid-test-key APP_PASSWORD=testpass123 FLASK_SECRET_KEY=testsecretkey PORT=8082 BASE_PATH=/suno-tool nohup python3 app.py)",
       "Read(//tmp/**)",
       "Bash(pkill -f \"python3 app.py\")",
-      "Bash(rm -f /tmp/suno-cookies.txt /tmp/suno-tool.log)"
+      "Bash(rm -f /tmp/suno-cookies.txt /tmp/suno-tool.log)",
+      "Bash(git -C /home/runner/workspace log --oneline --all -- artifacts/suno-tool)",
+      "Bash(git -C /home/runner/workspace show 83232f2 --stat)",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app.py'\\).read\\(\\)\\); ast.parse\\(open\\('db.py'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(.venv/bin/python -c \"import flask, anthropic, dotenv; print\\('deps OK'\\)\")",
+      "Bash(python3 -c \"import flask, anthropic, dotenv; print\\('deps OK \\(system python\\)'\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8082/suno-tool/)",
+      "Bash(ps -o ppid= -p 3948)",
+      "Bash(awk '$2==3948 {print $3}')",
+      "Bash(awk '$2==27')",
+      "Bash(kill 3948)",
+      "Bash(nohup .venv/bin/python app.py)",
+      "Bash(disown)",
+      "Bash(pkill -f \"python app.py\")",
+      "Bash(rm -f /tmp/suno_cookies.txt /tmp/login_resp.html /tmp/form_resp.html /tmp/result_resp.html /tmp/result2.html /tmp/form2.html /tmp/presets.html /tmp/presets2.html /tmp/presets3.html /tmp/form3.html /tmp/form4.html /tmp/err_resp.html /tmp/loggedout.html /tmp/suno-tool.log)",
+      "Bash(curl -s -o /dev/null -w \"port 8082 now: %{http_code}\\\\n\" http://localhost:8082/suno-tool/ --max-time 2)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
