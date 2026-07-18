@@ -14,15 +14,15 @@ PORT = "8082"
 BASE_PATH = "/suno-tool"
 
 [services.development]
-run = "bash -c 'pip install -q -r artifacts/suno-tool/requirements.txt && python3 artifacts/suno-tool/app.py'"
+run = "bash -c 'cd /home/runner/workspace/artifacts/suno-tool && pip install -q -r requirements.txt && python3 app.py'"
 
 [services.production]
 
 [services.production.build]
-args = ["python3", "-m", "pip", "install", "-r", "artifacts/suno-tool/requirements.txt"]
+args = ["bash", "-c", "cd /home/runner/workspace/artifacts/suno-tool && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt"]
 
 [services.production.run]
-args = ["gunicorn", "--chdir", "artifacts/suno-tool", "--bind", "0.0.0.0:8082", "--workers", "2", "app:app"]
+args = ["/home/runner/workspace/artifacts/suno-tool/.venv/bin/gunicorn", "--chdir", "/home/runner/workspace/artifacts/suno-tool", "--bind", "0.0.0.0:8082", "--workers", "2", "app:app"]
 
 [services.production.run.env]
 PORT = "8082"
