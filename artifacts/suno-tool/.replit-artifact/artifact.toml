@@ -19,7 +19,7 @@ run = "bash -c 'cd /home/runner/workspace/artifacts/suno-tool && pip install -q 
 [services.production]
 
 [services.production.build]
-args = ["bash", "-c", "cd /home/runner/workspace/artifacts/suno-tool && python3 -m venv .venv && PIP_USER=0 .venv/bin/pip install -r requirements.txt"]
+args = ["bash", "-c", "cd /home/runner/workspace/artifacts/suno-tool && python3 -m venv .venv && PIP_USER=0 .venv/bin/pip install --ignore-installed -r requirements.txt"]
 
 [services.production.run]
 args = ["/home/runner/workspace/artifacts/suno-tool/.venv/bin/gunicorn", "--chdir", "/home/runner/workspace/artifacts/suno-tool", "--bind", "0.0.0.0:8082", "--workers", "2", "app:app"]
