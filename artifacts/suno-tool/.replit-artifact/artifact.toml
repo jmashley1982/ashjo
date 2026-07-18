@@ -1,0 +1,29 @@
+kind = "web"
+previewPath = "/suno-tool"
+title = "Suno Prompt Tool"
+version = "1.0.0"
+id = "artifacts/suno-tool"
+
+[[services]]
+name = "Suno Tool"
+paths = ["/suno-tool"]
+localPort = 8082
+
+[services.env]
+PORT = "8082"
+BASE_PATH = "/suno-tool"
+
+[services.development]
+run = "bash -c 'pip install -q -r artifacts/suno-tool/requirements.txt && python3 artifacts/suno-tool/app.py'"
+
+[services.production]
+
+[services.production.build]
+args = ["pip3", "install", "-r", "artifacts/suno-tool/requirements.txt"]
+
+[services.production.run]
+args = ["gunicorn", "--chdir", "artifacts/suno-tool", "--bind", "0.0.0.0:8082", "--workers", "2", "app:app"]
+
+[services.production.run.env]
+PORT = "8082"
+BASE_PATH = "/suno-tool"

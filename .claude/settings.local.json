@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/runner/workspace log --oneline -20)",
+      "Bash(git -C /home/runner/workspace log --oneline --diff-filter=A -- 'artifacts/*/artifact.toml')",
+      "Skill(claude-api)",
+      "Bash(jobs -l)",
+      "Bash(python3 -c \"import secrets; print\\(secrets.token_hex\\(32\\)\\)\")",
+      "Bash(pip install *)",
+      "Bash(ANTHROPIC_API_KEY=sk-ant-invalid-test-key APP_PASSWORD=testpass123 FLASK_SECRET_KEY=testsecretkey PORT=8082 BASE_PATH=/suno-tool nohup python3 app.py)",
+      "Read(//tmp/**)",
+      "Bash(pkill -f \"python3 app.py\")",
+      "Bash(rm -f /tmp/suno-cookies.txt /tmp/suno-tool.log)"
+    ]
+  }
+}

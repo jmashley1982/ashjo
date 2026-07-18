@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Suno Prompt Tool</title>
+<style>
+  :root {
+    --bg: #0b0710;
+    --bg-panel: #15101f;
+    --accent: #b388ff;
+    --accent-dim: #6a4c93;
+    --text: #ece6f5;
+    --text-dim: #9c8fb5;
+    --error: #ff6b6b;
+    --border: #2a2036;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at 20% 0%, #1c1030 0%, var(--bg) 60%);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  h1 {
+    margin: 0 0 0.25rem;
+    font-size: 1.6rem;
+    background: linear-gradient(90deg, var(--accent), #ff9ecb);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  p.subtitle {
+    margin: 0 0 2rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.35rem;
+    margin-top: 1.25rem;
+  }
+  label:first-of-type { margin-top: 0; }
+  input[type="text"], input[type="password"], textarea {
+    width: 100%;
+    background: #0f0a18;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s;
+    font-family: inherit;
+  }
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  textarea#result {
+    width: 100%;
+    min-height: 180px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  button {
+    margin-top: 1.75rem;
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.9; }
+  button.secondary {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .error {
+    margin-top: 1.25rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid var(--error);
+    color: var(--error);
+    font-size: 0.9rem;
+  }
+  .locked-note {
+    margin-top: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    border-top: 1px dashed var(--border);
+    padding-top: 0.75rem;
+  }
+  .row-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+  }
+  .row-links a {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+  .row-links a:hover { color: var(--accent); }
+  #copy-status {
+    display: inline-block;
+    margin-top: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    min-height: 1.2em;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  {% if state == "login" %}
+    <h1>Suno Prompt Tool</h1>
+    <p class="subtitle">Private tool. Enter password to continue.</p>
+    <form method="post">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required autofocus>
+      <button type="submit">Unlock</button>
+    </form>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  {% elif state == "form" %}
+    <h1>Suno Prompt Tool</h1>
+    <p class="subtitle">Translate influences into a Suno-ready prompt.</p>
+    <form method="post">
+      <label for="artist_influences">Artist / band influences</label>
+      <input type="text" id="artist_influences" name="artist_influences" placeholder="e.g. Bjork, Deftones" required>
+
+      <label for="instruments">Instruments (optional)</label>
+      <input type="text" id="instruments" name="instruments" placeholder="e.g. detuned piano, distorted bass">
+
+      <label for="music_styles">Music styles (optional)</label>
+      <input type="text" id="music_styles" name="music_styles" placeholder="e.g. Trip-hop, Classical">
+
+      <label for="tempo_mood">Tempo / mood (optional)</label>
+      <input type="text" id="tempo_mood" name="tempo_mood" placeholder="e.g. 120 BPM, aggressive">
+
+      <button type="submit">Generate Prompt</button>
+    </form>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <p class="locked-note">Vocal style is locked to: haunting female soprano, robotic glitchy vibrato, broken-music-box tone.</p>
+    <div class="row-links">
+      <a href="{{ url_for('suno_tool.logout') }}">Log out</a>
+    </div>
+
+  {% elif state == "result" %}
+    <h1>Your Suno Prompt</h1>
+    <p class="subtitle">Copy this into Suno.</p>
+    <textarea id="result" readonly>{{ result }}</textarea>
+    <button type="button" onclick="copyResult()">Copy to Clipboard</button>
+    <span id="copy-status"></span>
+    <div class="row-links">
+      <a href="{{ url_for('suno_tool.index') }}">Generate another</a>
+      <a href="{{ url_for('suno_tool.logout') }}">Log out</a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  function copyResult() {
+    const el = document.getElementById("result");
+    const status = document.getElementById("copy-status");
+    navigator.clipboard.writeText(el.value).then(function () {
+      status.textContent = "Copied!";
+      setTimeout(function () { status.textContent = ""; }, 2000);
+    }, function () {
+      el.select();
+      status.textContent = "Press Ctrl+C to copy.";
+    });
+  }
+</script>
+</body>
+</html>
