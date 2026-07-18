@@ -10,8 +10,8 @@ import anthropic
 from flask import Blueprint, Flask, redirect, render_template, request, session, url_for
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-APP_PASSWORD = os.environ.get("APP_PASSWORD")
-FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY")
+APP_PASSWORD = os.environ.get("APP_PASSWORD") or os.environ.get("SUNO_TOOL_PASS")
+FLASK_SECRET_KEY = os.environ.get("FLASK_SECRET_KEY") or os.environ.get("SESSION_SECRET")
 PORT = int(os.environ.get("PORT", 8082))
 BASE_PATH = os.environ.get("BASE_PATH", "/suno-tool")
 CLAUDE_MODEL = os.environ.get("CLAUDE_MODEL", "claude-haiku-4-5")
