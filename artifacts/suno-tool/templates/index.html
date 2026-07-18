@@ -30,7 +30,7 @@
   }
   .card {
     width: 100%;
-    max-width: 560px;
+    max-width: 640px;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 16px;
@@ -58,7 +58,7 @@
     margin-top: 1.25rem;
   }
   label:first-of-type { margin-top: 0; }
-  input[type="text"], input[type="password"], textarea {
+  input[type="text"], input[type="password"], textarea, select {
     width: 100%;
     background: #0f0a18;
     border: 1px solid var(--border);
@@ -70,7 +70,7 @@
     transition: border-color 0.15s;
     font-family: inherit;
   }
-  input[type="text"]:focus, input[type="password"]:focus, textarea:focus {
+  input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {
     border-color: var(--accent);
   }
   textarea#result {
@@ -78,6 +78,12 @@
     min-height: 180px;
     resize: vertical;
     line-height: 1.5;
+  }
+  textarea#vocal_style_text {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 1.4;
+    margin-top: 0.6rem;
   }
   button {
     margin-top: 1.75rem;
@@ -107,12 +113,79 @@
     color: var(--error);
     font-size: 0.9rem;
   }
+  .section {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--border);
+  }
+  .section:first-of-type { margin-top: 1.25rem; }
+  .section-title {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.6rem;
+  }
+  .checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.9rem;
+    margin-bottom: 0.7rem;
+  }
+  .checkbox-grid label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .checkbox-grid input[type="checkbox"] {
+    accent-color: var(--accent);
+  }
+  .no-presets {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .remember-row input[type="checkbox"] {
+    accent-color: var(--accent);
+  }
+  .radio-row {
+    display: flex;
+    gap: 1.25rem;
+  }
+  .radio-row label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .radio-row input[type="radio"] {
+    accent-color: var(--accent);
+  }
+  .save-as-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .save-as-row input[type="text"] { flex: 1; }
   .locked-note {
     margin-top: 1.25rem;
     font-size: 0.78rem;
     color: var(--text-dim);
-    border-top: 1px dashed var(--border);
-    padding-top: 0.75rem;
   }
   .row-links {
     display: flex;
@@ -133,6 +206,12 @@
     color: var(--accent);
     min-height: 1.2em;
   }
+  .char-count {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .char-count.over { color: var(--error); }
 </style>
 </head>
 <body>
@@ -151,23 +230,93 @@
     <h1>Suno Prompt Tool</h1>
     <p class="subtitle">Translate influences into a Suno-ready prompt.</p>
     <form method="post">
-      <label for="artist_influences">Artist / band influences</label>
-      <input type="text" id="artist_influences" name="artist_influences" placeholder="e.g. Bjork, Deftones" required>
+      <div class="section" style="margin-top: 0; padding-top: 0; border-top: none;">
+        <div class="section-title">Model</div>
+        <div class="radio-row">
+          {% for key, model_id in model_choices.items() %}
+          <label>
+            <input type="radio" name="model_choice" value="{{ key }}" {% if selected_model == key %}checked{% endif %}>
+            {{ "Haiku — faster" if key == "haiku" else "Sonnet — higher quality" }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
 
-      <label for="instruments">Instruments (optional)</label>
-      <input type="text" id="instruments" name="instruments" placeholder="e.g. detuned piano, distorted bass">
+      <div class="section">
+        <label for="artist_influences">Artist / band influences</label>
+        {% if presets.influences %}
+        <div class="checkbox-grid">
+          {% for p in presets.influences %}
+          <label><input type="checkbox" name="influence_checked" value="{{ p.text }}"> {{ p.label }}</label>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <input type="text" id="artist_influences" name="artist_influences" placeholder="e.g. Bjork, Deftones" required>
+        <div class="remember-row">
+          <input type="checkbox" id="remember_influences" name="remember_influences" value="1">
+          <label for="remember_influences" style="margin:0;">Remember new entries above for next time</label>
+        </div>
+      </div>
 
-      <label for="music_styles">Music styles (optional)</label>
-      <input type="text" id="music_styles" name="music_styles" placeholder="e.g. Trip-hop, Classical">
+      <div class="section">
+        <label for="instruments">Instruments</label>
+        {% if presets.instruments %}
+        <div class="checkbox-grid">
+          {% for p in presets.instruments %}
+          <label><input type="checkbox" name="instrument_checked" value="{{ p.text }}"> {{ p.label }}</label>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <input type="text" id="instruments" name="instruments" placeholder="e.g. detuned piano, distorted bass">
+        <div class="remember-row">
+          <input type="checkbox" id="remember_instruments" name="remember_instruments" value="1">
+          <label for="remember_instruments" style="margin:0;">Remember new entries above for next time</label>
+        </div>
+      </div>
 
-      <label for="tempo_mood">Tempo / mood (optional)</label>
-      <input type="text" id="tempo_mood" name="tempo_mood" placeholder="e.g. 120 BPM, aggressive">
+      <div class="section">
+        <label for="music_styles">Music styles (optional)</label>
+        <input type="text" id="music_styles" name="music_styles" placeholder="e.g. Trip-hop, Classical">
+      </div>
+
+      <div class="section">
+        <label for="tempo_mood">Tempo / mood</label>
+        {% if presets.moods %}
+        <div class="checkbox-grid">
+          {% for p in presets.moods %}
+          <label><input type="checkbox" name="mood_checked" value="{{ p.text }}"> {{ p.label }}</label>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <input type="text" id="tempo_mood" name="tempo_mood" placeholder="e.g. 120 BPM, aggressive">
+        <div class="remember-row">
+          <input type="checkbox" id="remember_moods" name="remember_moods" value="1">
+          <label for="remember_moods" style="margin:0;">Remember new entries above for next time</label>
+        </div>
+      </div>
+
+      <div class="section">
+        <label for="vocal_style_select">Vocal style</label>
+        {% if presets.vocal_styles %}
+        <select id="vocal_style_select">
+          {% for p in presets.vocal_styles %}
+          <option value="{{ p.id }}" data-text="{{ p.text }}" {% if active_vocal_style_id and active_vocal_style_id|string == p.id|string %}selected{% endif %}>{{ p.label }}</option>
+          {% endfor %}
+          <option value="">— custom (not saved) —</option>
+        </select>
+        {% endif %}
+        <textarea id="vocal_style_text" name="vocal_style_text">{{ vocal_style_text }}</textarea>
+        <div class="save-as-row">
+          <input type="text" name="vocal_style_save_as" placeholder="Save this vocal style as… (optional name)">
+        </div>
+      </div>
 
       <button type="submit">Generate Prompt</button>
     </form>
     {% if error %}<div class="error">{{ error }}</div>{% endif %}
-    <p class="locked-note">Vocal style is locked to: haunting female soprano, robotic glitchy vibrato, broken-music-box tone.</p>
+    <p class="locked-note">Target output: one flowing paragraph, under 1000 characters.</p>
     <div class="row-links">
+      <a href="{{ url_for('suno_tool.presets') }}">Manage saved presets</a>
       <a href="{{ url_for('suno_tool.logout') }}">Log out</a>
     </div>
 
@@ -175,6 +324,7 @@
     <h1>Your Suno Prompt</h1>
     <p class="subtitle">Copy this into Suno.</p>
     <textarea id="result" readonly>{{ result }}</textarea>
+    <div class="char-count {% if result|length > 1000 %}over{% endif %}">{{ result|length }} / 1000 characters</div>
     <button type="button" onclick="copyResult()">Copy to Clipboard</button>
     <span id="copy-status"></span>
     <div class="row-links">
@@ -196,6 +346,19 @@
       status.textContent = "Press Ctrl+C to copy.";
     });
   }
+
+  (function () {
+    const select = document.getElementById("vocal_style_select");
+    const textarea = document.getElementById("vocal_style_text");
+    if (select && textarea) {
+      select.addEventListener("change", function () {
+        const option = select.options[select.selectedIndex];
+        if (option && option.dataset.text !== undefined) {
+          textarea.value = option.dataset.text;
+        }
+      });
+    }
+  })();
 </script>
 </body>
 </html>
