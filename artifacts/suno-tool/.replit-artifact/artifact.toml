@@ -19,7 +19,7 @@ run = "bash -c 'pip install -q -r artifacts/suno-tool/requirements.txt && python
 [services.production]
 
 [services.production.build]
-args = ["pip3", "install", "-r", "artifacts/suno-tool/requirements.txt"]
+args = ["python3", "-m", "pip", "install", "-r", "artifacts/suno-tool/requirements.txt"]
 
 [services.production.run]
 args = ["gunicorn", "--chdir", "artifacts/suno-tool", "--bind", "0.0.0.0:8082", "--workers", "2", "app:app"]
