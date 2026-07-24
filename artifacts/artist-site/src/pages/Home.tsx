@@ -139,7 +139,6 @@ const FALLBACK_VIDEO_IDS = [
   { id: "7gbCnCOREBk", title: 'Ash Johansen – Latest Music Video' },
   { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
   { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
-  { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies" (Official Music Video)' },
 ];
 
 const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
@@ -839,7 +838,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {liveVideos.map((video, i) => (
+              {liveVideos.slice(0, 3).map((video, i) => (
                 <div
                   key={video.id}
                   className="flex flex-col gap-2 min-w-0 w-full overflow-hidden"
