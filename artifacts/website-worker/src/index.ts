@@ -6,7 +6,21 @@ interface Env {
   INSTAGRAM_ACCESS_TOKEN?: string;
 }
 
-const FALLBACK_VIDEO_IDS = ["6ZJpSVg87ic", "mqWEPS37iyY", "FlS3Eop3kp0", "Mpo-ghb5Ggs", "dQw4w9WgXcQ", "Z8Z7n1r2e5s"];
+// Keep in sync with the frontend's FALLBACK_VIDEO_IDS in artist-site/src/pages/Home.tsx
+const FALLBACK_VIDEOS = [
+  { id: "7gbCnCOREBk", title: "Ash Johansen – Latest Music Video" },
+  { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
+  { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
+];
+
+function decodeXmlEntities(str: string): string {
+  return str
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
 
 const SECURITY_HEADERS = {
   "Content-Security-Policy": [
@@ -49,19 +63,16 @@ async function handleYoutubeFeed(env: Env): Promise<Response> {
     const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
 
     // First <title> is the playlist name — skip it
-    const videos = videoIdMatches.slice(0, 6).map((m, i) => ({
+    const videos = videoIdMatches.slice(0, 3).map((m, i) => ({
       id: m[1],
-      title: titleMatches[i + 1]?.[1] ?? `Video ${i + 1}`,
+      title: decodeXmlEntities(titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEOS[i]?.title ?? `Video ${i + 1}`),
     }));
 
     if (videos.length === 0) throw new Error("No videos found in feed");
 
     return json({ videos, source: "live" });
   } catch {
-    return json({
-      videos: FALLBACK_VIDEO_IDS.map((id, i) => ({ id, title: `Video ${i + 1}` })),
-      source: "fallback",
-    });
+    return json({ videos: FALLBACK_VIDEOS, source: "fallback" });
   }
 }
 
