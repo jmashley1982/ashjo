@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ashjo-website",
+  "name": "ashjo",
   "compatibility_date": "2026-07-24",
   "main": "src/index.ts",
   "assets": {
@@ -13,9 +13,9 @@
     "YOUTUBE_PLAYLIST_ID": "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf"
   }
   // After `wrangler login`, add custom domains for ashjo.com and www.ashjo.com
-  // from the Cloudflare dashboard (Workers & Pages > ashjo-website > Settings > Domains & Routes),
+  // from the Cloudflare dashboard (Workers & Pages > ashjo > Settings > Domains & Routes),
   // or list them here under "routes" once the zone is on this account.
   //
   // Set the Instagram feed secret with:
-  //   wrangler secret put INSTAGRAM_ACCESS_TOKEN --name ashjo-website
+  //   wrangler secret put INSTAGRAM_ACCESS_TOKEN --name ashjo
 }
