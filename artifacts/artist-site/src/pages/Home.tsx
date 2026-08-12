@@ -155,15 +155,12 @@ const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/channel/UCxAUYa3cgDeOc2ndXI
 // The release the MUSIC-section announcement points at (the newest one).
 const NEW_RELEASE_INDEX = 0;
 
-// Fallback video IDs — shown if live playlist fetch fails. Keep in sync with top 3 in playlist.
+// Fallback video IDs — shown if /api/youtube-feed is unreachable. Keep in sync with top 3 in playlist.
 const FALLBACK_VIDEO_IDS = [
   { id: LATEST_VIDEO_ID, title: 'Ash Johansen – "White Truck" (Official Music Video)' },
   { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
   { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
-  { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies" (Official Music Video)' },
 ];
-
-const PLAYLIST_ID = "PL6jbjn9FqoxInDO6GKY2yFljdMdSiovdf";
 
 const HERO_QUOTE = "we should be able to look at a little porn at work.";
 
@@ -309,47 +306,24 @@ export default function Home() {
     setIsNavOpen(false);
   };
 
-  // Live YouTube video feed — fetched directly in the browser via a CORS proxy
+  // Live YouTube video feed — served same-origin by the site's own Worker (/api/youtube-feed)
   const [liveVideos, setLiveVideos] = useState<{ id: string; title: string }[]>(FALLBACK_VIDEO_IDS);
   const [videosLoading, setVideosLoading] = useState(true);
 
   useEffect(() => {
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${PLAYLIST_ID}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 10000);
 
-    const parseXml = (xml: string) => {
-      const idMatches = [...xml.matchAll(/<yt:videoId>([^<]+)<\/yt:videoId>/g)];
-      const titleMatches = [...xml.matchAll(/<title>([^<]+)<\/title>/g)];
-      const decodeXml = (str: string) =>
-        str.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&apos;/g, "'");
-      return idMatches.slice(0, 3).map((m, i) => ({
-        id: m[1],
-        title: decodeXml(titleMatches[i + 1]?.[1] ?? FALLBACK_VIDEO_IDS[i]?.title ?? `Video ${i + 1}`),
-      }));
-    };
-
-    const tryProxy = async () => {
-      // Primary: corsproxy.io
-      try {
-        const r = await fetch(`https://corsproxy.io/?url=${encodeURIComponent(rssUrl)}`, { signal: controller.signal });
-        if (r.ok) {
-          const xml = await r.text();
-          if (xml.includes("yt:videoId")) return parseXml(xml);
-        }
-      } catch {}
-
-      // Backup: allorigins.win
-      const r2 = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`, { signal: controller.signal });
-      if (!r2.ok) throw new Error("both proxies failed");
-      const json = await r2.json() as { contents: string };
-      return parseXml(json.contents);
-    };
-
-    tryProxy()
-      .then((videos) => { if (videos.length > 0) setLiveVideos(videos); })
+    fetch("/api/youtube-feed", { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`youtube-feed returned ${r.status}`);
+        return r.json() as Promise<{ videos: { id: string; title: string }[] }>;
+      })
+      .then(({ videos }) => { if (videos.length > 0) setLiveVideos(videos); })
       .catch(() => { /* keep hardcoded fallback */ })
       .finally(() => { clearTimeout(timer); setVideosLoading(false); });
+
+    return () => controller.abort();
   }, []);
 
   // Periodic "U OWE ME MONEY" flicker
@@ -923,7 +897,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {liveVideos.map((video, i) => (
+              {liveVideos.slice(0, 3).map((video, i) => (
                 <div
                   key={video.id}
                   className="flex flex-col gap-2 min-w-0 w-full overflow-hidden"

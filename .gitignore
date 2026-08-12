@@ -53,8 +53,8 @@ Thumbs.db
 .env.*
 !.env.example
 
-# suno-tool runtime state (SQLite presets DB)
-artifacts/suno-tool/data/
-
-# Build archives — deploy by uploading dist/static/, never commit a tarball
+# generated deploy bundles — build and deploy via `pnpm run deploy:website` instead of committing these
 *.tar.gz
+
+# wrangler local dev state
+.wrangler/

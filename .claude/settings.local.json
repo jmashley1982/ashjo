@@ -27,7 +27,14 @@
       "Bash(rm -f /tmp/suno_cookies.txt /tmp/login_resp.html /tmp/form_resp.html /tmp/result_resp.html /tmp/result2.html /tmp/form2.html /tmp/presets.html /tmp/presets2.html /tmp/presets3.html /tmp/form3.html /tmp/form4.html /tmp/err_resp.html /tmp/loggedout.html /tmp/suno-tool.log)",
       "Bash(curl -s -o /dev/null -w \"port 8082 now: %{http_code}\\\\n\" http://localhost:8082/suno-tool/ --max-time 2)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git -C /home/user/ashjo lfs ls-files)",
+      "Bash(env)",
+      "Bash(curl -sI -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" https://ashjo.com)",
+      "Bash(curl -sI -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" https://www.ashjo.com)",
+      "Bash(curl -sv https://ashjo.com)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
