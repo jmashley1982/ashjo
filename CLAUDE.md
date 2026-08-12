@@ -87,9 +87,9 @@ That means there are two ways to ship, and you should normally use the first:
 | Build command | `pnpm --filter @workspace/artist-site exec vite build --config vite.config.static.ts` |
 | Deploy command | `npx wrangler deploy` |
 | Production branch | `main` |
-| Build non-production branches | on |
+| Build non-production branches | **off** — only `main` can deploy |
 
-⚠️ Because the deploy command is a plain `npx wrangler deploy`, a build on **any** branch publishes to production — there is no preview-only mode here. Pushing a work-in-progress branch will put it on the live site.
+Only `main` builds. Feature branches are safe to push — they will not touch the live site. Keep it that way: the deploy command is an unconditional `npx wrangler deploy`, so if non-production branch builds are ever switched back on, *any* branch push would publish straight to production.
 
 **Never tell the user a change is live just because it was merged or pushed.** Verify: `curl -sI https://www.ashjo.com/ | head -1`, and check that a changed asset is really being served.
 
