@@ -74,6 +74,7 @@ Do **not** package this into a tarball and commit it. Build straight to `dist/st
 
 ## User preferences
 
+- **Ship it — don't stage it.** Site changes go all the way to `main`: commit on the working branch, fast-forward `main`, push. No pull requests, no "ready for you to merge" hand-offs, no asking permission to merge. Only stop short of `main` if the work is genuinely unfinished or a check fails.
 - **No site-wide marquee/ticker banner.** Announcements belong inside the relevant section (e.g. the MUSIC section), styled like the rest of the page. The nav is pinned at `top-0`; don't reintroduce a bar above it.
 - **Unreleased dates are written as future dates** ("out 8.19", "hits streaming 8.19"), never "out now", until the date actually passes.
 
