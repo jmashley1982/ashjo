@@ -75,7 +75,16 @@ Singles and EPs use the same entry shape as albums — the card meta line plural
 
 That means there are two ways to ship, and you should normally use the first:
 
-1. **Push to `main`** and let Workers Builds deploy. Confirm it actually succeeded — the dashboard shows "Latest build failed" when it did not, and a failed build means the site did **not** change.
+1. **Push to `main` AND to the branch Cloudflare builds from.** As of Aug 2026 the production branch in Cloudflare is `claude/website-cloudflare-migration-ldpugi`, *not* `main` — pushing only to `main` deploys nothing. Both branches are kept at the same commit:
+
+   ```
+   git push origin main
+   git push origin main:claude/website-cloudflare-migration-ldpugi
+   ```
+
+   The build takes 1–3 minutes. Verify it deployed by checking the Worker's `modified_on` (Cloudflare MCP `workers_list`) — if the timestamp did not move, the build failed and **the site did not change.**
+
+   If someone later switches the production branch to `main` in the dashboard (Workers & Pages → ashjo → Settings → Build), drop the second push and this note.
 2. **Deploy directly** with `pnpm run deploy:website`, which builds the static bundle and runs `wrangler deploy`. This needs `CLOUDFLARE_API_TOKEN` in the environment. Without it wrangler stops with a clear error and there is no workaround from inside the container — `wrangler login` needs an interactive browser. Say so immediately instead of hunting for one.
 
 **Never tell the user a change is live just because it was merged or pushed.** Verify: `curl -sI https://www.ashjo.com/ | head -1`, and check that a changed asset is really being served.

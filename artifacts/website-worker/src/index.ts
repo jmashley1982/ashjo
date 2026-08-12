@@ -6,7 +6,7 @@ interface Env {
 
 // Keep in sync with the frontend's FALLBACK_VIDEO_IDS in artist-site/src/pages/Home.tsx
 const FALLBACK_VIDEOS = [
-  { id: "7gbCnCOREBk", title: "Ash Johansen – Latest Music Video" },
+  { id: "7gbCnCOREBk", title: 'Ash Johansen – "White Truck" (Official Music Video)' },
   { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
   { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
 ];
