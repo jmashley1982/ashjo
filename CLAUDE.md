@@ -62,19 +62,27 @@ Singles and EPs use the same entry shape as albums — the card meta line plural
 
 **The MUSIC-section announcement block** is driven entirely by `streamingDate` on the newest release. Setting it renders the "new single / we're back on streaming" card above the release switcher plus an "on streaming <date>" stamp on the release card; clearing the field removes both. There is no separate announcement component to clean up.
 
-### Building for deploy
+### Deploying — READ THIS FIRST
 
+**www.ashjo.com is a Cloudflare Worker named `ashjo`** (account-level Worker, static assets served via an `env.ASSETS` binding). It is **not** cPanel — older notes in this repo said cPanel and they were wrong.
+
+**Pushing to `main` does NOT deploy.** There is no GitHub Action, no `.cpanel.yml`, no build hook — GitHub and the live site are not connected. The site only changes when someone runs a deploy. Never tell the user a change is live because it was merged.
+
+Build, then deploy:
 ```
 cd artifacts/artist-site && npx vite build --config vite.config.static.ts \
   && cp -r public/. dist/static/
+npx wrangler deploy          # requires CLOUDFLARE_API_TOKEN
 ```
-Upload the **contents of `artifacts/artist-site/dist/static/`** to the cPanel web root.
 
-Do **not** package this into a tarball and commit it. Build straight to `dist/static/` and upload from there. `dist/` is gitignored and stays that way.
+**Deployment requires `CLOUDFLARE_API_TOKEN` in the environment.** `wrangler login` cannot be used from an agent session — it needs an interactive browser. If the token is missing, `wrangler whoami` reports "not authenticated" and there is no workaround from inside the container. Say so immediately rather than looking for one; the fix is for the user to add the token to their Claude Code environment variables, where it persists across sessions.
+
+Do **not** commit build archives. `dist/` is gitignored and stays that way.
 
 ## User preferences
 
-- **Ship it — don't stage it.** Site changes go all the way to `main`: commit on the working branch, fast-forward `main`, push. No pull requests, no "ready for you to merge" hand-offs, no asking permission to merge. Only stop short of `main` if the work is genuinely unfinished or a check fails.
+- **Ship it — don't stage it.** "Do it" means the change is live on www.ashjo.com, not staged for review. Commit, fast-forward `main`, push, **then deploy** (see "Deploying"). No pull requests, no "ready for you to merge", no handing back a list of steps to run. If something genuinely blocks the deploy, say that in the first sentence — don't bury it after a summary of what was merged.
+- **The user is not an engineer.** Don't explain internals unless asked, don't offer menus of options, and never end with homework. Pick the sensible path and do it.
 - **No site-wide marquee/ticker banner.** Announcements belong inside the relevant section (e.g. the MUSIC section), styled like the rest of the page. The nav is pinned at `top-0`; don't reintroduce a bar above it.
 - **Unreleased dates are written as future dates** ("out 8.19", "hits streaming 8.19"), never "out now", until the date actually passes.
 
