@@ -30,17 +30,22 @@ _Populate as you build — non-obvious choices a reader couldn't infer from the 
 
 ## Product
 
-Single-page artist website for **Ash Johansen** (www.ashjo.com) — dark punk aesthetic, hot pink (`#ff1a8c`). Lives in `artifacts/artist-site` (React + Vite). Sections: hero (with a "PLAY ME" demo overlay), MUSIC (self-hosted album player), VIDEOS, PICS, ABOUT, FRENZ, CONTACT. Deployed as a static bundle (`ash-johansen-website.tar.gz`) for cPanel hosting.
+Single-page artist website for **Ash Johansen** (www.ashjo.com) — dark punk aesthetic, hot pink (`#ff1a8c`). Lives in `artifacts/artist-site` (React + Vite). Sections: hero (with a sticker linking to the latest music video), MUSIC (self-hosted player), VIDEOS, PICS, ABOUT, FRENZ, CONTACT. Deployed as a static bundle (`ash-johansen-website.tar.gz`) for cPanel hosting.
 
 ### Self-hosted music player
 
-Music streams directly from the site (no external streaming-service embeds/tabs). Albums are defined in the `RELEASES` array in `artifacts/artist-site/src/pages/Home.tsx` (newest first). A sticky bottom now-playing bar provides play/pause, prev/next, and a seek slider; it is mobile-friendly. The album switcher only renders when more than one release exists.
+Music streams directly from the site (no external streaming-service embeds/tabs). Releases are defined in the `RELEASES` array in `artifacts/artist-site/src/pages/Home.tsx` (newest first). A sticky bottom now-playing bar provides play/pause, prev/next, and a seek slider; it is mobile-friendly. The release switcher only renders when more than one release exists.
 
-**To add an album:**
+Singles and EPs use the same entry shape as albums — the card meta line pluralizes `track`/`tracks` from `tracks.length`, and the play button reads "Play single" for a one-track release.
+
+**To add a release:**
 1. Web-optimize the audio to ~192kbps MP3 and drop the files in `artifacts/artist-site/public/audio/<slug>/` (named `NN-track-slug.mp3`).
-2. Resize the cover to ~900px and save as `artifacts/artist-site/public/album-<slug>.webp`.
+2. Resize the cover to ~900px and save as `artifacts/artist-site/public/album-<slug>.webp` (the `album-` prefix is used for every release kind).
 3. **Prepend** a new entry to the `RELEASES` array (newest release goes at the top).
-4. Rebuild the tarball (see "Building the distributable").
+4. Optional fields: `kind` (`"Single" | "EP" | "Album"`) shows in the card meta line, and `streamingDate` (e.g. `"8.19"`) marks a release as not-yet-on-streaming.
+5. Rebuild the tarball (see "Building the distributable").
+
+**The MUSIC-section announcement block** is driven entirely by `streamingDate` on the newest release. Setting it renders the "new single / we're back on streaming" card above the release switcher plus an "on streaming <date>" stamp on the release card; clearing the field removes both. There is no separate announcement component to clean up.
 
 ### Building the distributable
 
@@ -53,11 +58,16 @@ Upload the contents of `ash-johansen-website.tar.gz` to the cPanel web root.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- **No site-wide marquee/ticker banner.** Announcements belong inside the relevant section (e.g. the MUSIC section), styled like the rest of the page. The nav is pinned at `top-0`; don't reintroduce a bar above it.
+- **Unreleased dates are written as future dates** ("out 8.19", "hits streaming 8.19"), never "out now", until the date actually passes.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- **No image tooling is installed** in a fresh container — no `sharp`, `magick`/`convert`, `cwebp`, or `ffmpeg`. For cover conversion, `pip3 install --break-system-packages pillow` and resize with PIL; don't add `sharp` to the workspace for a one-shot conversion.
+- **The dev server throws without `PORT` and `BASE_PATH`** — `vite.config.ts` requires both on `serve`. Use `PORT=19222 BASE_PATH=/ pnpm --filter @workspace/artist-site run dev`.
+- **`vite.config.static.ts` sets `emptyOutDir: true`**, so `cp -r public/. dist/static/` must run *after* the build, not before.
+- **The distributable command's tarball path (`/home/runner/workspace/...`) is Replit-specific** and won't exist elsewhere; use a repo-relative path outside Replit.
+- `ash-johansen-website.tar.gz` is tracked via **Git LFS**. Regenerating it in a container without LFS replaces the pointer with a real blob — only rebuild it when you actually intend to ship.
 
 ## Pointers
 

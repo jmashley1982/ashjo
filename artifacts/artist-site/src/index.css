@@ -527,16 +527,6 @@ html, body {
   overscroll-behavior-y: contain;
 }
 
-/* Banner marquee ticker (mobile only) */
-@keyframes banner-scroll {
-  0%   { transform: translateX(100vw); }
-  100% { transform: translateX(-100%); }
-}
-.banner-marquee {
-  display: inline-block;
-  animation: banner-scroll 28s linear infinite;
-}
-
 /* HEAR NEW DEMO sticker — idle wobble */
 @keyframes sticker-wobble {
   0%, 100% { transform: rotate(8deg); }

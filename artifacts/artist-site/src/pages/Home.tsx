@@ -47,18 +47,31 @@ function LiteYT({ id, title, className }: { id: string; title: string; className
 const ARTIST = "Ash Johansen";
 
 type Track = { title: string; src: string };
-type Release = { id: string; title: string; year?: string; cover: string; tracks: Track[] };
+type Release = {
+  id: string;
+  title: string;
+  year?: string;
+  kind?: "Single" | "EP" | "Album";
+  streamingDate?: string;
+  cover: string;
+  tracks: Track[];
+};
 
 // === RELEASES — newest first ===
-// To add an album: drop its audio into public/audio/<slug>/ and its cover webp into
+// To add a release: drop its audio into public/audio/<slug>/ and its cover webp into
 // public/, then PREPEND a new entry here (newest release goes at the top).
+// Optional fields: `kind` shows in the card meta line; `streamingDate` ("8.19") marks a
+// release as not-yet-on-streaming and renders the announcement block in the MUSIC section.
+// Clear `streamingDate` once the release actually lands and the announcement disappears.
 const RELEASES: Release[] = [
   {
-    id: "doomsayer",
-    title: "DOOMSAYER",
-    cover: "/album-doomsayer.webp",
+    id: "white-truck",
+    title: "WHITE TRUCK",
+    kind: "Single",
+    streamingDate: "8.19",
+    cover: "/album-white-truck.webp",
     tracks: [
-      { title: "White Truck", src: "/audio/doomsayer/01-white-truck.mp3" },
+      { title: "White Truck", src: "/audio/white-truck/01-white-truck.mp3" },
     ],
   },
   {
@@ -134,9 +147,17 @@ const RELEASES: Release[] = [
   },
 ];
 
+// Latest music video — used by the hero sticker, the MUSIC-section CTA, and the fallback list.
+const LATEST_VIDEO_ID = "7gbCnCOREBk";
+const LATEST_VIDEO_URL = `https://www.youtube.com/watch?v=${LATEST_VIDEO_ID}`;
+const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/channel/UCxAUYa3cgDeOc2ndXIZgfPw";
+
+// The release the MUSIC-section announcement points at (the newest one).
+const NEW_RELEASE_INDEX = 0;
+
 // Fallback video IDs — shown if live playlist fetch fails. Keep in sync with top 3 in playlist.
 const FALLBACK_VIDEO_IDS = [
-  { id: "7gbCnCOREBk", title: 'Ash Johansen – Latest Music Video' },
+  { id: LATEST_VIDEO_ID, title: 'Ash Johansen – "White Truck" (Official Music Video)' },
   { id: "F9Ucr687l3s", title: 'Ash Johansen – "RDY2DIE" (Official Music Video)' },
   { id: "6ZJpSVg87ic", title: 'Ash Johansen – "TM2YL" (Official Music Video)' },
   { id: "GDvx11wyT50", title: 'Ash Johansen x TMSTRY – "Lovin\' On Da Ladies" (Official Music Video)' },
@@ -183,6 +204,7 @@ export default function Home() {
   const [trackDurations, setTrackDurations] = useState<Record<string, number>>({});
 
   const selectedRelease = RELEASES[selectedReleaseIndex];
+  const trackCount = selectedRelease.tracks.length;
   const playingRelease = playingReleaseIndex !== null ? RELEASES[playingReleaseIndex] : null;
   const currentTrack =
     playingRelease && currentTrackIndex !== null ? playingRelease.tracks[currentTrackIndex] : null;
@@ -589,15 +611,8 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Distributor notice banner */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-8 flex items-center bg-black/95 border-b border-primary/40 overflow-hidden">
-        <p className="banner-marquee text-[11px] text-white/75 whitespace-nowrap">
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Our distributor, Emubands, has made the decision not to distribute our music because Ash&rsquo;s voice is AI. Bear with us as we seek a reputable, trustworthy distributor.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </p>
-      </div>
-
       {/* Navigation */}
-      <nav className="fixed top-8 w-full z-40 backdrop-blur-md border-b border-primary/20" style={{ transform: "rotate(-0.15deg)", background: "rgba(12, 2, 6, 0.93)" }}>
+      <nav className="fixed top-0 w-full z-40 backdrop-blur-md border-b border-primary/20" style={{ transform: "rotate(-0.15deg)", background: "rgba(12, 2, 6, 0.93)" }}>
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection("hero")}
@@ -678,17 +693,18 @@ export default function Home() {
 
         {/* NEW MUSIC VIDEO thumbnail card */}
         <a
-          href="https://www.youtube.com/watch?v=7gbCnCOREBk"
+          href={LATEST_VIDEO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label="Watch new music video"
+          aria-label={'Watch the "White Truck" music video'}
           className="absolute z-20 mv-sticker group"
+          data-testid="link-hero-music-video"
         >
           {/* thumbnail image */}
           <div className="relative overflow-hidden" style={{ width: "148px", boxShadow: "0 6px 24px rgba(0,0,0,0.8), 0 0 0 3px #ff1a8c" }}>
             <img
-              src="https://img.youtube.com/vi/7gbCnCOREBk/mqdefault.jpg"
-              alt="New music video"
+              src={`https://img.youtube.com/vi/${LATEST_VIDEO_ID}/mqdefault.jpg`}
+              alt={'"White Truck" music video'}
               width={148}
               height={83}
               style={{ display: "block", width: "100%", height: "83px", objectFit: "cover" }}
@@ -702,7 +718,8 @@ export default function Home() {
           </div>
           {/* label below */}
           <div style={{ background: "#ff1a8c", padding: "3px 8px", textAlign: "center" }}>
-            <span style={{ fontFamily: "var(--font-elite)", fontSize: "9px", letterSpacing: "0.22em", color: "#fff", textTransform: "uppercase", display: "block" }}>NEW MUSIC VIDEO</span>
+            <span style={{ fontFamily: "var(--font-elite)", fontSize: "9px", letterSpacing: "0.2em", color: "#fff", textTransform: "uppercase", display: "block" }}>White Truck</span>
+            <span style={{ fontFamily: "var(--font-elite)", fontSize: "7px", letterSpacing: "0.16em", color: "#fff", opacity: 0.85, textTransform: "uppercase", display: "block" }}>Official Video</span>
           </div>
         </a>
       </section>
@@ -718,6 +735,62 @@ export default function Home() {
             MUSIC
           </h2>
           <div className="graffiti-divider" />
+
+          {/* === NEW SINGLE / DISTRIBUTOR ANNOUNCEMENT ===
+              Dated copy. Driven by `streamingDate` on the newest release — clear that
+              field once WHITE TRUCK is actually live and this whole block disappears. */}
+          {RELEASES[NEW_RELEASE_INDEX].streamingDate && (
+            <div
+              className="mb-10 bg-card/40 backdrop-blur border border-primary/30 punk-card-alt p-6 md:p-8"
+              data-testid="block-release-announcement"
+            >
+              <span
+                className="inline-block bg-primary text-black text-[10px] px-2 py-1 uppercase tracking-[0.18em]"
+                style={{ fontFamily: "var(--font-elite)" }}
+              >
+                Out {RELEASES[NEW_RELEASE_INDEX].streamingDate}
+              </span>
+
+              <h3
+                className="mt-3 text-2xl md:text-3xl text-primary neon-text-glow leading-tight"
+                style={{ fontFamily: "var(--font-elite)" }}
+              >
+                New single &mdash; &ldquo;{RELEASES[NEW_RELEASE_INDEX].title}&rdquo;
+              </h3>
+
+              <p className="mt-3 text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl" style={{ fontFamily: "var(--font-elite)" }}>
+                Good news, creeps: we found a new distributor. Ash is headed back to the streaming services soon.
+              </p>
+              <p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl" style={{ fontFamily: "var(--font-elite)" }}>
+                &ldquo;White Truck&rdquo; hits streaming <span className="text-primary">{RELEASES[NEW_RELEASE_INDEX].streamingDate}</span>. Until then there are exactly two places to hear it &mdash; right here, and the music video.
+              </p>
+
+              <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => {
+                    setSelectedReleaseIndex(NEW_RELEASE_INDEX);
+                    playTrack(NEW_RELEASE_INDEX, 0);
+                  }}
+                  className="cursor-finger inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
+                  style={{ fontFamily: "var(--font-elite)" }}
+                  data-testid="button-announcement-listen"
+                >
+                  <Play size={16} /> Listen here now
+                </button>
+
+                <a
+                  href={LATEST_VIDEO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cursor-finger inline-flex items-center justify-center px-6 py-3 border border-primary/40 text-primary text-sm uppercase tracking-widest hover:bg-primary/10 hover:border-primary transition-colors"
+                  style={{ fontFamily: "var(--font-elite)" }}
+                  data-testid="link-announcement-video"
+                >
+                  Watch the video &rarr;
+                </a>
+              </div>
+            </div>
+          )}
 
           {/* Release browser — shown when there is more than one album */}
           {RELEASES.length > 1 && (
@@ -753,15 +826,26 @@ export default function Home() {
                   {selectedRelease.title}
                 </h3>
                 <p className="text-xs uppercase tracking-widest text-muted-foreground mt-1" style={{ fontFamily: "var(--font-elite)" }}>
-                  {ARTIST}{selectedRelease.year ? ` — ${selectedRelease.year}` : ""} · {selectedRelease.tracks.length} tracks
+                  {ARTIST}
+                  {selectedRelease.year ? ` — ${selectedRelease.year}` : ""}
+                  {selectedRelease.kind ? ` · ${selectedRelease.kind}` : ""}
+                  {` · ${trackCount} ${trackCount === 1 ? "track" : "tracks"}`}
                 </p>
+                {selectedRelease.streamingDate && (
+                  <span
+                    className="inline-block mt-2 bg-primary text-black text-[10px] px-2 py-1 uppercase tracking-[0.18em]"
+                    style={{ fontFamily: "var(--font-elite)" }}
+                  >
+                    On streaming {selectedRelease.streamingDate}
+                  </span>
+                )}
                 <button
                   onClick={() => playTrack(selectedReleaseIndex, 0)}
                   className="cursor-finger mt-4 w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-black text-sm font-bold uppercase tracking-widest hover:bg-primary/80 transition-colors"
                   style={{ fontFamily: "var(--font-elite)" }}
                   data-testid="button-play-album"
                 >
-                  <Play size={16} /> Play album
+                  <Play size={16} /> {trackCount === 1 ? "Play single" : "Play album"}
                 </button>
               </div>
 
@@ -858,7 +942,7 @@ export default function Home() {
           )}
           <div className="mt-10 text-center">
             <a
-              href="https://www.youtube.com/channel/UCxAUYa3cgDeOc2ndXIZgfPw"
+              href={YOUTUBE_CHANNEL_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-6 py-3 border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary transition-colors uppercase tracking-widest text-sm"
@@ -984,7 +1068,7 @@ export default function Home() {
                 {[
                   { Icon: SiInstagram, href: "https://www.instagram.com/ashjotheahole", name: "Instagram" },
                   { Icon: SiSpotify, href: "https://open.spotify.com/artist/0ALEPHbwPTJaqzNFMr5aMe", name: "Spotify" },
-                  { Icon: SiYoutube, href: "#", name: "YouTube" },
+                  { Icon: SiYoutube, href: YOUTUBE_CHANNEL_URL, name: "YouTube" },
                 ].map(({ Icon, href, name }) => (
                   <a
                     key={name}
