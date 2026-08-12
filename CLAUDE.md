@@ -1,60 +1,52 @@
 # ashjo
 
-Monorepo for **www.ashjo.com** — the Ash Johansen artist site, plus a small API server and a couple of side tools.
+The website **www.ashjo.com** — Ash Johansen's artist site.
 
-> **Deploying is the thing people get wrong.** The live site is a Cloudflare Worker.
-> Merging to `main` does not deploy. Jump to [Deploying](#deploying--read-this-first).
+> **Read [Deploying](#deploying--read-this-first) before shipping anything.**
+> The site is a Cloudflare Worker, and there is more than one way to get it wrong.
+
+## The whole repo, in two parts
+
+| Folder | What it is |
+|---|---|
+| `artifacts/artist-site/` | The website itself — React + Vite. Nearly all of it is `src/pages/Home.tsx`; custom CSS is `src/index.css`. |
+| `artifacts/website-worker/` | The Cloudflare Worker that serves it. Handles three JSON routes, hands everything else to the built site. |
+
+`attached_assets/` holds source images, audio masters and pasted notes. Some are historical and referenced by nothing.
+
+That's it. There is no database, no backend service, no CMS, and no test suite.
 
 ## Run & Operate
 
-Each app picks a sensible default port; set `PORT` (and `BASE_PATH` for the Vite apps) to override.
+```
+pnpm install                                        # once
+pnpm --filter @workspace/artist-site run dev        # the site, on :19222
+pnpm run typecheck                                  # both packages
+pnpm run build                                      # typecheck + build
+pnpm run deploy:website                             # build + deploy (see Deploying)
+```
 
-| App | Command | Default port |
-|---|---|---|
-| Artist site | `pnpm --filter @workspace/artist-site run dev` | 19222 |
-| API server | `pnpm --filter @workspace/api-server run dev` | 8080 |
-| Mockup sandbox | `pnpm --filter @workspace/mockup-sandbox run dev` | 8081 (base `/__mockup`) |
-| Suno prompt tool | `cd artifacts/suno-tool && pip install -r requirements.txt && python3 app.py` | 8082 |
-
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
+`PORT` and `BASE_PATH` override the dev server's defaults but are not required.
 
 **Environment variables**
 
 | Name | Used by | Required? |
 |---|---|---|
-| `CLOUDFLARE_API_TOKEN` | `wrangler deploy` | **Yes, to deploy.** Without it nothing can reach the live site. |
-| `INSTAGRAM_ACCESS_TOKEN` | Worker `/api/instagram-feed` | No — a Worker *secret*, set with `wrangler secret put`. Missing means an empty post list. |
-| `DATABASE_URL` | `lib/db` only | No — nothing on the site reads the database. |
-| `ALLOWED_ORIGINS` | local Express api-server | No — comma-separated extra CORS origins; `ashjo.com` and `www.ashjo.com` are always allowed. |
+| `CLOUDFLARE_API_TOKEN` | `wrangler deploy` | Only for deploying straight from a session. Pushing to `main` deploys without it. |
+| `INSTAGRAM_ACCESS_TOKEN` | Worker `/api/instagram-feed` | No — a Worker *secret*, not a repo value. Missing means an empty post list. |
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- Site: React 18 + Vite 7 + Tailwind v4, routed with `wouter`
-- Production runtime: Cloudflare Workers (static assets + three JSON endpoints)
-- Local API (not deployed): Express 5
-- DB: PostgreSQL + Drizzle ORM — scaffolding, unused by the site
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-
-## Where things live
-
-- `artifacts/artist-site/` — the public website (React + Vite). Nearly all of it is `src/pages/Home.tsx`; custom CSS is `src/index.css`.
-- `artifacts/artist-site/worker/index.ts` — **the code that actually runs in production.** Serves static assets plus `/api/healthz`, `/api/youtube-feed`, `/api/instagram-feed`.
-- `artifacts/artist-site/wrangler.jsonc` — deploy config for the `ashjo` Worker.
-- `artifacts/api-server/` — a separate Express 5 app with the same three routes (`/healthz`, `/api/youtube-feed`, `/api/instagram-feed`). **Not deployed anywhere.** Editing it does not change the live site.
-- `artifacts/mockup-sandbox/`, `artifacts/suno-tool/` — side tools, not part of the public site.
-- `lib/` — shared packages (db, api-spec, api-zod). Scaffolding; the site does not read from the database.
-- `attached_assets/` — source images, audio masters, and pasted notes. Some are historical and no longer referenced.
+- React 18 + Vite 7 + Tailwind v4, routed with `wouter`
+- Cloudflare Workers in production (static assets + three JSON endpoints)
 
 ## Architecture decisions
 
-- **Production is one Cloudflare Worker.** `worker/index.ts` handles three JSON routes and falls through to the `ASSETS` binding for everything else, stamping security headers on what it returns. The Worker is small; the site is the 200 MB of assets beside it.
-- **The Express api-server is dead weight for the live site.** It duplicates the Worker's three routes for local use. If you change one, change both, or delete the Express one.
-- **The page doesn't call its own API.** `Home.tsx` fetches the YouTube playlist client-side through public CORS proxies (corsproxy.io, then allorigins.win), so the site works even if the Worker routes fail. `FALLBACK_VIDEO_IDS` in `Home.tsx` is the last resort.
-- **Music is self-hosted, not embedded.** See below.
+- **One Worker serves everything.** `website-worker/src/index.ts` answers `/api/healthz`, `/api/youtube-feed` and `/api/instagram-feed`, and falls through to the `ASSETS` binding for the rest, stamping security headers on the way out. `run_worker_first: true` in `wrangler.jsonc` is what lets it see the API paths at all.
+- **The Worker reads the site's build output.** `wrangler.jsonc` points `assets.directory` at `../artist-site/dist/static`, so the site must be built before the Worker is deployed. `deploy:website` does both in order.
+- **The video feed goes through the Worker**, not a third-party CORS proxy. If it fails, `FALLBACK_VIDEO_IDS` in `Home.tsx` is the backstop — keep it in sync with `FALLBACK_VIDEOS` in the Worker.
+- **Music is self-hosted**, not embedded from a streaming service. See below.
 
 ## Product
 
@@ -71,34 +63,29 @@ Singles and EPs use the same entry shape as albums — the card meta line plural
 2. Resize the cover to ~900px and save as `artifacts/artist-site/public/album-<slug>.webp` (the `album-` prefix is used for every release kind).
 3. **Prepend** a new entry to the `RELEASES` array (newest release goes at the top).
 4. Optional fields: `kind` (`"Single" | "EP" | "Album"`) shows in the card meta line, and `streamingDate` (e.g. `"8.19"`) marks a release as not-yet-on-streaming.
-5. Deploy — `pnpm --filter @workspace/artist-site run deploy`. Nothing is live until this runs.
+5. Ship it — see [Deploying](#deploying--read-this-first). Nothing is live until that happens.
 
 **The MUSIC-section announcement block** is driven entirely by `streamingDate` on the newest release. Setting it renders the "new single / we're back on streaming" card above the release switcher plus an "on streaming <date>" stamp on the release card; clearing the field removes both. There is no separate announcement component to clean up.
 
 ### Deploying — READ THIS FIRST
 
-**www.ashjo.com is a Cloudflare Worker named `ashjo`.** Not cPanel, not Replit, not static hosting — older notes in this repo said cPanel and they were wrong.
+**www.ashjo.com is a Cloudflare Worker named `ashjo`** (`artifacts/website-worker/`). Not cPanel — older notes in this repo said cPanel and they were wrong.
 
-**Pushing to `main` does NOT deploy.** There is no GitHub Action, no `.cpanel.yml`, no build hook. GitHub and the live site are not connected in any way. The site changes only when someone runs the deploy command below. Never tell the user their change is live because it was merged.
+**Cloudflare Workers Builds is connected to this GitHub repo.** Pushing to the production branch triggers a build that deploys the site. Nothing in the repo shows this — the config lives in the Cloudflare dashboard under Workers & Pages → ashjo → Settings → Build — so do not conclude "there is no CI" just because there is no `.github/workflows`.
 
-When the user says "push it live" / "update the site" / "ship it", run exactly this:
+That means there are two ways to ship, and you should normally use the first:
 
-```
-pnpm --filter @workspace/artist-site run deploy
-```
+1. **Push to `main`** and let Workers Builds deploy. Confirm it actually succeeded — the dashboard shows "Latest build failed" when it did not, and a failed build means the site did **not** change.
+2. **Deploy directly** with `pnpm run deploy:website`, which builds the static bundle and runs `wrangler deploy`. This needs `CLOUDFLARE_API_TOKEN` in the environment. Without it wrangler stops with a clear error and there is no workaround from inside the container — `wrangler login` needs an interactive browser. Say so immediately instead of hunting for one.
 
-That builds `dist/static/` and runs `wrangler deploy` against `artifacts/artist-site/wrangler.jsonc`. It takes a couple of minutes — the asset upload is ~200 MB, mostly audio. Then confirm with `curl -sI https://www.ashjo.com/ | head -1` and by checking that a changed asset is actually served.
-
-**It needs `CLOUDFLARE_API_TOKEN` in the environment.** Check with `npx wrangler whoami` before starting. If it says "not authenticated", stop and tell the user in your first sentence — do not build a bundle, do not suggest manual uploads, do not look for a workaround. `wrangler login` cannot work from an agent session; it needs an interactive browser. The fix is theirs: add `CLOUDFLARE_API_TOKEN` to the Claude Code environment settings, where it persists across sessions. The token needs the "Edit Cloudflare Workers" permission.
+**Never tell the user a change is live just because it was merged or pushed.** Verify: `curl -sI https://www.ashjo.com/ | head -1`, and check that a changed asset is really being served.
 
 Useful extras:
-- `npx wrangler deploy --dry-run` — validates config and bundles the Worker with **no** auth needed. Good for checking a change before the token exists.
-- `npx wrangler secret put INSTAGRAM_ACCESS_TOKEN` — sets the one secret the Worker uses.
-- `npx wrangler deployments list` / `npx wrangler rollback` — history and undo.
+- `pnpm --filter @workspace/website-worker exec wrangler deploy --dry-run` — validates config and bundles the Worker with **no** auth needed.
+- `wrangler secret put INSTAGRAM_ACCESS_TOKEN --name ashjo` — the one secret the Worker uses. Without it the Instagram feed returns an empty list, which is fine.
+- `wrangler deployments list` / `wrangler rollback` — history and undo.
 
-Do **not** commit build archives. `dist/` is gitignored and stays that way.
-
-**Provenance note:** `worker/index.ts` and `wrangler.jsonc` were reconstructed on 2026-08-12 from the deployed Worker bundle, because the original source was never committed. Behaviour matches what was live, with two deliberate differences: the health check returns `{"status":"ok"}` directly instead of via a Zod parse, and `FALLBACK_VIDEOS[0]` now names White Truck. `not_found_handling: "single-page-application"` is set so `/lookbook` resolves; the previously deployed setting could not be read back, so **sanity-check `/lookbook` after the first deploy.**
+Do **not** commit build archives. `dist/` and `*.tar.gz` are gitignored.
 
 ## User preferences
 
@@ -109,11 +96,12 @@ Do **not** commit build archives. `dist/` is gitignored and stays that way.
 
 ## Gotchas
 
-- **No image tooling is installed** in a fresh container — no `sharp`, `magick`/`convert`, `cwebp`, or `ffmpeg`. For cover conversion, `pip3 install --break-system-packages pillow` and resize with PIL; don't add `sharp` to the workspace for a one-shot conversion.
-- **`vite.config.static.ts` sets `emptyOutDir: true`**, so `cp -r public/. dist/static/` must run *after* the build. The `build:static` script already orders this correctly — use it rather than running the two commands by hand.
-- **Vite's `strictPort: true`** means the dev server fails outright if 19222 is already taken, rather than picking another port. Kill the stale process (`pkill -f vite`) instead of assuming the config is broken.
-- **The workspace enforces a 1-day `minimumReleaseAge`** on new packages (`pnpm-workspace.yaml`). Installing a just-published version fails with a wall of text; pin a version a few days old instead of disabling the setting.
-- **Never commit build archives.** `dist/` and `*.tar.gz` are both gitignored; deploying is `wrangler deploy`, not uploading files anywhere.
+- **Check `git branch -r` before assuming `main` is the truth.** In Aug 2026 the entire Cloudflare migration sat on an unmerged branch for 18 days while `main` still described cPanel hosting. Every session read `main`, believed it, and was wrong. If the repo contradicts the Cloudflare dashboard, the dashboard wins.
+- **Vite copies `public/` into the build automatically.** No `cp` step is needed — `vite build --config vite.config.static.ts` alone produces the full `dist/static/`.
+- **No image tooling is installed** in a fresh container — no `sharp`, `magick`/`convert`, `cwebp`, or `ffmpeg`. For cover conversion, `pip3 install --break-system-packages pillow` and resize with PIL; don't add `sharp` for a one-shot conversion.
+- **Vite's `strictPort: true`** means the dev server fails outright if 19222 is already taken rather than picking another port. Kill the stale process (`pkill -f vite`) instead of assuming the config is broken.
+- **The workspace enforces a 1-day `minimumReleaseAge`** (`pnpm-workspace.yaml`). Installing a just-published package fails with a wall of text; pin a slightly older version instead of disabling the setting.
+- **Never commit build archives.** `dist/` and `*.tar.gz` are gitignored.
 
 ## Pointers
 
