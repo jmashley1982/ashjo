@@ -1,15 +1,24 @@
-# [Project name]
+# ashjo
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Monorepo for **www.ashjo.com** — the Ash Johansen artist site, plus a small API server and a couple of side tools.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+Each app picks a sensible default port; set `PORT` (and `BASE_PATH` for the Vite apps) to override.
+
+| App | Command | Default port |
+|---|---|---|
+| Artist site | `pnpm --filter @workspace/artist-site run dev` | 19222 |
+| API server | `pnpm --filter @workspace/api-server run dev` | 8080 |
+| Mockup sandbox | `pnpm --filter @workspace/mockup-sandbox run dev` | 8081 (base `/__mockup`) |
+| Suno prompt tool | `cd artifacts/suno-tool && pip install -r requirements.txt && python3 app.py` | 8082 |
+
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+
+Env vars: `DATABASE_URL` (Postgres connection string, for the db package) and `ALLOWED_ORIGINS` (optional, comma-separated extra CORS origins for the API server — `ashjo.com` and `www.ashjo.com` are always allowed).
 
 ## Stack
 
@@ -22,11 +31,17 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/artist-site/` — the public website (React + Vite). Nearly all of it is `src/pages/Home.tsx`; custom CSS is `src/index.css`.
+- `artifacts/api-server/` — Express 5 API (`/health`, `/api/youtube-feed`, `/api/instagram-feed`).
+- `artifacts/mockup-sandbox/`, `artifacts/suno-tool/` — side tools, not part of the public site.
+- `lib/` — shared packages (db, api-spec, api-zod). Currently scaffolding; the site does not read from the database.
+- `attached_assets/` — source images, audio masters, and pasted notes. Some are historical and no longer referenced.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- **Hosting is plain static.** The site is built to `dist/static/` and uploaded to cPanel. There is no platform-specific config in the repo — no build archive, no run manifests. Ports and base paths come from `PORT` / `BASE_PATH` with defaults baked into each Vite config.
+- **The site ships no backend.** The API server exists but the site fetches YouTube/Instagram through public CORS proxies client-side, so the static bundle works with nothing else deployed.
+- **Music is self-hosted, not embedded.** See below.
 
 ## Product
 
@@ -55,7 +70,7 @@ cd artifacts/artist-site && npx vite build --config vite.config.static.ts \
 ```
 Upload the **contents of `artifacts/artist-site/dist/static/`** to the cPanel web root.
 
-Do **not** package this into a tarball and commit it. That was a Replit-era habit and is retired for good — build straight to `dist/static/` and upload from there. `dist/` is gitignored and stays that way.
+Do **not** package this into a tarball and commit it. Build straight to `dist/static/` and upload from there. `dist/` is gitignored and stays that way.
 
 ## User preferences
 

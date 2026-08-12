@@ -8,15 +8,15 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
-// Trust the first proxy hop (Replit's reverse proxy sets X-Forwarded-For)
+// Trust the first proxy hop (the hosting reverse proxy sets X-Forwarded-For)
 app.set("trust proxy", 1);
 
-// Derive allowed origins from the runtime domain list (set by Replit in production)
-const allowedOrigins: string[] = (process.env.REPLIT_DOMAINS ?? "")
+// Extra allowed origins for whatever host this runs on, as a comma-separated
+// list of full origins, e.g. ALLOWED_ORIGINS="https://api.example.com".
+const allowedOrigins: string[] = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
-  .map((d) => d.trim())
-  .filter(Boolean)
-  .map((d) => `https://${d}`);
+  .map((o) => o.trim())
+  .filter(Boolean);
 
 // Allow the cPanel-hosted site to call the API
 allowedOrigins.push("https://www.ashjo.com", "https://ashjo.com");
