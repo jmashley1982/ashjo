@@ -8,8 +8,7 @@
     "build": "vite build --config vite.config.ts",
     "build:static": "vite build --config vite.config.static.ts && cp -r public/. dist/static/",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "deploy": "pnpm run build:static && wrangler deploy"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -71,7 +70,6 @@
     "vaul": "^1.1.2",
     "vite": "catalog:",
     "wouter": "^3.3.5",
-    "wrangler": "4.120.0",
     "zod": "catalog:"
   }
 }
