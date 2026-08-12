@@ -65,6 +65,7 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - unrs-resolver
+  - workerd
 
 overrides:
   # Builds and deploys target linux-x64 only, so exclude every other platform
