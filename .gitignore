@@ -55,3 +55,6 @@ Thumbs.db
 
 # suno-tool runtime state (SQLite presets DB)
 artifacts/suno-tool/data/
+
+# Build archives — deploy by uploading dist/static/, never commit a tarball
+*.tar.gz
